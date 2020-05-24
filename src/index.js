@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import logoImg from "./assets/logo.png";
 import img_blood from "./assets/blood.png";
+import './style.scss';
 
 import { spawn_update, spawn_preload, spawn_create } from './spawn-manager';
 
@@ -27,7 +28,6 @@ const game = new Phaser.Game(config);
 let emitter;
 
 function preload() {
-  this.load.image('logo', logoImg);
   this.load.image('blood', img_blood);
   spawn_preload(this);
 

@@ -1,0 +1,37 @@
+
+/* Resets, etc */
+@import './theme/theme.scss';
+
+/* Color palette */
+@import './theme/colors.scss';
+
+
+h1, h2, h3, h4{
+  font-family: $font-rocksalt;
+}
+
+h1{
+  font-size:4rem;
+}
+h2{
+  font-size:3rem;
+}
+h3{
+  font-size:2.6rem;
+}
+
+body{
+  position:absolute;
+  left:0;
+  top:0;
+  right:0;
+  bottom:0;
+  margin:0;
+  padding: 10px;
+  font-family: 'Roboto', cursive;
+  font-weight: 500;
+  font-size: 1.8rem;
+
+  background-color: $color_grey;
+  color: $color_green;
+}

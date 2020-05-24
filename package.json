@@ -33,6 +33,10 @@
     "webpack-merge": "^4.2.2"
   },
   "dependencies": {
-    "phaser": "^3.20.1"
+    "css-loader": "^3.5.3",
+    "node-sass": "^4.14.1",
+    "phaser": "^3.20.1",
+    "sass-loader": "^8.0.2",
+    "style-loader": "^1.2.1"
   }
 }
