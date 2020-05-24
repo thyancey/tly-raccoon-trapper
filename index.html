@@ -6,13 +6,20 @@
   <body>
     <header>
       <h1>Raccoon Trapper!</h1>
-      <button onclick="onGlobalButton('1')">Global Button 1</button>
+      <!-- <button onclick="onGlobalButton('1')">Global Button 1</button> -->
+      <div>
+        <span>Spawn speed:</span>
+        <span id="spawn-display">50%</span>
+      </div>
+      <input id="spawn-slider" type="range" min="0" max="100" value="50" />
     </header>
     <div id="game-container">
     </div>
+    <!--
     <div class="input-box">
       <span>></span>
       <input id="user-input" type="text" placeholder="enter text"/>
     </div>
+  -->
   </body>
 </html>
