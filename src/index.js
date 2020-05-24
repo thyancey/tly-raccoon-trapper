@@ -1,8 +1,9 @@
-import Phaser from "phaser";
-import img_blood from "./assets/blood.png";
+import Phaser from 'phaser';
+import img_blood from './assets/blood.png';
 import './style.scss';
 
-import { spawn_update, spawn_preload, spawn_create } from './spawn-manager';
+import SpawnController from './controllers/spawn-controller';
+import LevelController from './controllers/level-controller';
 
 const config = {
   type: Phaser.AUTO,
@@ -24,12 +25,24 @@ const config = {
 };
 
 const game = new Phaser.Game(config);
+
+let enemies;
+let platforms;
 let emitter;
+let sceneContext;
+
+function setSceneContext(context){
+  sceneContext = context;
+  LevelController.setContext(context);
+  SpawnController.setContext(context);
+}
 
 function preload() {
+  setSceneContext(this);
+  
   this.load.image('blood', img_blood);
-  spawn_preload(this);
-
+  LevelController.preload();
+  SpawnController.preload();
 }
 
 function onObjectClicked(pointer, gameObject){
@@ -39,12 +52,21 @@ function onObjectClicked(pointer, gameObject){
 }
 
 function create() {
-  spawn_create(this);
+  //- make the level
+  platforms = LevelController.create();
+  
+  //- make the enemies
+  let spawnGroups = SpawnController.create(this, enemies);
 
+  this.physics.add.collider(spawnGroups.enemies, platforms);
 
   this.input.on('gameobjectdown', onObjectClicked);
 
-  var particles = this.add.particles('blood');
+  setupMouseEmitter();
+}
+
+function setupMouseEmitter(){
+  let particles = sceneContext.add.particles('blood');
 
   emitter = particles.createEmitter({
     visible: false,
@@ -57,7 +79,6 @@ function create() {
   });
 }
 
-function update ()
-{
-  spawn_update();
+function update (){
+  SpawnController.update();
 }

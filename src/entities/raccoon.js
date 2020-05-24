@@ -6,10 +6,11 @@ export class Raccoon extends Phaser.Physics.Arcade.Sprite {
   constructor (scene, x, y, physicsGroup) {
     super(scene, x, y, 'raccoon');
 
+    //- custom properties
     this.isAlive = true;
 
+    //- parent stuff
     scene.add.existing(this);
-
     if(physicsGroup){
       physicsGroup.add(this);
     }else{
@@ -26,10 +27,15 @@ export class Raccoon extends Phaser.Physics.Arcade.Sprite {
     this.body.offset.x = 35;
     this.body.offset.y = 30;
     this.anims.play('raccoon_walk');
+
+    //- interaction listeners
+    this.setInteractive();
+    this.on('pointerdown', (thing) => {
+      this.kill();
+    });
   }
 
   kill(){
-    console.log('YOU KILLED THE RACCOON');
     this.anims.play('raccoon_dead');
     this.body.setDrag(500);
     this.isAlive = false;
@@ -39,7 +45,8 @@ export class Raccoon extends Phaser.Physics.Arcade.Sprite {
     }, KILL_TIMEOUT)
   }
 
-  updateChild(){
+  update(){
+    //- turn if facing left
     if(this.flipX){
       if(this.body.velocity.x > 0) this.flipX = false;
     }else{
