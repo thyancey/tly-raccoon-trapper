@@ -1,18 +1,20 @@
 import Phaser from "phaser";
 import img_raccoonTest from "./assets/raccoon1.png";
 import img_bar from "./assets/bar.png";
-
+import { Raccoon } from './entities/raccoon.js';
 
 const SPAWN_MIN = 1000;
-const SPAWN_MAX = 10;
+const SPAWN_MAX = 1;
 
 let spawnFrequency = 50;
-let curTicker = 1000;
+let curTicker = 0;
 
 let enemies;
 let platforms;
+let sceneContext;
 
-let spawnSlider;
+let el_spawnSlider;
+let el_spawnCount;
 
 const getValue = position => {
   var minp = 0;
@@ -28,34 +30,14 @@ const getValue = position => {
 
 const onSpawnSlider = sliderVal => {
   spawnFrequency = Math.round(getValue(sliderVal));
-  
-  const sliderPercent = sliderVal / 100;
   document.querySelector('#spawn-display').innerHTML = `${sliderVal}%`;
 }
 
 const spawnRaccoon = () => {
-  let enemy = enemies.create(0, 50, 'raccoon_walk')
-  // let enemy = enemies.create(0, 50, 'raccoon_walk').setInteractive();
-  enemy.isAlive = true;
-  enemy.kill = () => {
-    console.log('YOU KILLED ME');
-    enemy.anims.play('raccoon_dead');
-    enemy.body.setDrag(500);
-    enemy.isAlive = false;
-  }
-
-  enemy.setBounce(.4);
-  enemy.setCollideWorldBounds(true);
-
+  let enemy = new Raccoon(sceneContext, 0, 50, enemies);
   enemy.setVelocity(Phaser.Math.Between(200, 800), 20);
-  //- squeeze in hit box from edge of sprite
-  enemy.body.setSize(60,70);
-  enemy.body.offset.x = 35;
-  enemy.body.offset.y = 30;
-  enemy.allowGravity = false;
-  enemy.anims.play('raccoon_walk');
+  
   enemy.setInteractive();
-
   enemy.on('pointerdown', (thing) => {
     enemy.kill();
   });
@@ -67,14 +49,12 @@ export const spawn_preload = (context) => {
 }
 
 export const spawn_create = (context) => {
-  spawnSlider = document.querySelector('#spawn-slider');
-  // spawnSlider.addEventListener('change', (e) => {
-  //   onSpawnSlider(e.target.value);
-  // })
-  spawnSlider.oninput = (e) => {
+  sceneContext = context;
+  el_spawnSlider = document.querySelector('#spawn-slider');
+  el_spawnSlider.oninput = (e) => {
     onSpawnSlider(e.target.value);
   }
-
+  el_spawnCount = document.querySelector('#spawn-count');
   //- make the level
   platforms = context.physics.add.staticGroup();
 
@@ -83,7 +63,6 @@ export const spawn_create = (context) => {
   platforms.create(50, 220, 'bar').setScale(-1, .5).refreshBody();
 
   //- init the enemy stuff
-
   enemies = context.physics.add.group();
 
   context.anims.create({
@@ -100,36 +79,59 @@ export const spawn_create = (context) => {
   });
   
   context.physics.add.collider(enemies, platforms);
+  
+  // spawnRaccoon(context, enemies);
 }
 
 const checkForJump = (entity, chance) => {
-
   if(entity.isAlive && entity.body.touching.down && Math.random() < chance){
     entity.setVelocityX((1 + Math.random()) * entity.body.velocity.x);
     entity.setVelocityY(Math.random() * - 300);
   }
 }
 
+
+
 export const spawn_update = () => {
+  updateSpawnCount();
+
   enemies.children.each(entity => {
-    if(entity.flipX){
-      if(entity.body.velocity.x > 0) entity.flipX = false;
-    }else{
-      if(entity.body.velocity.x < 0) entity.flipX = true;
-    }
-
-    checkForJump(entity, .05);
+    entity.updateChild();
   });
-  checkSpawn();
-}
-
-export const checkSpawn = () => {
-  // console.log('checkSpawn')
 
   curTicker++;
-  if(curTicker > spawnFrequency){
-    curTicker = 0;
-    // spawnFrequency *= .8;
-    spawnRaccoon();
+  //- hack to have slider all the way down to "stop"
+  if(spawnFrequency !== SPAWN_MIN){
+    if(curTicker > spawnFrequency){
+      curTicker = 0;
+      spawnRaccoon();
+    }
   }
 }
+
+export const updateSpawnCount = () => {
+  if(parseInt(el_spawnCount.innerHTML) !== enemies.countActive()){
+    el_spawnCount.innerHTML = enemies.countActive();
+  }
+}
+
+/*
+//- this approach seems to perform a lot better, however cannot extend gameobject class correctly
+const basicSpawn = () => {
+  let enemy = enemies.create(0, 50, 'raccoon_walk');
+  // console.log('instance:', enemy)
+
+  //- physics
+  enemy.setBounce(.4);
+  enemy.setCollideWorldBounds(true);
+  enemy.allowGravity = false;
+  
+  //- squeeze in hit box from edge of sprite
+  enemy.body.setSize(60,70);
+  enemy.body.offset.x = 35;
+  enemy.body.offset.y = 30;
+  enemy.anims.play('raccoon_walk');
+
+  enemy.setVelocity(Phaser.Math.Between(200, 800), 20);
+}
+ */

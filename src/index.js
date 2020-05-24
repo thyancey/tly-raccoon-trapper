@@ -1,5 +1,4 @@
 import Phaser from "phaser";
-import logoImg from "./assets/logo.png";
 import img_blood from "./assets/blood.png";
 import './style.scss';
 
@@ -34,53 +33,20 @@ function preload() {
 }
 
 function onObjectClicked(pointer, gameObject){
-  // gameObject.anims.play('raccoon_dead');
-  // console.log('clicked it', gameObject);
-  // gameObject.kill();
-
-  emitter.setPosition(pointer.x, pointer.y);
-  // emitter.reset();
+  emitter.setPosition(pointer.worldX, pointer.worldY);
   emitter.explode(20);
   emitter.visible = true;
 }
 
 function create() {
-  // const logo = this.add.image(400, 150, "logo");
-
   spawn_create(this);
 
-  
+
   this.input.on('gameobjectdown', onObjectClicked);
 
-  // this.tweens.add({
-  //   targets: logo,
-  //   y: 450,
-  //   duration: 2000,
-  //   ease: "Power2",
-  //   yoyo: true,
-  //   loop: -1
-  // });
-
   var particles = this.add.particles('blood');
-/*
-  emitter = particles.createEmitter({
-    speed: 100,
-    scale: { start: 1, end: 0 },
-    blendMode: 'ADD',
-  });
-*/
-
-// emitter = particles.createEmitter({
-//   speed: 100,
-//   scale: { start: 1, end: 0 },
-//   blendMode: 'ADD',
-//   maxParticles: 10
-// });
 
   emitter = particles.createEmitter({
-    // speed: 100,
-    // scale: { start: 1, end: 0 },
-    // active:false,
     visible: false,
     blendMode: 'SCREEN',
     speed: { min: -400, max: 400 },
@@ -93,6 +59,5 @@ function create() {
 
 function update ()
 {
-    // console.log('hi')
-    spawn_update();
+  spawn_update();
 }
