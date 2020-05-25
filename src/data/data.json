@@ -1,0 +1,28 @@
+{
+  "info":{ 
+    "name": "Phaser 3 test",
+    "description": "json not used yet"
+  },
+  "sprites":{
+    "racoonTest_walk":{
+      "sprite": {
+        "type": "multi",
+        "key": "racoonTest",
+        "frames": { 
+          "start":0, 
+          "end": 1
+        }
+      },
+      "frameRate": 10,
+      "repeat": -1
+    },
+    "racoonTest_dead":{
+      "sprite": {
+        "type": "single",
+        "key": "raccoon",
+        "frame": 2
+      },
+      "frameRate": 10
+    }
+  }
+}

@@ -1,97 +1,54 @@
-import Phaser from 'phaser';
-import img_blood from './assets/blood.png';
 import './style.scss';
+import jsonData from './data/data.json';
+import { createGame } from './game';
+import { renderHtml } from './utils';
 
-import SpawnController from './controllers/spawn-controller';
-import LevelController from './controllers/level-controller';
 
-const config = {
-  type: Phaser.AUTO,
-  parent: "game-container",
-  width: 900,
-  height: 500,
-  physics: {
-      default: 'arcade',
-      arcade: {
-          gravity: { y: 800 },
-          debug: false
-      }
-  },
-  scene: {
-    preload: preload,
-    create: create,
-    update: update
-  }
+const createHeader = () => {
+
+  const logoHtml = `
+    <h2>Phaser 3 test</h2>
+  `;
+
+  const controlsHtml = `
+    <div id="controls">
+      <h4>Controls</h4>
+      <div class="control-group">
+        <p>Game</p>
+        <button id="start-game" onclick="startGame();">Start</button>
+        <button id="stop-game" onclick="stopGame();">Stop</button>
+      </div>
+      <div class="control-group">
+        <p>Spawn speed</p>
+        <input id="spawn-slider" class="slider" type="range" min="0" max="100" value="50" />
+        <span id="spawn-display">50%</span>
+      </div>
+    </div>
+  `;
+
+  const statusHtml = `
+    <div id="status">
+      <h4>Status</h4>
+      <div class="control-group">
+        <span>Spawned:</span><span id="spawn-count">0</span>
+      </div>
+    </div>
+  `;
+
+  renderHtml('#header', `
+    <div class="header-left">
+      ${logoHtml}
+    </div>
+    <div class="header-right">
+      ${controlsHtml}
+      ${statusHtml}
+    </div>
+  `);
+}
+
+const start = () => {
+  createHeader();
+  createGame(jsonData)
 };
 
-const game = new Phaser.Game(config);
-
-let enemies;
-let platforms;
-let emitter;
-let sceneContext;
-
-function setSceneContext(context){
-  sceneContext = context;
-  LevelController.setContext(context);
-  SpawnController.setContext(context);
-}
-
-function preload() {
-  setSceneContext(this);
-  
-  this.load.image('blood', img_blood);
-  LevelController.preload();
-  SpawnController.preload();
-}
-
-function create() {
-  //- make the level
-  platforms = LevelController.create();
-  
-  //- make the enemies
-  let spawnGroups = SpawnController.create(this, enemies);
-
-  this.physics.add.collider(spawnGroups.enemies, platforms);
-  this.physics.add.collider(spawnGroups.items, platforms);
-  this.physics.add.overlap(spawnGroups.enemies, spawnGroups.items, touchItem, null, this);
-
-  this.input.on('gameobjectdown', onObjectClicked);
-  this.input.on('pointerdown', onSceneClicked);
-
-  setupMouseEmitter();
-}
-
-function touchItem(enemy, item){
-  enemy.touched('bowl');
-  enemy.body.x = item.x;
-}
-
-
-function onObjectClicked(pointer, gameObject){
-  emitter.setPosition(pointer.worldX, pointer.worldY);
-  emitter.explode(20);
-  emitter.visible = true;
-}
-
-function onSceneClicked(pointer){
-  SpawnController.spawn('items', 'bowl', 'foodBowl_full', pointer.x, pointer.y);
-}
-
-function setupMouseEmitter(){
-  let particles = sceneContext.add.particles('blood');
-
-  emitter = particles.createEmitter({
-    visible: false,
-    blendMode: 'SCREEN',
-    speed: { min: -400, max: 400 },
-    angle: { min: 0, max: 360 },
-    scale: { start: 1, end: 0 },
-    lifespan: 500,
-    gravityY: 1000
-  });
-}
-
-function update (){
-  SpawnController.update();
-}
+start();
