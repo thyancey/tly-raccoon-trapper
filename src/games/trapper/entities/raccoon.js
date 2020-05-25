@@ -83,11 +83,22 @@ export class Raccoon extends Phaser.Physics.Arcade.Sprite {
     }
   }
 
+  ascend(){
+    console.log("ASCEND!")
+    this.destroy();
+  }
+
   //- if 
   touched(key){
     // console.log('touched')
-    if(this.status !== STATUS.TAME && this.status !== STATUS.EATING){
+    if(this.status === STATUS.ROAMING){
       this.setStatus(STATUS.EATING);
+    }
+  }
+
+  bowlEmpty(){
+    if(this.isAlive){
+      this.setStatus(STATUS.TAME);
     }
   }
 
@@ -96,7 +107,14 @@ export class Raccoon extends Phaser.Physics.Arcade.Sprite {
       this.status = status;
 
       switch(this.status){
-        case STATUS.EATING: this.body.velocity.x = 0; break;
+        case STATUS.TAME: 
+          this.body.setDrag(0);
+          this.body.velocity.x = 200; 
+          break;
+        case STATUS.EATING: 
+          // this.body.velocity.x = 0; 
+          this.body.setDrag(500);
+          break;
       }
       const animKey = animationStatus[this.status];
       if(animKey){

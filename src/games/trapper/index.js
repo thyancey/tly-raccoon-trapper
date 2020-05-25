@@ -1,17 +1,20 @@
 import Phaser from 'phaser';
-import img_blood from './assets/blood.png';
+import img_blood from '../../assets/blood.png';
+import gameData from './data.json';
+import { STATUS as enemyStatus } from './entities/raccoon';
 
-import SpawnController from './controllers/spawn-controller';
-import LevelController from './controllers/level-controller';
+import SpawnController from './spawn.js';
+import LevelController from './level.js';
 
 let game;
 let enemies;
-let platforms;
+let levelGroups;
 let emitter;
 let sceneContext;
 
-export const createGame = (jsonData) =>{
-  console.log('jsonData is ', jsonData);
+
+
+export const createGame = () =>{
   const config = {
     type: Phaser.AUTO,
     parent: "game-container",
@@ -59,14 +62,21 @@ function preload() {
 
 function create() {
   //- make the level
-  platforms = LevelController.create();
+  levelGroups = LevelController.create(gameData.level);
   
   //- make the enemies
-  let spawnGroups = SpawnController.create(this, enemies);
+  const spawnPositions = gameData.level.platforms.map(pO => ({
+    x: parseInt(pO.x),
+    y: parseInt(pO.y) - 50
+  }));
 
-  this.physics.add.collider(spawnGroups.enemies, platforms);
-  this.physics.add.collider(spawnGroups.items, platforms);
-  this.physics.add.overlap(spawnGroups.enemies, spawnGroups.items, touchItem, null, this);
+  let spawnGroups = SpawnController.create(spawnPositions, gameData.entities);
+
+  this.physics.add.collider(spawnGroups.enemies, levelGroups.platforms);
+  this.physics.add.collider(spawnGroups.bowls, levelGroups.platforms);
+  this.physics.add.overlap(spawnGroups.enemies, spawnGroups.bowls, trigger_enemyBowl, null, this);
+  this.physics.add.overlap(spawnGroups.bowls, levelGroups.leftTrigger, trigger_itemAtStart, null, this);
+  this.physics.add.overlap(spawnGroups.enemies, levelGroups.rightTrigger, trigger_enemyAtEnd, null, this);
 
   this.input.on('gameobjectdown', onObjectClicked);
   this.input.on('pointerdown', onSceneClicked);
@@ -75,9 +85,27 @@ function create() {
   setupMouseEmitter();
 }
 
-function touchItem(enemy, item){
-  enemy.touched('bowl');
-  enemy.body.x = item.x;
+function trigger_enemyAtEnd(enemy, trigger){
+  if(enemy.status === enemyStatus.TAME){
+    enemy.ascend();
+  }else{
+    enemy.kill();
+  }
+}
+
+function trigger_itemAtStart(item, trigger){
+  item.destroy();
+  // enemy.kill();
+  // enemy.touched('bowl');
+  // enemy.body.x = item.x;
+}
+
+function trigger_enemyBowl(enemy, bowl){
+  if(bowl.canBeEaten){
+    enemy.touched('bowl');
+    // enemy.body.x = bowl.x;
+    bowl.touched(enemy);
+  }
 }
 
 
@@ -88,7 +116,7 @@ function onObjectClicked(pointer, gameObject){
 }
 
 function onSceneClicked(pointer){
-  SpawnController.spawn('items', 'bowl', 'foodBowl_full', pointer.x, pointer.y);
+  SpawnController.spawnBowl(pointer.x, pointer.y);
 }
 
 function setupMouseEmitter(){

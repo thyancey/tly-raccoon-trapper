@@ -1,0 +1,45 @@
+{
+  "info":{ 
+    "name": "Raccoon Trapper"
+  },
+  "entities":{
+    "raccoon":{
+      "spawnSpeeds": [ 25, 100 ]
+    },
+    "bowl":{
+      "spawnSpeed": -200
+    }
+  },
+  "level":{
+    "values":{
+      "spawn_width": "100"
+    },
+    "platforms":[
+      {
+        "x": "250",
+        "y": "100",
+        "width": "400",
+        "height": "25"
+      },
+      {
+        "x": "200",
+        "y": "225",
+        "width": "500",
+        "height": "25"
+      },
+      {
+        "x": "150",
+        "y": "350",
+        "width": "600",
+        "height": "25"
+      },
+      {
+        "x": "100",
+        "y": "475",
+        "width": "700",
+        "height": "25"
+      }
+    ]
+  }
+
+}
