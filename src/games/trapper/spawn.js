@@ -1,9 +1,11 @@
 import Phaser from "phaser";
+import img_player from "./assets/player.png";
 import img_raccoonTest from "./assets/raccoon.png";
 import img_raccoonWizard from "../../assets/raccoon-wizard.png";
 import img_foodBowl from "../../assets/bowl.png";
 import { Raccoon } from './entities/raccoon.js';
 import { Bowl } from './entities/bowl.js';
+import { Player } from './entities/player.js';
 import { RaccoonWizard } from '../../entities/raccoon-wizard.js';
 
 const SPAWN_MIN = 1000;
@@ -18,6 +20,7 @@ let spawnPositions = [];
 let entityData = {};
 
 const groups = {};
+let player;
 let sceneContext;
 
 let el_spawnSlider;
@@ -28,22 +31,26 @@ export const setContext = (context) => {
 }
 
 export const preload = () => {
+  sceneContext.load.spritesheet('player', img_player, { frameWidth: 90, frameHeight: 120 });
   sceneContext.load.spritesheet('raccoonTest', img_raccoonTest, { frameWidth: 110, frameHeight: 110 });
   sceneContext.load.spritesheet('raccoonWizard', img_raccoonWizard, { frameWidth: 110, frameHeight: 137 });
   sceneContext.load.spritesheet('foodBowl', img_foodBowl, { frameWidth: 70, frameHeight: 40 });
 }
 
-export const create = (spawnPos, eData) => {
+export const create = (spawnPos, eData, pData) => {
   spawnPositions = spawnPos;
   entityData = eData;
   //- container for bad boyz
   groups.enemies = sceneContext.physics.add.group();
   groups.bowls = sceneContext.physics.add.group();
+  groups.player = sceneContext.physics.add.staticGroup();
 
   initSprites();
 
   initSpawnControls();
   
+  
+  spawnPlayer(pData);
   return groups;
 }
 
@@ -54,9 +61,9 @@ export const update = () => {
     entity.update();
   });
   
-  groups.bowls.children.each(entity => {
-    entity.update();
-  });
+  // groups.bowls.children.each(entity => {
+  //   entity.update();
+  // });
 
   //- hack that stops spawning when slider at lowest value
   if(spawnFrequency !== SPAWN_MIN){
@@ -115,7 +122,7 @@ const initSprites = () => {
   });
 
   sceneContext.anims.create({
-    key: 'raccoonTest_ascend',
+    key: 'raccoonTest_hug',
     frames: [ { key: 'raccoonTest', frame: 5 },  { key: 'raccoonTest', frame: 8 } ],
     frameRate: 20,
     repeat: -1
@@ -147,6 +154,14 @@ const initSprites = () => {
     frames: [ { key: 'foodBowl', frame: 1 } ],
     frameRate: 10
   });
+
+  
+  sceneContext.anims.create({
+    key: 'player_idle',
+    frames: sceneContext.anims.generateFrameNumbers('player', { start: 0, end: 1 }),
+    frameRate: 5,
+    repeat: -1
+  });
 }
 
 const spawnRaccoon = (laneIdx) => {
@@ -168,6 +183,15 @@ const spawnRaccoonWizard = () => {
 export const spawnBowl = (x, y) => {
   let bowl = new Bowl(sceneContext, x, y, groups.bowls);
   bowl.setVelocity(entityData.bowl.spawnSpeed, 20);
+}
+
+export const slingBowl = () => {
+  let bowl = new Bowl(sceneContext, player.x + 20, player.y + 60, groups.bowls);
+  bowl.setVelocity(entityData.bowl.spawnSpeed, -200);
+}
+
+const spawnPlayer = (laneData) => {
+  player = new Player(sceneContext, 800, 300, groups.player, laneData);
 }
 
 
@@ -204,6 +228,10 @@ const getValue = position => {
 }
 
 
+export const changeLane = (diff) => {
+  player.changeLane(diff);
+}
+
 
 /*
 //- this approach seems to perform a lot better, however cannot extend gameobject class correctly
@@ -233,5 +261,7 @@ export default {
   create,
   update,
   spawn,
-  spawnBowl
+  spawnBowl,
+  changeLane,
+  slingBowl
 }

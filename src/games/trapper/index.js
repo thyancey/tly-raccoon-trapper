@@ -26,6 +26,8 @@ let points = {
   total: 0
 }
 
+let cursors;
+
 
 
 export const createGame = () =>{
@@ -86,17 +88,18 @@ function create() {
     y: parseInt(pO.y) - 50
   }));
 
-  let spawnGroups = SpawnController.create(spawnPositions, gameData.entities);
+  let spawnGroups = SpawnController.create(spawnPositions, gameData.entities, gameData.level.platforms);
 
   this.physics.add.collider(spawnGroups.enemies, levelGroups.platforms);
   this.physics.add.collider(spawnGroups.bowls, levelGroups.platforms);
-  this.physics.add.overlap(spawnGroups.enemies, spawnGroups.bowls, trigger_enemyBowl, null, this);
+  this.physics.add.overlap(spawnGroups.enemies, spawnGroups.bowls, trigger_enemyAndBowl, null, this);
   this.physics.add.overlap(spawnGroups.bowls, levelGroups.leftTrigger, trigger_itemAtStart, null, this);
   this.physics.add.overlap(spawnGroups.enemies, levelGroups.rightTrigger, trigger_enemyAtEnd, null, this);
+  this.physics.add.overlap(spawnGroups.enemies, spawnGroups.player, trigger_enemyAndPlayer, null, this);
 
-  // this.input.on('gameobjectdown', onObjectClicked);
-  this.input.on('pointerdown', onSceneClicked);
-
+  this.input.on('gameobjectdown', onObjectClicked);
+  // this.input.on('pointerdown', onSceneClicked);
+  this.input.keyboard.on('keydown', onKeyDown);
 
   setupMouseEmitter();
 }
@@ -104,8 +107,7 @@ function create() {
 function trigger_enemyAtEnd(enemy, trigger){
   if(enemy.isAlive){
     if(enemy.status === enemyStatus.TAME){
-      enemy.ascend();
-      setPoints('hugs', 1);
+      enemy.kill();
     }else{
       enemy.kill();
       setPoints('bites', 1);
@@ -121,7 +123,7 @@ function trigger_itemAtStart(item, trigger){
   // enemy.body.x = item.x;
 }
 
-function trigger_enemyBowl(enemy, bowl){
+function trigger_enemyAndBowl(enemy, bowl){
   if(enemy.status === enemyStatus.ROAMING && bowl.canBeEaten){
     enemy.touched(bowl.body);
     // enemy.body.x = bowl.x;
@@ -129,6 +131,18 @@ function trigger_enemyBowl(enemy, bowl){
   }
 }
 
+
+function trigger_enemyAndPlayer(enemy, bowl){
+  if(enemy.isAlive){
+    if(enemy.status === enemyStatus.TAME){
+      enemy.hug();
+      setPoints('hugs', 1);
+    }else{
+      enemy.kill();
+      setPoints('bites', 1);
+    }
+  }
+}
 
 function onObjectClicked(pointer, gameObject){
   emitter.setPosition(pointer.worldX, pointer.worldY);
@@ -158,6 +172,18 @@ function update (){
   SpawnController.update();
 }
 
+const onKeyDown = (e) => {
+  switch(e.code){
+    case 'ArrowDown': SpawnController.changeLane(1);
+      break;
+    case 'ArrowUp': SpawnController.changeLane(-1);
+      break;
+    case 'ArrowLeft': SpawnController.slingBowl();
+      break;
+    case 'Space': SpawnController.slingBowl();
+      break;
+  }
+}
 
 const setPoints = (key, change) => {
   points[key] += change;

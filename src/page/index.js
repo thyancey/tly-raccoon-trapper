@@ -4,6 +4,12 @@ export const createHeader = () => {
 
   const logoHtml = `
     <h2>Phaser 3 test</h2>
+    <div class="description">
+      <p>Feed the raccoons and give them hugs!</p>
+      <p>Arrow Up/Down: Change langes</p>
+      <p>Space / Arrow Left: Throw food</p>
+      <p>... you can't win or lose right now</p>
+    </div>
   `;
 
   const controlsHtml = `
@@ -27,7 +33,7 @@ export const createHeader = () => {
     <div id="status">
       <h4>Status</h4>
       <div class="control-group">
-        <div class="score score-bowls"><span>Bowls:</span><span id="score-bowls">0</span></div>
+        <div class="score score-bowls"><span>Lost bowls:</span><span id="score-bowls">0</span></div>
         <div class="score score-bites"><span>Bites:</span><span id="score-bites">0</span></div>
         <div class="score score-hugs"><span>Hugs:</span><span id="score-hugs">0</span></div>
         <div class="score score-total"><span>Score:</span><span id="score-total">0</span></div>

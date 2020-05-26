@@ -35,7 +35,7 @@ export const create = (levelData) => {
     // const w = parseInt(pO.width) / 100;
     const w = 900 - x;
     const h = parseInt(pO.height) / 100;
-    const endX = parseInt(pO.width) + x;
+    const endX = parseInt(pO.width) + x + 60;
 
     platforms.create(x, y, 'bar-white').setScale(w, h).setOrigin(0,0).refreshBody();
     platforms.create(x - spawnW, y, 'bar-purple').setScale(1, h).setOrigin(0,0).refreshBody();

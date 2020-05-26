@@ -8,7 +8,7 @@ export const STATUS = {
   ANGRY: 2,
   TAME: 3,
   DEAD: 4,
-  ASCEND: 5
+  hug: 5
 }
 
 const animationStatus = {
@@ -17,7 +17,7 @@ const animationStatus = {
   [STATUS.ANGRY]: 'raccoonTest_walk',
   [STATUS.TAME]: 'raccoonTest_loveWalk',
   [STATUS.DEAD]: 'raccoonTest_dead',
-  [STATUS.ASCEND]: 'raccoonTest_ascend'
+  [STATUS.HUG]: 'raccoonTest_hug'
 }
 
 export class Raccoon extends Phaser.Physics.Arcade.Sprite {
@@ -58,6 +58,10 @@ export class Raccoon extends Phaser.Physics.Arcade.Sprite {
     });
   }
 
+  escape(){
+
+  }
+
   kill(){
     this.setStatus(STATUS.DEAD);
     this.body.setDrag(500);
@@ -68,8 +72,8 @@ export class Raccoon extends Phaser.Physics.Arcade.Sprite {
     }, KILL_TIMEOUT)
   }
   
-  ascend(){
-    this.setStatus(STATUS.ASCEND);
+  hug(){
+    this.setStatus(STATUS.HUG);
     this.body.setDrag(500);
     this.isAlive = false;
 
