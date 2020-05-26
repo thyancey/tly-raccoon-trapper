@@ -12,6 +12,20 @@ let levelGroups;
 let emitter;
 let sceneContext;
 
+const scoreElements = {
+  bowls:null,
+  bites:null,
+  hugs:null,
+  total: null
+}
+
+let points = {
+  bowls: 0,
+  hugs: 0,
+  bites: 0,
+  total: 0
+}
+
 
 
 export const createGame = () =>{
@@ -21,11 +35,11 @@ export const createGame = () =>{
     width: 900,
     height: 500,
     physics: {
-        default: 'arcade',
-        arcade: {
-            gravity: { y: 800 },
-            debug: false
-        }
+      default: 'arcade',
+      arcade: {
+        gravity: { y: 800 },
+        debug: false
+      }
     },
     scene: {
       preload: preload,
@@ -63,6 +77,8 @@ function preload() {
 function create() {
   //- make the level
   levelGroups = LevelController.create(gameData.level);
+
+  initScoreboard();
   
   //- make the enemies
   const spawnPositions = gameData.level.platforms.map(pO => ({
@@ -78,7 +94,7 @@ function create() {
   this.physics.add.overlap(spawnGroups.bowls, levelGroups.leftTrigger, trigger_itemAtStart, null, this);
   this.physics.add.overlap(spawnGroups.enemies, levelGroups.rightTrigger, trigger_enemyAtEnd, null, this);
 
-  this.input.on('gameobjectdown', onObjectClicked);
+  // this.input.on('gameobjectdown', onObjectClicked);
   this.input.on('pointerdown', onSceneClicked);
 
 
@@ -86,23 +102,28 @@ function create() {
 }
 
 function trigger_enemyAtEnd(enemy, trigger){
-  if(enemy.status === enemyStatus.TAME){
-    enemy.ascend();
-  }else{
-    enemy.kill();
+  if(enemy.isAlive){
+    if(enemy.status === enemyStatus.TAME){
+      enemy.ascend();
+      setPoints('hugs', 1);
+    }else{
+      enemy.kill();
+      setPoints('bites', 1);
+    }
   }
 }
 
 function trigger_itemAtStart(item, trigger){
   item.destroy();
+  setPoints('bowls', 1);
   // enemy.kill();
   // enemy.touched('bowl');
   // enemy.body.x = item.x;
 }
 
 function trigger_enemyBowl(enemy, bowl){
-  if(bowl.canBeEaten){
-    enemy.touched('bowl');
+  if(enemy.status === enemyStatus.ROAMING && bowl.canBeEaten){
+    enemy.touched(bowl.body);
     // enemy.body.x = bowl.x;
     bowl.touched(enemy);
   }
@@ -135,4 +156,32 @@ function setupMouseEmitter(){
 
 function update (){
   SpawnController.update();
+}
+
+
+const setPoints = (key, change) => {
+  points[key] += change;
+
+  updateScoreboard(key, points[key]);
+}
+
+/* Spawn slider thingies */
+const initScoreboard = () => {
+  scoreElements.bowls = document.querySelector('#score-bowls');
+  scoreElements.bites = document.querySelector('#score-bites');
+  scoreElements.hugs = document.querySelector('#score-hugs');
+  scoreElements.total = document.querySelector('#score-total');
+}
+
+const updateScoreboard = (key, value) => {
+  scoreElements[key].innerHTML = value;
+  const total = points.hugs - points.bowls - points.bites;
+  scoreElements.total.innerHTML = total;
+  if(total > 0){
+    scoreElements.total.className = "good"
+  }else if (total < 0){
+    scoreElements.total.className = "bad"
+  }else{
+    scoreElements.total.className = ""
+  }
 }

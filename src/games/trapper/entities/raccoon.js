@@ -6,7 +6,9 @@ export const STATUS = {
   ROAMING: 0,
   EATING: 1,
   ANGRY: 2,
-  TAME: 3
+  TAME: 3,
+  DEAD: 4,
+  ASCEND: 5
 }
 
 const animationStatus = {
@@ -14,7 +16,8 @@ const animationStatus = {
   [STATUS.EATING]: 'raccoonTest_eat',
   [STATUS.ANGRY]: 'raccoonTest_walk',
   [STATUS.TAME]: 'raccoonTest_loveWalk',
-  [STATUS.DEAD]: 'raccoonTest_dead'
+  [STATUS.DEAD]: 'raccoonTest_dead',
+  [STATUS.ASCEND]: 'raccoonTest_ascend'
 }
 
 export class Raccoon extends Phaser.Physics.Arcade.Sprite {
@@ -64,6 +67,16 @@ export class Raccoon extends Phaser.Physics.Arcade.Sprite {
       this.destroy();
     }, KILL_TIMEOUT)
   }
+  
+  ascend(){
+    this.setStatus(STATUS.ASCEND);
+    this.body.setDrag(500);
+    this.isAlive = false;
+
+    global.setTimeout(() => {
+      this.destroy();
+    }, 1000);
+  }
 
   update(){
     //- turn if facing left
@@ -78,22 +91,20 @@ export class Raccoon extends Phaser.Physics.Arcade.Sprite {
 
   checkForJump(chance){
     if(this.isAlive && this.status === STATUS.ROAMING && this.body.touching.down && Math.random() < chance){
-      this.setVelocityX((1 + Math.random()) * this.body.velocity.x);
+      // this.setVelocityX((1 + Math.random()) * this.body.velocity.x);
       this.setVelocityY(Math.random() * - 300);
     }
   }
 
-  ascend(){
-    console.log("ASCEND!")
-    this.destroy();
-  }
 
   //- if 
-  touched(key){
+  touched(otherBody){
     // console.log('touched')
     if(this.status === STATUS.ROAMING){
       this.setStatus(STATUS.EATING);
     }
+
+    this.body.x = otherBody.x;
   }
 
   bowlEmpty(){

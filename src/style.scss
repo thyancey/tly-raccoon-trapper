@@ -122,9 +122,33 @@ $shadow_tab: 5px 0px 5px -4px $color_black;
       color:$color_green;
     }
   }
+
+  #spawn-counter{
+    margin-top:10px;
+    color: $color_grey_light;
+  }
 }
 
 #status{
+  .score-bowls{
+    color: $color_red;
+  }
+  .score-bites{
+    color: $color_red;
+  }
+  .score-hugs{
+    color: $color_green;
+  }
+  .score-total{
+    color: $color_grey_light;
+  }
+
+  .good{
+    color: $color_green;
+  }
+  .bad{
+    color: $color_red;
+  }
 }
 
 .control-group{
@@ -133,7 +157,6 @@ $shadow_tab: 5px 0px 5px -4px $color_black;
 
 
   color: $color_yellow;
-  margin-top:10px;
 
   &:first-child{
     margin-top:0;

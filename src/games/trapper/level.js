@@ -39,7 +39,7 @@ export const create = (levelData) => {
 
     platforms.create(x, y, 'bar-white').setScale(w, h).setOrigin(0,0).refreshBody();
     platforms.create(x - spawnW, y, 'bar-purple').setScale(1, h).setOrigin(0,0).refreshBody();
-    leftTrigger.create(x - (spawnW * 2), y - 100, 'bar-green').setScale(1, 10).setOrigin(0,0).setAlpha(.5).refreshBody();
+    leftTrigger.create(x - (spawnW) - 20, y - 100, 'bar-green').setScale(1, 10).setOrigin(0,0).setAlpha(.5).refreshBody();
     rightTrigger.create(endX, y - 100, 'bar-red').setScale(1, 10).setOrigin(0,0).setAlpha(.5).refreshBody();
   });
 

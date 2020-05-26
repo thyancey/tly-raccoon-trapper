@@ -4,6 +4,7 @@
   },
   "entities":{
     "raccoon":{
+      "scaleRange": [80, 110],
       "spawnSpeeds": [ 25, 100 ]
     },
     "bowl":{

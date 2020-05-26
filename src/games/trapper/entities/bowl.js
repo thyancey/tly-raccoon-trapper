@@ -1,8 +1,8 @@
 import Phaser from "phaser";
 
-const KILL_TIMEOUT = 5000;
+const KILL_TIMEOUT = 1000;
 const DRAIN_TIMER_INTERVAL = 500;
-const MAX_FEEDING = 3;
+const MAX_FEEDING = 1;
 
 export const STATUS = {
   FULL: 0,
@@ -37,6 +37,8 @@ export class Bowl extends Phaser.Physics.Arcade.Sprite {
       scene.physics.add.existing(this);
     }
 
+    this.setDepth(1);
+
     //- physics
     this.setBounce(.4);
     this.setCollideWorldBounds(true);
@@ -47,7 +49,7 @@ export class Bowl extends Phaser.Physics.Arcade.Sprite {
 
   addToDrainRate(drainRate){
     this.drainRate += drainRate;
-    console.log(`addToDrainRate to ${this.drainRate}`);
+    // console.log(`addToDrainRate to ${this.drainRate}`);
 
     this.startDrainTimer();
   }
@@ -100,7 +102,7 @@ export class Bowl extends Phaser.Physics.Arcade.Sprite {
 
   touched(entity){
     if(this.feeding.indexOf(entity) === -1){
-      global.enemy = entity;
+      entity.body.velocity.x = 0;
       //- new feeder
       this.addToDrainRate(20);
       this.feeding.push(entity);
@@ -122,12 +124,12 @@ export class Bowl extends Phaser.Physics.Arcade.Sprite {
   setStatus(status, force){
     if(force || this.status !== status){
       this.status = status;
-      console.log(`bowl status set to ${this.status}`);
 
       switch(this.status){
         case STATUS.FULL: 
           break;
         case STATUS.EATING: 
+          this.body.velocity.x = 0;
           this.body.setDrag(500);
 
           break;

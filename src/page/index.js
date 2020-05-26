@@ -18,6 +18,7 @@ export const createHeader = () => {
         <p>Spawn speed</p>
         <input id="spawn-slider" class="slider" type="range" min="0" max="100" value="50" />
         <span id="spawn-display">50%</span>
+        <div id="spawn-counter"><span>Spawned:</span><span id="spawn-count">0</span></div>
       </div>
     </div>
   `;
@@ -26,7 +27,10 @@ export const createHeader = () => {
     <div id="status">
       <h4>Status</h4>
       <div class="control-group">
-        <span>Spawned:</span><span id="spawn-count">0</span>
+        <div class="score score-bowls"><span>Bowls:</span><span id="score-bowls">0</span></div>
+        <div class="score score-bites"><span>Bites:</span><span id="score-bites">0</span></div>
+        <div class="score score-hugs"><span>Hugs:</span><span id="score-hugs">0</span></div>
+        <div class="score score-total"><span>Score:</span><span id="score-total">0</span></div>
       </div>
     </div>
   `;

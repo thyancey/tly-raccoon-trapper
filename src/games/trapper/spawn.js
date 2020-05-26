@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import img_raccoonTest from "../../assets/raccoon1.png";
+import img_raccoonTest from "./assets/raccoon.png";
 import img_raccoonWizard from "../../assets/raccoon-wizard.png";
 import img_foodBowl from "../../assets/bowl.png";
 import { Raccoon } from './entities/raccoon.js';
@@ -109,8 +109,16 @@ const initSprites = () => {
 
   sceneContext.anims.create({
     key: 'raccoonTest_eat',
-    frames: [ { key: 'raccoonTest', frame: 5 } ],
-    frameRate: 10
+    frames: sceneContext.anims.generateFrameNumbers('raccoonTest', { start: 6, end: 7 }),
+    frameRate: 10,
+    repeat: -1
+  });
+
+  sceneContext.anims.create({
+    key: 'raccoonTest_ascend',
+    frames: [ { key: 'raccoonTest', frame: 5 },  { key: 'raccoonTest', frame: 8 } ],
+    frameRate: 20,
+    repeat: -1
   });
 
   
@@ -144,8 +152,10 @@ const initSprites = () => {
 const spawnRaccoon = (laneIdx) => {
   const pos = spawnPositions[laneIdx];
   let enemy = new Raccoon(sceneContext, pos.x, pos.y, groups.enemies);
+  const randomScale = Phaser.Math.Between(entityData.raccoon.scaleRange[0], entityData.raccoon.scaleRange[1]) / 100;
+  enemy.setScale(randomScale);
 
-  
+
   enemy.setVelocity(Phaser.Math.Between(entityData.raccoon.spawnSpeeds[0], entityData.raccoon.spawnSpeeds[1]), 20);
 }
 
