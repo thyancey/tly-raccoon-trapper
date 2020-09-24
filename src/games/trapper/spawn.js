@@ -2,19 +2,23 @@ import Phaser from "phaser";
 import img_player from "./assets/player.png";
 import img_raccoonTest from "./assets/raccoon.png";
 import img_raccoonWizard from "../../assets/raccoon-wizard.png";
+import img_anibal01 from "./assets/anibal01.png";
 import img_foodBowl from "../../assets/bowl.png";
 import { Raccoon } from './entities/raccoon.js';
+import { AnibalCritter } from './entities/anibal-critter.js';
 import { Bowl } from './entities/bowl.js';
 import { Player } from './entities/player.js';
 import { RaccoonWizard } from '../../entities/raccoon-wizard.js';
 
 const SPAWN_MIN = 1000;
 const SPAWN_MAX = 1;
+const START_SPAWN_FREQUENCY = 25;
 
 //- 0 - 1, ex: .5 is 50% of the time
-const WIZARD_CHANCE = 0;
+const WIZARD_CHANCE = .1;
+const ANIBAL_CHANCE = .3;
 
-let spawnFrequency = 50;
+let spawnFrequency = null;
 let curTicker = 0;
 let spawnPositions = [];
 let entityData = {};
@@ -33,6 +37,7 @@ export const setContext = (context) => {
 export const preload = () => {
   sceneContext.load.spritesheet('player', img_player, { frameWidth: 90, frameHeight: 120 });
   sceneContext.load.spritesheet('raccoonTest', img_raccoonTest, { frameWidth: 110, frameHeight: 110 });
+  sceneContext.load.spritesheet('anibal01', img_anibal01, { frameWidth: 244, frameHeight: 174 });
   sceneContext.load.spritesheet('raccoonWizard', img_raccoonWizard, { frameWidth: 110, frameHeight: 137 });
   sceneContext.load.spritesheet('foodBowl', img_foodBowl, { frameWidth: 70, frameHeight: 40 });
 }
@@ -55,6 +60,9 @@ export const create = (spawnPos, eData, pData) => {
 }
 
 export const update = () => {
+  // if(spawnFrequency === null){
+  //   spawnFrequency = Math.round(getValue(25));
+  // }
   updateSpawnCount();
 
   groups.enemies.children.each(entity => {
@@ -70,9 +78,13 @@ export const update = () => {
     if(curTicker > spawnFrequency){
       curTicker = 0;
       const laneIdx = Math.floor(Math.random() * spawnPositions.length);
+
       
-      if(Math.random() < WIZARD_CHANCE){
-        spawnRaccoonWizard(laneIdx);
+      // if(Math.random() < WIZARD_CHANCE){
+      //   spawnRaccoonWizard(laneIdx);
+      // }
+      if(Math.random() < ANIBAL_CHANCE){
+        spawnAnibalCritter(laneIdx);
       }else{
         spawnRaccoon(laneIdx);
       }
@@ -155,6 +167,51 @@ const initSprites = () => {
     frameRate: 10
   });
 
+
+
+  /* ANIBALS CRITTER */
+  sceneContext.anims.create({
+    key: 'anibal01_walk',
+    frames: sceneContext.anims.generateFrameNumbers('anibal01', { start: 12, end: 14 }),
+    frameRate: 10,
+    repeat: -1
+  });
+
+  sceneContext.anims.create({
+    key: 'anibal01_angryWalk',
+    frames: sceneContext.anims.generateFrameNumbers('anibal01', { start: 3, end: 6 }),
+    frameRate: 10,
+    repeat: -1
+  });
+
+  sceneContext.anims.create({
+    key: 'anibal01_loveWalk',
+    frames: sceneContext.anims.generateFrameNumbers('anibal01', { start: 16, end: 18 }),
+    frameRate: 10,
+    repeat: -1
+  });
+
+  sceneContext.anims.create({
+    key: 'anibal01_dead',
+    frames: [ { key: 'anibal01', frame: 0 } ],
+    frameRate: 10
+  });
+
+  sceneContext.anims.create({
+    key: 'anibal01_eat',
+    frames: sceneContext.anims.generateFrameNumbers('anibal01', { start: 8, end: 11 }),
+    frameRate: 10,
+    repeat: -1
+  });
+
+  sceneContext.anims.create({
+    key: 'anibal01_hug',
+    frames: [ { key: 'anibal01', frame: 18 },  { key: 'anibal01', frame: 11 } ],
+    frameRate: 5,
+    repeat: -1
+  });
+
+
   
   sceneContext.anims.create({
     key: 'player_idle',
@@ -180,6 +237,16 @@ const spawnRaccoonWizard = () => {
   enemy.setVelocity(Phaser.Math.Between(-200, -800), 20);
 }
 
+const spawnAnibalCritter = (laneIdx) => {
+  const pos = spawnPositions[laneIdx];
+  let enemy = new AnibalCritter(sceneContext, pos.x, pos.y, groups.enemies);
+  const randomScale = Phaser.Math.Between(entityData.anibal01.scaleRange[0], entityData.anibal01.scaleRange[1]) / 100;
+  enemy.setScale(randomScale);
+
+
+  enemy.setVelocity(Phaser.Math.Between(entityData.anibal01.spawnSpeeds[0], entityData.anibal01.spawnSpeeds[1]), 20);
+}
+
 export const spawnBowl = (x, y) => {
   let bowl = new Bowl(sceneContext, x, y, groups.bowls);
   bowl.setVelocity(entityData.bowl.spawnSpeed, 20);
@@ -198,6 +265,7 @@ const spawnPlayer = (laneData) => {
 /* Spawn slider thingies */
 const initSpawnControls = () => {
   el_spawnSlider = document.querySelector('#spawn-slider');
+  onSpawnSlider(el_spawnSlider.value);
   el_spawnSlider.oninput = (e) => {
     onSpawnSlider(e.target.value);
   }

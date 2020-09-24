@@ -22,8 +22,8 @@ export const createHeader = () => {
       </div>
       <div class="control-group">
         <p>Spawn speed</p>
-        <input id="spawn-slider" class="slider" type="range" min="0" max="100" value="50" />
-        <span id="spawn-display">50%</span>
+        <input id="spawn-slider" class="slider" type="range" min="0" max="100" value="20" />
+        <span id="spawn-display">20%</span>
         <div id="spawn-counter"><span>Spawned:</span><span id="spawn-count">0</span></div>
       </div>
     </div>
