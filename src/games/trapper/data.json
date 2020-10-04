@@ -4,14 +4,17 @@
   },
   "entities":{
     "raccoon":{
+      "spawnRate": "1",
       "scaleRange": [80, 110],
       "spawnSpeeds": [ 25, 100 ]
     },
     "newRaccoon":{
+      "spawnRate": "1",
       "scaleRange": [120, 140],
       "spawnSpeeds": [ 25, 50 ]
     },
     "anibal01":{
+      "spawnRate": "1",
       "scaleRange": [40, 60],
       "spawnSpeeds": [ 25, 100 ]
     },

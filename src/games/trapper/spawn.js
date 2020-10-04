@@ -10,11 +10,7 @@ import { RaccoonWizard } from '../../entities/raccoon-wizard.js';
 
 const SPAWN_MIN = 1000;
 const SPAWN_MAX = 1;
-const START_SPAWN_FREQUENCY = 25;
-
-//- 0 - 1, ex: .5 is 50% of the time
-const WIZARD_CHANCE = .1;
-const ANIBAL_CHANCE = 0;
+let spawnProbability = [];
 
 let spawnFrequency = null;
 let curTicker = 0;
@@ -42,8 +38,10 @@ export const preload = () => {
 }
 
 export const create = (spawnPos, eData, pData) => {
+
   spawnPositions = spawnPos;
   entityData = eData;
+  spawnProbability = getSpawnProbability(eData);
   //- container for bad boyz
   groups.enemies = sceneContext.physics.add.group();
   groups.bowls = sceneContext.physics.add.group();
@@ -62,10 +60,56 @@ export const create = (spawnPos, eData, pData) => {
   return groups;
 }
 
+const getSpawnProbability = (entitiesList) => {
+  const probability = [];
+
+  let totRate = 0;
+  Object.keys(entitiesList).forEach(k => {
+    if(entitiesList[k].spawnRate){
+      totRate += +entitiesList[k].spawnRate;
+    }
+  });
+  let adj = 1 / totRate;
+  
+  let curVal = 0;
+  Object.keys(entitiesList).forEach(k => {
+    if(entitiesList[k].spawnRate){
+      curVal += +entitiesList[k].spawnRate * adj;
+      probability.push({
+        key: k,
+        rate: curVal
+      });
+    }
+  });
+
+  return probability;
+}
+
+const getSpawnKey = spawnProbability => {
+  const rando = Math.random();
+  for(let i = 0; i < spawnProbability.length; i++){
+    if(spawnProbability[i].rate > rando){
+      return spawnProbability[i].key;
+    }
+  }
+
+  return null;
+}
+
+const spawnAnEnemy = (laneIdx) => {
+  const spawnKey = getSpawnKey(spawnProbability);
+
+  switch(spawnKey){
+    case 'raccoon': spawnIt(Raccoon.Entity, entityData.raccoon, laneIdx);
+      break;
+    case 'newRaccoon': spawnIt(NewRaccoon.Entity, entityData.newRaccoon, laneIdx);
+      break;
+    case 'anibal01': spawnIt(AnibalCritter.Entity, entityData.anibal01, laneIdx);
+      break;
+  }
+}
+
 export const update = () => {
-  // if(spawnFrequency === null){
-  //   spawnFrequency = Math.round(getValue(25));
-  // }
   updateSpawnCount();
 
   groups.enemies.children.each(entity => {
@@ -81,17 +125,7 @@ export const update = () => {
     if(curTicker > spawnFrequency){
       curTicker = 0;
       const laneIdx = Math.floor(Math.random() * spawnPositions.length);
-
-      
-      // if(Math.random() < WIZARD_CHANCE){
-      //   spawnRaccoonWizard(laneIdx);
-      // }
-      if(Math.random() < ANIBAL_CHANCE){
-        spawnAnibalCritter(laneIdx);
-      }else{
-        // spawnRaccoon(laneIdx);
-        spawnNewRaccoon(laneIdx);
-      }
+      spawnAnEnemy(laneIdx);
     }else{
       curTicker++;
     }
@@ -138,40 +172,19 @@ const initSprites = () => {
   });
 }
 
-const spawnRaccoon = (laneIdx) => {
-  const pos = spawnPositions[laneIdx];
-  let enemy = new Raccoon.Entity(sceneContext, pos.x, pos.y, groups.enemies);
-  const randomScale = Phaser.Math.Between(entityData.raccoon.scaleRange[0], entityData.raccoon.scaleRange[1]) / 100;
-  enemy.setScale(randomScale);
-
-
-  enemy.setVelocity(Phaser.Math.Between(entityData.raccoon.spawnSpeeds[0], entityData.raccoon.spawnSpeeds[1]), 20);
-}
-
-const spawnNewRaccoon = (laneIdx) => {
-  const pos = spawnPositions[laneIdx];
-  let enemy = new NewRaccoon.Entity(sceneContext, pos.x, pos.y, groups.enemies);
-  const randomScale = Phaser.Math.Between(entityData.newRaccoon.scaleRange[0], entityData.newRaccoon.scaleRange[1]) / 100;
-  enemy.setScale(randomScale);
-
-
-  enemy.setVelocity(Phaser.Math.Between(entityData.raccoon.spawnSpeeds[0], entityData.raccoon.spawnSpeeds[1]), 20);
-}
-
 const spawnRaccoonWizard = () => {
   const pos = spawnPositions[laneIdx];
   let enemy = new RaccoonWizard(sceneContext, pos.x, pos.y, groups.enemies);
   enemy.setVelocity(Phaser.Math.Between(-200, -800), 20);
 }
 
-const spawnAnibalCritter = (laneIdx) => {
+const spawnIt = (EntityRef, entityData, laneIdx) => {
   const pos = spawnPositions[laneIdx];
-  let enemy = new AnibalCritter.Entity(sceneContext, pos.x, pos.y, groups.enemies);
-  const randomScale = Phaser.Math.Between(entityData.anibal01.scaleRange[0], entityData.anibal01.scaleRange[1]) / 100;
-  enemy.setScale(randomScale);
+  let entity = new EntityRef(sceneContext, pos.x, pos.y, groups.enemies);
+  const randomScale = Phaser.Math.Between(entityData.scaleRange[0], entityData.scaleRange[1]) / 100;
+  entity.setScale(randomScale);
 
-
-  enemy.setVelocity(Phaser.Math.Between(entityData.anibal01.spawnSpeeds[0], entityData.anibal01.spawnSpeeds[1]), 20);
+  entity.setVelocity(Phaser.Math.Between(entityData.spawnSpeeds[0], entityData.spawnSpeeds[1]), 20);
 }
 
 export const spawnBowl = (x, y) => {
