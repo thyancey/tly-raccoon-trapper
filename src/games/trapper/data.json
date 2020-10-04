@@ -7,6 +7,10 @@
       "scaleRange": [80, 110],
       "spawnSpeeds": [ 25, 100 ]
     },
+    "newRaccoon":{
+      "scaleRange": [120, 140],
+      "spawnSpeeds": [ 25, 50 ]
+    },
     "anibal01":{
       "scaleRange": [40, 60],
       "spawnSpeeds": [ 25, 100 ]

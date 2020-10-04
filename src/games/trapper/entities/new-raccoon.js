@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import img_anibal01 from "../assets/anibal01.png";
+import img_newRaccoon from "../assets/new-raccoon.png";
 
 const KILL_TIMEOUT = 5000;
 
@@ -13,17 +13,17 @@ export const STATUS = {
 }
 
 const animationStatus = {
-  [STATUS.ROAMING]: 'anibal01_walk',
-  [STATUS.EATING]: 'anibal01_eat',
-  [STATUS.ANGRY]: 'anibal01_walk',
-  [STATUS.TAME]: 'anibal01_loveWalk',
-  [STATUS.DEAD]: 'anibal01_dead',
-  [STATUS.HUG]: 'anibal01_hug'
+  [STATUS.ROAMING]: 'newRaccoon_walk',
+  [STATUS.EATING]: 'newRaccoon_eat',
+  [STATUS.ANGRY]: 'newRaccoon_walk',
+  [STATUS.TAME]: 'newRaccoon_loveWalk',
+  [STATUS.DEAD]: 'newRaccoon_dead',
+  [STATUS.HUG]: 'newRaccoon_hug'
 }
 
 class Entity extends Phaser.Physics.Arcade.Sprite {
   constructor (scene, x, y, physicsGroup) {
-    super(scene, x, y, 'anibal01');
+    super(scene, x, y, 'newRaccoon');
 
     // this.status = STATUS.ROAMING;
     this.love = 0;
@@ -46,10 +46,9 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
     this.allowGravity = false;
 
     //- squeeze in hit box from edge of sprite
-    this.body.setSize(143,138);
-    this.body.offset.x = 46;
-    this.body.offset.y = 30;
-    // this.anims.play('anibal01_walk');
+    this.body.setSize(25,40);
+    this.body.offset.x = 15;
+    this.body.offset.y = 5;
     this.setStatus(STATUS.ROAMING, true);
 
     //- interaction listeners
@@ -142,50 +141,51 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
 }
 
 const initSprites = (sceneContext) => {
+  
   sceneContext.anims.create({
-    key: 'anibal01_walk',
-    frames: sceneContext.anims.generateFrameNumbers('anibal01', { start: 12, end: 14 }),
+    key: 'newRaccoon_walk',
+    frames: sceneContext.anims.generateFrameNumbers('newRaccoon', { start: 0, end: 1 }),
+    frameRate: 7,
+    repeat: -1
+  });
+
+  sceneContext.anims.create({
+    key: 'newRaccoon_angryWalk',
+    frames: sceneContext.anims.generateFrameNumbers('newRaccoon', { start: 0, end: 1 }),
     frameRate: 10,
     repeat: -1
   });
 
   sceneContext.anims.create({
-    key: 'anibal01_angryWalk',
-    frames: sceneContext.anims.generateFrameNumbers('anibal01', { start: 3, end: 6 }),
+    key: 'newRaccoon_loveWalk',
+    frames: sceneContext.anims.generateFrameNumbers('newRaccoon', { start: 0, end: 4 }),
     frameRate: 10,
     repeat: -1
   });
 
   sceneContext.anims.create({
-    key: 'anibal01_loveWalk',
-    frames: sceneContext.anims.generateFrameNumbers('anibal01', { start: 16, end: 18 }),
-    frameRate: 10,
-    repeat: -1
-  });
-
-  sceneContext.anims.create({
-    key: 'anibal01_dead',
-    frames: [ { key: 'anibal01', frame: 0 } ],
+    key: 'newRaccoon_dead',
+    frames: [ { key: 'newRaccoon', frame: 8 } ],
     frameRate: 10
   });
 
   sceneContext.anims.create({
-    key: 'anibal01_eat',
-    frames: sceneContext.anims.generateFrameNumbers('anibal01', { start: 8, end: 11 }),
+    key: 'newRaccoon_eat',
+    frames: sceneContext.anims.generateFrameNumbers('newRaccoon', { start: 5, end: 6 }),
     frameRate: 10,
     repeat: -1
   });
 
   sceneContext.anims.create({
-    key: 'anibal01_hug',
-    frames: [ { key: 'anibal01', frame: 18 },  { key: 'anibal01', frame: 11 } ],
+    key: 'newRaccoon_hug',
+    frames: [ { key: 'newRaccoon', frame: 3 },  { key: 'newRaccoon', frame: 4 },  { key: 'newRaccoon', frame: 7 } ],
     frameRate: 5,
     repeat: -1
   });
 }
 
 const initSpritesheet = (sceneContext) => {
-  sceneContext.load.spritesheet('anibal01', img_anibal01, { frameWidth: 244, frameHeight: 174 });
+  sceneContext.load.spritesheet('newRaccoon', img_newRaccoon, { frameWidth: 56, frameHeight: 56 });
 }
 
 export default {

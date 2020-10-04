@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import img_raccoonTest from "../assets/raccoon.png";
 
 const KILL_TIMEOUT = 5000;
 
@@ -20,7 +21,7 @@ const animationStatus = {
   [STATUS.HUG]: 'raccoonTest_hug'
 }
 
-export class Raccoon extends Phaser.Physics.Arcade.Sprite {
+class Entity extends Phaser.Physics.Arcade.Sprite {
   constructor (scene, x, y, physicsGroup) {
     super(scene, x, y, 'raccoonTest');
 
@@ -138,4 +139,51 @@ export class Raccoon extends Phaser.Physics.Arcade.Sprite {
       }
     }
   }
+}
+
+
+const initSprites = (sceneContext) => {
+  sceneContext.anims.create({
+    key: 'raccoonTest_walk',
+    frames: sceneContext.anims.generateFrameNumbers('raccoonTest', { start: 0, end: 1 }),
+    frameRate: 10,
+    repeat: -1
+  });
+
+  sceneContext.anims.create({
+    key: 'raccoonTest_loveWalk',
+    frames: sceneContext.anims.generateFrameNumbers('raccoonTest', { start: 3, end: 4 }),
+    frameRate: 10,
+    repeat: -1
+  });
+
+  sceneContext.anims.create({
+    key: 'raccoonTest_dead',
+    frames: [ { key: 'raccoonTest', frame: 2 } ],
+    frameRate: 10
+  });
+
+  sceneContext.anims.create({
+    key: 'raccoonTest_eat',
+    frames: sceneContext.anims.generateFrameNumbers('raccoonTest', { start: 6, end: 7 }),
+    frameRate: 10,
+    repeat: -1
+  });
+
+  sceneContext.anims.create({
+    key: 'raccoonTest_hug',
+    frames: [ { key: 'raccoonTest', frame: 5 },  { key: 'raccoonTest', frame: 8 } ],
+    frameRate: 20,
+    repeat: -1
+  });
+}
+
+const initSpritesheet = (sceneContext) => {
+  sceneContext.load.spritesheet('raccoonTest', img_raccoonTest, { frameWidth: 110, frameHeight: 110 });
+}
+
+export default {
+  Entity,
+  initSprites,
+  initSpritesheet
 }

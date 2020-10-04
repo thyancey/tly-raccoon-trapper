@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import img_player from "../assets/player.png";
 
 export const STATUS = {
   IDLE: 0,
@@ -14,7 +15,7 @@ const animationStatus = {
   [STATUS.DEAD]: 'player_idle'
 }
 
-export class Player extends Phaser.Physics.Arcade.Sprite {
+class Entity extends Phaser.Physics.Arcade.Sprite {
   constructor (scene, x, y, physicsGroup, laneData) {
     super(scene, x, y, 'player');
 
@@ -105,4 +106,23 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       }
     }
   }
+}
+
+const initSprites = (sceneContext) => {
+  sceneContext.anims.create({
+    key: 'player_idle',
+    frames: sceneContext.anims.generateFrameNumbers('player', { start: 0, end: 1 }),
+    frameRate: 5,
+    repeat: -1
+  });
+}
+
+const initSpritesheet = (sceneContext) => {
+  sceneContext.load.spritesheet('player', img_player, { frameWidth: 90, frameHeight: 120 });
+}
+
+export default {
+  Entity,
+  initSprites,
+  initSpritesheet
 }
