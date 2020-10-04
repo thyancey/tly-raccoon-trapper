@@ -10,7 +10,16 @@ import { RaccoonWizard } from '../../entities/raccoon-wizard.js';
 
 const SPAWN_MIN = 1000;
 const SPAWN_MAX = 1;
+const SPAWN_LIMIT = -1;
+const DEFAULT_STATS_OBJ = {
+  "stats":{
+    "speed": [ 10, 40 ],
+    "jumpRate": [ ".005", ".1" ]
+  }
+}
+
 let spawnProbability = [];
+let spawnCount = 0;
 
 let spawnFrequency = null;
 let curTicker = 0;
@@ -121,13 +130,16 @@ export const update = () => {
   // });
 
   //- hack that stops spawning when slider at lowest value
-  if(spawnFrequency !== SPAWN_MIN){
-    if(curTicker > spawnFrequency){
-      curTicker = 0;
-      const laneIdx = Math.floor(Math.random() * spawnPositions.length);
-      spawnAnEnemy(laneIdx);
-    }else{
-      curTicker++;
+  if(SPAWN_LIMIT === -1 || spawnCount < SPAWN_LIMIT){
+    if(spawnFrequency !== SPAWN_MIN){
+      if(curTicker > spawnFrequency){
+        curTicker = 0;
+        const laneIdx = Math.floor(Math.random() * spawnPositions.length);
+        spawnAnEnemy(laneIdx);
+        spawnCount++;
+      }else{
+        curTicker++;
+      }
     }
   }
 }
@@ -178,13 +190,22 @@ const spawnRaccoonWizard = () => {
   enemy.setVelocity(Phaser.Math.Between(-200, -800), 20);
 }
 
+const randomizeStats = (statsObj = DEFAULT_STATUS_OBJ) => {
+  return {
+    speed: Phaser.Math.Between(+statsObj.speed[0], +statsObj.speed[1]),
+    jumpRate: Phaser.Math.Between(+statsObj.jumpRate[0], +statsObj.jumpRate[1]),
+  }
+}
 const spawnIt = (EntityRef, entityData, laneIdx) => {
   const pos = spawnPositions[laneIdx];
-  let entity = new EntityRef(sceneContext, pos.x, pos.y, groups.enemies);
+  const stats = randomizeStats(entityData.stats);
+  
+  let entity = new EntityRef(sceneContext, pos.x, pos.y, groups.enemies, stats);
   const randomScale = Phaser.Math.Between(entityData.scaleRange[0], entityData.scaleRange[1]) / 100;
   entity.setScale(randomScale);
 
-  entity.setVelocity(Phaser.Math.Between(entityData.spawnSpeeds[0], entityData.spawnSpeeds[1]), 20);
+  
+  // entity.setVelocity(Phaser.Math.Between(entityData.spawnSpeeds[0], entityData.spawnSpeeds[1]), 20);
 }
 
 export const spawnBowl = (x, y) => {

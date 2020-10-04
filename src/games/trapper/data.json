@@ -3,18 +3,22 @@
     "name": "Raccoon Trapper"
   },
   "entities":{
-    "raccoon":{
+    "newRaccoon":{
       "spawnRate": "1",
+      "scaleRange": [160, 180],
+      "spawnSpeeds": [ 0, 0 ],
+      "stats":{
+        "speed": [ 10, 40 ],
+        "jumpRate": [ 2, 10 ]
+      }
+    },
+    "raccoon":{
+      "spawnRate": "0",
       "scaleRange": [80, 110],
       "spawnSpeeds": [ 25, 100 ]
     },
-    "newRaccoon":{
-      "spawnRate": "1",
-      "scaleRange": [120, 140],
-      "spawnSpeeds": [ 25, 50 ]
-    },
     "anibal01":{
-      "spawnRate": "1",
+      "spawnRate": "0",
       "scaleRange": [40, 60],
       "spawnSpeeds": [ 25, 100 ]
     },
