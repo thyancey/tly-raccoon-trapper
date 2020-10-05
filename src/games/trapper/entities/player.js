@@ -23,6 +23,7 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
     this.hp = this.hpRange[1];
     this.laneIdx = 0;
     this.laneValues = this.parseLaneData(laneData);
+    this.posOffset = [];
 
     this.isAlive = true;
 
@@ -37,10 +38,11 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
     this.setDepth(0);
 
     /* would rather use lower left, but I cant figure out how, the body and sprite keep getting out of sync */
-    this.body.setSize(90,120);
-    this.body.offset.x = 0;
-    this.body.offset.y = 0;
     this.setOrigin(0, 0).refreshBody();
+    this.body.setSize(40, 90);
+    this.posOffset = [ 25, 15 ];
+    // this.body.offset.x = 0;
+    // this.body.offset.y = 0;
 
     this.updatePlayerPosition();
     this.setStatus(STATUS.IDLE, true);
@@ -48,7 +50,7 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
 
   parseLaneData(laneData){
     return laneData.map(lane => ({
-      x: parseInt(lane.x) + parseInt(lane.width) - 20,
+      x: parseInt(lane.x) + parseInt(lane.width) - 10,
       y: parseInt(lane.y) - 110
     }));
   }
@@ -67,9 +69,15 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
 
   updatePlayerPosition(){
     const pos = this.laneValues[this.laneIdx];
-    this.body.x = pos.x;
-    this.body.y = pos.y;
-    this.setPosition(pos.x, pos.y);
+    this.body.x = pos.x + this.posOffset[0];
+    this.body.y = pos.y + this.posOffset[1];
+    const realPos = {
+      x: pos.x + this.posOffset[0] - 25,
+      y: pos.y + this.posOffset[1] - 20,
+    }
+    // this.body.x = pos.x;
+    // this.body.y = pos.y;
+    this.setPosition(realPos.x, realPos.y);
   }
   
   bit(enemy){

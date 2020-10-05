@@ -6,6 +6,8 @@ import { STATUS as enemyStatus } from './entities/raccoon';
 import SpawnController from './spawn.js';
 import LevelController from './level.js';
 
+import img_bg_yard from './assets/bg-yard.jpg';
+
 let game;
 let enemies;
 let levelGroups;
@@ -53,7 +55,7 @@ export const createGame = () =>{
   game = new Phaser.Game(config);
 }
 
-window.stopGame = () => {
+window.stopGame = () => {[]
   sceneContext.scene.stop();
 }
 
@@ -71,14 +73,24 @@ function setSceneContext(context){
 function preload() {
   setSceneContext(this);
   
+  // this.load.image('bg-yard', img_bg_yard);
+  
   this.load.image('blood', img_blood);
   LevelController.preload();
   SpawnController.preload();
 }
 
+let bgSprite;
+let bgTexture;
 function create() {
   //- make the level
   levelGroups = LevelController.create(gameData.level);
+  // bgSprite = this.make.sprite(0, 0, 'bg-yard');
+
+  // bgTexture = this.add.renderTexture(this.width, this.height);
+
+  // this.add.sprite(0, 0, bgTexture);
+  // this.add.image(0, 0, 'bg-yard').setOrigin(0).setScale(1);
 
   initScoreboard();
   
@@ -134,7 +146,7 @@ function trigger_enemyAndBowl(enemy, bowl){
 
 function trigger_enemyAndPlayer(enemy, bowl){
   if(enemy.isAlive){
-    if(enemy.status === enemyStatus.TAME){
+    if(enemy.isFull){
       enemy.hug();
       setPoints('hugs', 1);
     }else{
@@ -169,6 +181,8 @@ function setupMouseEmitter(){
 }
 
 function update (){
+  // bgTexture.renderXY(bgSprite, 0, 0, true);
+  // bgTexture.renderTexture(bgSprite, true)
   SpawnController.update();
 }
 

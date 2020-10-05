@@ -5,7 +5,7 @@ import Raccoon from './entities/raccoon.js';
 import NewRaccoon from './entities/new-raccoon.js';
 import AnibalCritter from './entities/anibal-critter.js';
 import Player from './entities/player.js';
-import { Bowl } from './entities/bowl.js';
+import Bowl from './entities/bowl.js';
 import { RaccoonWizard } from '../../entities/raccoon-wizard.js';
 
 const SPAWN_MIN = 1000;
@@ -42,8 +42,9 @@ export const preload = () => {
   NewRaccoon.initSpritesheet(sceneContext);
   Player.initSpritesheet(sceneContext);
   AnibalCritter.initSpritesheet(sceneContext);
+  Bowl.initSpritesheet(sceneContext);
   sceneContext.load.spritesheet('raccoonWizard', img_raccoonWizard, { frameWidth: 110, frameHeight: 137 });
-  sceneContext.load.spritesheet('foodBowl', img_foodBowl, { frameWidth: 70, frameHeight: 40 });
+  // sceneContext.load.spritesheet('foodBowl', img_foodBowl, { frameWidth: 70, frameHeight: 40 });
 }
 
 export const create = (spawnPos, eData, pData) => {
@@ -58,6 +59,7 @@ export const create = (spawnPos, eData, pData) => {
 
   initSprites();
   Player.initSprites(sceneContext);
+  Bowl.initSprites(sceneContext);
   AnibalCritter.initSprites(sceneContext);
   Raccoon.initSprites(sceneContext);
   NewRaccoon.initSprites(sceneContext);
@@ -170,18 +172,6 @@ const initSprites = () => {
     frameRate: 10,
     repeat: -1
   });
-
-  sceneContext.anims.create({
-    key: 'foodBowl_full',
-    frames: [ { key: 'foodBowl', frame: 0 } ],
-    frameRate: 10
-  });
-
-  sceneContext.anims.create({
-    key: 'foodBowl_empty',
-    frames: [ { key: 'foodBowl', frame: 1 } ],
-    frameRate: 10
-  });
 }
 
 const spawnRaccoonWizard = () => {
@@ -192,8 +182,8 @@ const spawnRaccoonWizard = () => {
 
 const randomizeStats = (statsObj = DEFAULT_STATUS_OBJ) => {
   return {
-    speed: Phaser.Math.Between(+statsObj.speed[0], +statsObj.speed[1]),
-    jumpRate: Phaser.Math.Between(+statsObj.jumpRate[0], +statsObj.jumpRate[1]),
+    speed: Phaser.Math.Between(statsObj.speed[0], statsObj.speed[1]),
+    jumpRate: Phaser.Math.Between(statsObj.jumpRate[0], statsObj.jumpRate[1]),
   }
 }
 const spawnIt = (EntityRef, entityData, laneIdx) => {
@@ -209,13 +199,13 @@ const spawnIt = (EntityRef, entityData, laneIdx) => {
 }
 
 export const spawnBowl = (x, y) => {
-  let bowl = new Bowl(sceneContext, x, y, groups.bowls);
+  let bowl = new Bowl.Entity(sceneContext, x, y, groups.bowls);
   bowl.setVelocity(entityData.bowl.spawnSpeed, 20);
 }
 
 export const slingBowl = () => {
-  let bowl = new Bowl(sceneContext, player.x + 20, player.y + 60, groups.bowls);
-  bowl.setVelocity(entityData.bowl.spawnSpeed, -200);
+  let bowl = new Bowl.Entity(sceneContext, player.x + 20, player.y + 60, groups.bowls);
+  bowl.setVelocity(entityData.bowl.spawnSpeed, -100);
 }
 
 const spawnPlayer = (laneData) => {

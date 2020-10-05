@@ -5,12 +5,12 @@
   "entities":{
     "newRaccoon":{
       "spawnRate": "1",
-      "scaleRange": [160, 180],
+      "scaleRange": [95, 110],
       "spawnSpeeds": [ 0, 0 ],
       "stats":{
         "speed": [ 10, 40 ],
         "jumpRate": [ 2, 10 ]
-      }
+      } 
     },
     "raccoon":{
       "spawnRate": "0",

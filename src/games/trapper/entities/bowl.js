@@ -3,6 +3,7 @@ import Phaser from "phaser";
 const KILL_TIMEOUT = 1000;
 const DRAIN_TIMER_INTERVAL = 500;
 const MAX_FEEDING = 1;
+import img_foodBowl from "../assets/bowl.png";
 
 export const STATUS = {
   FULL: 0,
@@ -16,7 +17,7 @@ const animationStatus = {
   [STATUS.EMPTY]: 'foodBowl_empty'
 }
 
-export class Bowl extends Phaser.Physics.Arcade.Sprite {
+class Entity extends Phaser.Physics.Arcade.Sprite {
   constructor (scene, x, y, physicsGroup) {
     super(scene, x, y, 'foodBowl');
 
@@ -43,6 +44,9 @@ export class Bowl extends Phaser.Physics.Arcade.Sprite {
     this.setBounce(.4);
     this.setCollideWorldBounds(true);
     // this.allowGravity = false;
+    
+    this.body.setSize(36,15);
+    this.body.offset.y = -2;
 
     this.setStatus(STATUS.FULL, true);
   }
@@ -147,4 +151,29 @@ export class Bowl extends Phaser.Physics.Arcade.Sprite {
       }
     }
   }
+}
+
+const initSprites = (sceneContext) => {
+  sceneContext.anims.create({
+    key: 'foodBowl_full',
+    frames: [ { key: 'foodBowl', frame: 0 } ],
+    frameRate: 10
+  });
+
+  sceneContext.anims.create({
+    key: 'foodBowl_empty',
+    frames: [ { key: 'foodBowl', frame: 1 } ],
+    frameRate: 10
+  });
+}
+
+
+const initSpritesheet = (sceneContext) => {
+  sceneContext.load.spritesheet('foodBowl', img_foodBowl, { frameWidth: 38, frameHeight: 22 });
+}
+
+export default {
+  Entity,
+  initSprites,
+  initSpritesheet
 }
