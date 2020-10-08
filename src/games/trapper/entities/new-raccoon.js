@@ -37,14 +37,13 @@ stats = {
 */
 
 class Entity extends Phaser.Physics.Arcade.Sprite {
-  constructor (scene, x, y, physicsGroup, stats = {}) {
-    super(scene, x, y, 'newRaccoon');
-
+  constructor (scene, physicsGroup, spawnData) {
+    super(scene, spawnData.x, spawnData.y, 'newRaccoon');
 
     // this.status = STATUS.ROAMING;
     // this.love = 0;
     // this.maxLove = 100;
-    this.stats = stats;
+    this.stats = spawnData.stats || {};
     this.status = null;
     this.isFull = false;
 
@@ -52,6 +51,7 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
     this.isAlive = true;
 
     //- parent stuff
+    this.setDepth(spawnData.depth);
     scene.add.existing(this);
     if(physicsGroup){
       physicsGroup.add(this);
@@ -351,7 +351,7 @@ const initSprites = (sceneContext) => {
 }
 
 const initSpritesheet = (sceneContext) => {
-  sceneContext.load.spritesheet('newRaccoon', img_newRaccoon, { frameWidth: 56, frameHeight: 56 });
+  const spr = sceneContext.load.spritesheet('newRaccoon', img_newRaccoon, { frameWidth: 56, frameHeight: 56 });
 }
 
 export default {

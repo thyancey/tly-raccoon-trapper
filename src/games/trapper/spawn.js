@@ -7,6 +7,7 @@ import AnibalCritter from './entities/anibal-critter.js';
 import Player from './entities/player.js';
 import Bowl from './entities/bowl.js';
 import { RaccoonWizard } from '../../entities/raccoon-wizard.js';
+import Values from "./utils/values";
 
 const SPAWN_MIN = 1000;
 const SPAWN_MAX = 1;
@@ -186,11 +187,21 @@ const randomizeStats = (statsObj = DEFAULT_STATUS_OBJ) => {
     jumpRate: Phaser.Math.Between(statsObj.jumpRate[0], statsObj.jumpRate[1]),
   }
 }
+
+const getDepthOfLane = laneIdx => {
+  return Values.zindex[`LANE_${laneIdx + 1}`];
+}
+
 const spawnIt = (EntityRef, entityData, laneIdx) => {
   const pos = spawnPositions[laneIdx];
   const stats = randomizeStats(entityData.stats);
   
-  let entity = new EntityRef(sceneContext, pos.x, pos.y, groups.enemies, stats);
+  let entity = new EntityRef(sceneContext, groups.enemies, {
+    x: pos.x,
+    y: pos.y,
+    stats: stats,
+    depth: getDepthOfLane(laneIdx)
+  });
   const randomScale = Phaser.Math.Between(entityData.scaleRange[0], entityData.scaleRange[1]) / 100;
   entity.setScale(randomScale);
 

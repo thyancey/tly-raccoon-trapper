@@ -6,8 +6,6 @@ import { STATUS as enemyStatus } from './entities/raccoon';
 import SpawnController from './spawn.js';
 import LevelController from './level.js';
 
-import img_bg_yard from './assets/bg-yard.jpg';
-
 let game;
 let enemies;
 let levelGroups;
@@ -73,8 +71,6 @@ function setSceneContext(context){
 function preload() {
   setSceneContext(this);
   
-  // this.load.image('bg-yard', img_bg_yard);
-  
   this.load.image('blood', img_blood);
   LevelController.preload();
   SpawnController.preload();
@@ -85,13 +81,7 @@ let bgTexture;
 function create() {
   //- make the level
   levelGroups = LevelController.create(gameData.level);
-  // bgSprite = this.make.sprite(0, 0, 'bg-yard');
-
   // bgTexture = this.add.renderTexture(this.width, this.height);
-
-  // this.add.sprite(0, 0, bgTexture);
-  // this.add.image(0, 0, 'bg-yard').setOrigin(0).setScale(1);
-
   initScoreboard();
   
   //- make the enemies

@@ -22,8 +22,8 @@ const animationStatus = {
 }
 
 class Entity extends Phaser.Physics.Arcade.Sprite {
-  constructor (scene, x, y, physicsGroup) {
-    super(scene, x, y, 'raccoonTest');
+  constructor (scene, physicsGroup, spawnData) {
+    super(scene, spawnData.x, spawnData.y, 'raccoonTest');
 
     // this.status = STATUS.ROAMING;
     this.love = 0;
@@ -33,6 +33,7 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
     this.isAlive = true;
 
     //- parent stuff
+    this.setDepth(spawnData.depth);
     scene.add.existing(this);
     if(physicsGroup){
       physicsGroup.add(this);
