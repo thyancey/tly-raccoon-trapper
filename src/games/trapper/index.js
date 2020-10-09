@@ -5,6 +5,7 @@ import { STATUS as enemyStatus } from './entities/raccoon';
 
 import SpawnController from './spawn.js';
 import LevelController from './level.js';
+import player from './entities/player';
 
 let game;
 let enemies;
@@ -27,8 +28,6 @@ let points = {
 }
 
 let cursors;
-
-
 
 export const createGame = () =>{
   const config = {
@@ -126,7 +125,7 @@ function trigger_itemAtStart(item, trigger){
 }
 
 function trigger_enemyAndBowl(enemy, bowl){
-  if(enemy.status === enemyStatus.ROAMING && bowl.canBeEaten){
+  if(enemy.canEat() && bowl.canBeEaten){
     enemy.touched(bowl.body);
     // enemy.body.x = bowl.x;
     bowl.touched(enemy);
@@ -134,16 +133,24 @@ function trigger_enemyAndBowl(enemy, bowl){
 }
 
 
-function trigger_enemyAndPlayer(enemy, bowl){
+function trigger_enemyAndPlayer(enemy, player){
   if(enemy.isAlive){
-    if(enemy.isFull){
-      enemy.hug();
-      setPoints('hugs', 1);
-    }else{
-      enemy.kill();
-      setPoints('bites', 1);
+    if(player.checkStatus('HUG_PREP')){
+      if(enemy.isFull){
+        enemy.hug();
+        player.hug();
+        setPoints('hugs', 1);
+      }else{
+        player.hurt();
+        setPoints('bites', 1);
+      }
+    }else if(player.checkStatus('KICK_PREP')){
+      enemy.punt ? enemy.punt() : enemy.kill();
+      player.kick();
     }
   }
+
+  //- anything else, just walk on by
 }
 
 function onObjectClicked(pointer, gameObject){
@@ -178,12 +185,6 @@ function update (){
 
 const onKeyDown = (e) => {
   switch(e.code){
-    case 'ArrowDown': SpawnController.changeLane(1);
-      break;
-    case 'ArrowUp': SpawnController.changeLane(-1);
-      break;
-    case 'ArrowLeft': SpawnController.slingBowl();
-      break;
     case 'Space': SpawnController.slingBowl();
       break;
   }

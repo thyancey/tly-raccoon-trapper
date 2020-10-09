@@ -14,6 +14,7 @@ export const STATUS = {
   HOPPING: 7,
   HOPPING_START: 8,
   HOPPING_END: 9,
+  PUNTED: 10
 }
 
 const animationStatus = {
@@ -26,7 +27,8 @@ const animationStatus = {
   [STATUS.ANGRY]: 'newRaccoon_walk',
   [STATUS.TAME]: 'newRaccoon_loveWalk',
   [STATUS.DEAD]: 'newRaccoon_dead',
-  [STATUS.HUG]: 'newRaccoon_hug'
+  [STATUS.HUG]: 'newRaccoon_hug',
+  [STATUS.PUNTED]: 'newRaccoon_punted'
 }
 
 
@@ -51,7 +53,9 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
     this.isAlive = true;
 
     //- parent stuff
-    this.setDepth(spawnData.depth);
+    if(!isNaN(spawnData.depth)) {
+      this.setDepth(spawnData.depth);
+    }
     scene.add.existing(this);
     if(physicsGroup){
       physicsGroup.add(this);
@@ -78,14 +82,15 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
   }
 
   canEat(){
-    if(this.isAlive){
+    if(this.isAlive && !this.isFull){
       switch(this.status){
-        case STATUS.ROAMING: return true
-        case STATUS.IDLE: return true
-        case STATUS.HOPPING_START: return true
-        case STATUS.HOPPING: return true
-        case STATUS.HOPPING_END: return true
-        default: return false;
+        // case STATUS.ROAMING: return true
+        // case STATUS.IDLE: return true
+        // case STATUS.HOPPING_START: return true
+        case STATUS.EATING: return false;
+        case STATUS.HOPPING: return false;
+        // case STATUS.HOPPING_END: return true
+        default: return true;
       }
     }else{
       return false;
@@ -95,9 +100,9 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
   canHop(){
     if(this.isAlive && this.body.touching.down){
       switch(this.status){
-        case STATUS.ROAMING: return true
-        case STATUS.IDLE: return true
-        case STATUS.TAME: return true
+        case STATUS.ROAMING: return true;
+        case STATUS.IDLE: return true;
+        case STATUS.TAME: return true;
         default: return false;
       }
     }else{
@@ -108,8 +113,8 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
   canIdle(){
     if(this.isAlive && this.body.touching.down && this.body.velocity.x === 0){
       switch(this.status){
-        case STATUS.ROAMING: return true
-        case STATUS.IDLE: return true
+        case STATUS.ROAMING: return true;
+        case STATUS.IDLE: return true;
         default: return false;
       }
     }else{
@@ -117,10 +122,15 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
     }
   }
 
+  punt(){
+    this.setStatus(STATUS.PUNTED);
+    this.body.setDrag(200);
+    this.setVelocityY(-100);
+    this.setVelocityX(-1500);
+  }
+
   kill(){
     this.setStatus(STATUS.DEAD);
-    this.body.setDrag(500);
-    this.isAlive = false;
 
     global.setTimeout(() => {
       this.destroy();
@@ -135,9 +145,11 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
       if(this.body.velocity.x < 0) this.flipX = true;
     }
 
-    const didHop = this.handleHopping();
-    if(!didHop){
-      if(this.canIdle()) this.setStatus(STATUS.IDLE);
+    if(this.isAlive){
+      const didHop = this.handleHopping();
+      if(!didHop){
+        if(this.canIdle()) this.setStatus(STATUS.IDLE);
+      }
     }
   }
 
@@ -170,10 +182,10 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
   //- if 
   touched(otherBody){
     // console.log('touched')
-    if(this.canEat()){
+    // if(this.canEat()){ //- redundant, now that checking in collison checker
       this.setStatus(STATUS.EATING);
       this.body.x = otherBody.x;
-    }
+    // }
   }
 
   bowlEmpty(){
@@ -219,7 +231,9 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
           this.body.setDrag(500);
 
           window.setTimeout(() => {
-            this.setStatus(STATUS.HOPPING, false, false);
+            if(this.isAlive){
+              this.setStatus(STATUS.HOPPING, false, false);
+            }
           }, 500);
           break;
         case STATUS.HOPPING: 
@@ -232,12 +246,18 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
           this.body.setDrag(500);
 
           window.setTimeout(() => {
-            if(this.isFull){
-              this.setStatus(STATUS.TAME);
-            }else{
-              this.setStatus(STATUS.ROAMING);
+            if(this.isAlive){
+              if(this.isFull){
+                this.setStatus(STATUS.TAME);
+              }else{
+                this.setStatus(STATUS.ROAMING);
+              }
             }
           }, 200);
+          break;
+        case STATUS.DEAD:
+          this.body.setDrag(500);
+          this.isAlive = false;
           break;
       }
       if(playStatusAnimation) this.playAnimationForStatus();
@@ -306,7 +326,7 @@ const initSprites = (sceneContext) => {
     frameRate: 7,
     repeat: 0
   });
-
+[]
   sceneContext.anims.create({
     key: 'newRaccoon_hop_end',
     frames: [ { key: 'newRaccoon', frame: 7 } ],
@@ -345,6 +365,13 @@ const initSprites = (sceneContext) => {
   sceneContext.anims.create({
     key: 'newRaccoon_hug',
     frames: sceneContext.anims.generateFrameNumbers('newRaccoon', { start: 12, end: 13 }),
+    frameRate: 7,
+    repeat: -1
+  });
+
+  sceneContext.anims.create({
+    key: 'newRaccoon_punted',
+    frames: sceneContext.anims.generateFrameNumbers('newRaccoon', { start: 2, end: 3 }),
     frameRate: 7,
     repeat: -1
   });

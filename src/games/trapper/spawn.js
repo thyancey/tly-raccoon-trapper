@@ -7,7 +7,7 @@ import AnibalCritter from './entities/anibal-critter.js';
 import Player from './entities/player.js';
 import Bowl from './entities/bowl.js';
 import { RaccoonWizard } from '../../entities/raccoon-wizard.js';
-import Values from "./utils/values";
+import { getDepthOfLane } from "./utils/values";
 
 const SPAWN_MIN = 1000;
 const SPAWN_MAX = 1;
@@ -188,10 +188,6 @@ const randomizeStats = (statsObj = DEFAULT_STATUS_OBJ) => {
   }
 }
 
-const getDepthOfLane = laneIdx => {
-  return Values.zindex[`LANE_${laneIdx + 1}`];
-}
-
 const spawnIt = (EntityRef, entityData, laneIdx) => {
   const pos = spawnPositions[laneIdx];
   const stats = randomizeStats(entityData.stats);
@@ -210,12 +206,21 @@ const spawnIt = (EntityRef, entityData, laneIdx) => {
 }
 
 export const spawnBowl = (x, y) => {
-  let bowl = new Bowl.Entity(sceneContext, x, y, groups.bowls);
+  let bowl = new Bowl.Entity(sceneContext, groups.bowls, {
+    x: x,
+    y: y
+  });
+
   bowl.setVelocity(entityData.bowl.spawnSpeed, 20);
 }
 
 export const slingBowl = () => {
-  let bowl = new Bowl.Entity(sceneContext, player.x + 20, player.y + 60, groups.bowls);
+  let bowl = new Bowl.Entity(sceneContext, groups.bowls, {
+    x: player.x + 20,
+    y: player.y + 60,
+    depth: getDepthOfLane(player.laneIdx, 1)
+  });
+
   bowl.setVelocity(entityData.bowl.spawnSpeed, -100);
 }
 
@@ -258,11 +263,6 @@ const getValue = position => {
 }
 
 
-export const changeLane = (diff) => {
-  player.changeLane(diff);
-}
-
-
 /*
 //- this approach seems to perform a lot better, however cannot extend gameobject class correctly
 const basicSpawn = () => {
@@ -292,6 +292,5 @@ export default {
   update,
   spawn,
   spawnBowl,
-  changeLane,
   slingBowl
 }

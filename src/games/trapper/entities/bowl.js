@@ -18,8 +18,8 @@ const animationStatus = {
 }
 
 class Entity extends Phaser.Physics.Arcade.Sprite {
-  constructor (scene, x, y, physicsGroup) {
-    super(scene, x, y, 'foodBowl');
+    constructor (scene, physicsGroup, spawnData) {
+    super(scene, spawnData.x, spawnData.y, 'foodBowl');
 
     this.drainRate = 0;
     this.drainStart = null;
@@ -32,13 +32,14 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
 
     //- parent stuff
     scene.add.existing(this);
+    if(!isNaN(spawnData.depth)) {
+      this.setDepth(spawnData.depth);
+    }
     if(physicsGroup){
       physicsGroup.add(this);
     }else{
       scene.physics.add.existing(this);
     }
-
-    this.setDepth(1);
 
     //- physics
     this.setBounce(.4);
