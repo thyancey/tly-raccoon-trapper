@@ -1,13 +1,10 @@
 import Phaser from 'phaser';
 import img_player from '../assets/entity-oldlady.png';
+import img_statBar from '../assets/statbar.png';
 import { getDepthOfLane } from '../utils/values';
-import StatBar from './stat-bar';
-
-const THROTTLE_SPEED = 150;
 
 const KILL_TIMEOUT = 5000;
-
-let statBar;
+const KICK_RECOVERY = 250;
 
 export const STATUS = {
   IDLE: 0,
@@ -39,13 +36,12 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
     this.hp = this.hpRange[1];
     this.laneIdx = 0;
     this.laneValues = this.parseLaneData(laneData);
+    console.log('lv', this.laneValues)
     this.posOffset = [];
     this.spriteOffset = [];
 
     this.isAlive = true;
     this.kickCharge = 0;
-
-    // this.throttledUpdate = throttle(THROTTLE_SPEED, false, this.onThrottledUpdate);
 
     //- parent stuff
     scene.add.existing(this);
@@ -68,10 +64,6 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
     
     scene.input.keyboard.on('keydown', this.onKeyDown.bind(this));
     scene.input.keyboard.on('keyup', this.onKeyUp.bind(this));
-
-    
-    statBar = new StatBar.Entity(scene, 150, 150);
-    this.updatePlayerPosition();
   }
 
   onKeyUp(e){
@@ -132,7 +124,6 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
     this.body.x = realPos.x + this.spriteOffset[0];
     this.body.y = realPos.y + this.spriteOffset[1];
     this.setPosition(realPos.x, realPos.y);
-    statBar && statBar.setOffsetPosition(realPos.x, realPos.y);
     
     this.setLaneDepth();
   }
@@ -143,6 +134,12 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
       this.recoveryTimer = null;
       callback();
     }, timeout);
+  }
+
+  killRecoveryTimer(){
+    if(this.recoveryTimer);
+    window.clearTimeout(this.recoveryTimer);
+    this.recoveryTimer = null;
   }
 
   killRecoveryTimer(){
@@ -178,23 +175,15 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
     if(this.kickCharge > 1){
       this.kickCharge = 1;
     }
-
-    statBar.setProgress(this.kickCharge);
   }
 
   kick(){
     this.setStatus(STATUS.KICK);
-    // console.log('KICK: ', this.kickCharge);
-
-    this.startRecoveryTimer(() => {
-      this.stopKick();
-    }, 500);
-  }
-
-  stopKick(){
     this.kickCharge = 0;
-    statBar.setProgress(this.kickCharge);
-    this.setStatus(STATUS.IDLE);
+    
+    this.startRecoveryTimer(() => {
+      this.setStatus(STATUS.IDLE);
+    }, 500);
   }
 
   //- eventually this should be % charge * stats
@@ -208,7 +197,7 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
       
       this.startRecoveryTimer(() => {
         this.setStatus(STATUS.IDLE);
-      }, 500);
+      }, KICK_RECOVERY;
     }
   }
 
@@ -216,7 +205,6 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
   }
   
   throttledUpdate(){
-      // console.log('player.thorttled')
     if(this.checkStatus(STATUS.KICK_PREP)){
       this.chargeKick();
     }
@@ -304,14 +292,78 @@ const initSprites = (sceneContext) => {
     repeat: -1
   });
 
+
+  sceneContext.anims.create({
+    key: 'statBar_0',
+    frames: [ { key: 'statBar', frame: 0 } ],
+    frameRate: 0,
+    repeat: -1
+  });
   
-  StatBar.initSprites(sceneContext);
+  sceneContext.anims.create({
+    key: 'statBar_0',
+    frames: [ { key: 'statBar', frame: 0 } ],
+    frameRate: 0,
+    repeat: -1
+  });
+  
+  sceneContext.anims.create({
+    key: 'statBar_1',
+    frames: [ { key: 'statBar', frame: 1 } ],
+    frameRate: 0,
+    repeat: -1
+  });
+  
+  sceneContext.anims.create({
+    key: 'statBar_2',
+    frames: [ { key: 'statBar', frame: 2 } ],
+    frameRate: 0,
+    repeat: -1
+  });
+  
+  sceneContext.anims.create({
+    key: 'statBar_3',
+    frames: [ { key: 'statBar', frame: 3 } ],
+    frameRate: 0,
+    repeat: -1
+  });
+  
+  sceneContext.anims.create({
+    key: 'statBar_4',
+    frames: [ { key: 'statBar', frame: 4 } ],
+    frameRate: 0,
+    repeat: -1
+  });
+  sceneContext.anims.create({
+    key: 'statBar_5',
+    frames: [ { key: 'statBar', frame: 5 } ],
+    frameRate: 0,
+    repeat: -1
+  });
+  sceneContext.anims.create({
+    key: 'statBar_6',
+    frames: [ { key: 'statBar', frame: 6 } ],
+    frameRate: 0,
+    repeat: -1
+  });
+  sceneContext.anims.create({
+    key: 'statBar_7',
+    frames: [ { key: 'statBar', frame: 7 } ],
+    frameRate: 0,
+    repeat: -1
+  });
+  sceneContext.anims.create({
+    key: 'statBar_8',
+    frames: [ { key: 'statBar', frame: 8 } ],
+    frameRate: 0,
+    repeat: -1
+  });
 }
 
 const initSpritesheet = (sceneContext) => {
   sceneContext.load.spritesheet('player', img_player, { frameWidth: 64, frameHeight: 88 });
 
-  StatBar.initSpritesheet(sceneContext);
+  sceneContext.load.spritesheet('statBar', img_statBar, { frameWidth: 45, frameHeight: 10 } )
 }
 
 export default {

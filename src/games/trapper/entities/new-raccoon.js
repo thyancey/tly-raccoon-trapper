@@ -32,6 +32,30 @@ const animationStatus = {
 }
 
 
+const velocityRanges = {
+  LIL_PUNT: {
+    min: { x: -75, y: -50 },
+    max: { x: -200, y: -200 },
+    diff: { x: 0, y: 0 }
+  },
+  BIG_PUNT: {
+    min: { x: -500, y: -300 },
+    max: { x: -700, y: -500 },
+    diff: { x: 0, y: 0 }
+  }
+}
+
+velocityRanges.LIL_PUNT.diff = {
+  x: velocityRanges.LIL_PUNT.max.x - velocityRanges.LIL_PUNT.min.x,
+  y: velocityRanges.LIL_PUNT.max.y - velocityRanges.LIL_PUNT.min.y
+},
+velocityRanges.BIG_PUNT.diff = {
+  x: velocityRanges.BIG_PUNT.max.x - velocityRanges.BIG_PUNT.min.x,
+  y: velocityRanges.BIG_PUNT.max.y - velocityRanges.BIG_PUNT.min.y
+}
+
+
+
 /*
 stats = {
   speed: [ minSpeedX, maxSpeedX ]
@@ -109,6 +133,11 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
       return false;
     }
   }
+
+  isGoingUp(){
+    // console.log('velocity', this.body.y);
+    return this.body.velocity.y < 5; 
+  }
   
   canIdle(){
     if(this.isAlive && this.body.touching.down && this.body.velocity.x === 0){
@@ -122,11 +151,30 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
     }
   }
 
-  punt(){
+  // right now, its a %, later should be actual power
+  punt(force){
+    // console.log('force', force)
+    //- (1 - 100)
+
     this.setStatus(STATUS.PUNTED);
     this.body.setDrag(200);
-    this.setVelocityY(-100);
-    this.setVelocityX(-1500);
+
+    let vRange;
+    if(force < .5){
+      vRange = velocityRanges.LIL_PUNT;
+    }else{
+      vRange = velocityRanges.BIG_PUNT;
+    }
+
+    // console.log('vRange', vRange.min.x + vRange.diff.x * force)
+    this.setVelocity(
+      vRange.min.x + vRange.diff.x * force,
+      vRange.min.y + vRange.diff.y * force,
+    );
+
+    if(force >= 1){
+      this.kill();
+    }
   }
 
   kill(){
@@ -148,35 +196,53 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
     if(this.isAlive){
       const didHop = this.handleHopping();
       if(!didHop){
-        if(this.canIdle()) this.setStatus(STATUS.IDLE);
+        // this.resumeStatus();
       }
     }
+  }
+  
+  throttledUpdate(){
+
   }
 
   handleHopping(){
     if(this.checkStatus('HOPPING')){
-      // console.log("vel", this.body.velocity)
-      if(this.body.velocity.y > 40){
-        this.anims.play('newRaccoon_hop_down');
-        this.setVelocityX(150); // this lil boost helps it get over barriers
-        return true;
-      }else if(this.body.velocity.y < -40){
-        this.anims.play('newRaccoon_hop_up');
-        return true;
-      }else if(this.body.velocity.y === 0){
-        this.setStatus(STATUS.HOPPING_END);
-        return true;
-      }
-    }
-    else if(this.canHop()){
+      this.checkHoppingAnimation(true);
+      return true;
+    } else if(this.canHop()){
       //touching ground
       if((Math.random() * 1000) < this.stats.jumpRate){
         this.hopForward();
         return true;
       }
+    }else{
+      // this.checkHoppingAnimation(false);
+      // this.checkFallingAnimation();
+      return false;
     }
+  }
 
-    return false;
+  checkFallingAnimation(){
+    // console.log("vel", this.body.velocity)
+    if(this.body.velocity.y > 40){
+      this.anims.play('newRaccoon_hop_down');
+    }else if(this.body.velocity.y < -40){
+      this.anims.play('newRaccoon_hop_up');
+    }else{
+      this.resumeStatus();
+    }
+  }
+  
+  checkHoppingAnimation(){
+    // console.log("vel", this.body.velocity)
+    if(this.body.velocity.y > 40){
+      this.anims.play('newRaccoon_hop_down');
+      this.setVelocityX(150); // this lil boost helps it get over barriers
+    }else if(this.body.velocity.y < -40){
+      this.anims.play('newRaccoon_hop_up');
+    }else if(this.body.velocity.y === 0){
+      this.setStatus(STATUS.HOPPING_END);
+    }
   }
 
   //- if 
@@ -246,13 +312,7 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
           this.body.setDrag(500);
 
           window.setTimeout(() => {
-            if(this.isAlive){
-              if(this.isFull){
-                this.setStatus(STATUS.TAME);
-              }else{
-                this.setStatus(STATUS.ROAMING);
-              }
-            }
+            this.resumeStatus();
           }, 200);
           break;
         case STATUS.DEAD:
@@ -261,6 +321,28 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
           break;
       }
       if(playStatusAnimation) this.playAnimationForStatus();
+    }
+  }
+
+  resumeStatus(){
+    if(this.isAlive){
+      if(this.isFull){
+        this.setStatus(STATUS.TAME);
+      }else{
+        if(this.canIdle()){
+          this.setStatus(STATUS.IDLE)
+        }else{
+          if(this.body.velocity.y > 40){
+            this.anims.play('newRaccoon_hop_down');
+            this.setStatus(STATUS.ROAMING, false, false);
+          }else if(this.body.velocity.y < -40){
+            this.anims.play('newRaccoon_hop_up');
+            this.setStatus(STATUS.ROAMING, false, false);
+          }else{
+            this.setStatus(STATUS.ROAMING, false, true);
+          }
+        }
+      }
     }
   }
 

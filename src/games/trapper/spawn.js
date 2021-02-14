@@ -1,6 +1,5 @@
 import Phaser from "phaser";
 import img_raccoonWizard from "../../assets/raccoon-wizard.png";
-import img_foodBowl from "../../assets/bowl.png";
 import Raccoon from './entities/raccoon.js';
 import NewRaccoon from './entities/new-raccoon.js';
 import AnibalCritter from './entities/anibal-critter.js';
@@ -8,7 +7,9 @@ import Player from './entities/player.js';
 import Bowl from './entities/bowl.js';
 import { RaccoonWizard } from '../../entities/raccoon-wizard.js';
 import { getDepthOfLane } from "./utils/values";
+import { throttle } from 'throttle-debounce';
 
+const THROTTLE_SPEED = 150;
 const SPAWN_MIN = 1000;
 const SPAWN_MAX = 1;
 const SPAWN_LIMIT = -1;
@@ -33,6 +34,8 @@ let sceneContext;
 
 let el_spawnSlider;
 let el_spawnCount;
+
+
 
 export const setContext = (context) => {
   sceneContext = context;
@@ -123,14 +126,13 @@ const spawnAnEnemy = (laneIdx) => {
 
 export const update = () => {
   updateSpawnCount();
-
   groups.enemies.children.each(entity => {
     entity.update();
   });
   
-  // groups.bowls.children.each(entity => {
-  //   entity.update();
-  // });
+  groups.player.children.each(entity => {
+    entity.update();
+  });
 
   //- hack that stops spawning when slider at lowest value
   if(SPAWN_LIMIT === -1 || spawnCount < SPAWN_LIMIT){
@@ -145,7 +147,22 @@ export const update = () => {
       }
     }
   }
+
+  throttledUpdate();
 }
+
+
+export const onThrottledUpdate = () => {
+  groups.enemies.children.each(entity => {
+    entity.throttledUpdate();
+  });
+  
+  groups.player.children.each(entity => {
+    entity.throttledUpdate();
+  });
+}
+
+const throttledUpdate = throttle(THROTTLE_SPEED, false, onThrottledUpdate);
 
 export const spawn = (group, key, anim, x, y) => {
   console.log(`spawn ${key} at (${x}, ${y})`)

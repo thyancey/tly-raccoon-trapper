@@ -1,7 +1,8 @@
 import Phaser from 'phaser';
 import img_blood from '../../assets/blood.png';
 import gameData from './data.json';
-import { STATUS as enemyStatus } from './entities/raccoon';
+import { STATUS as STATUS_ENEMY } from './entities/raccoon';
+import { STATUS as STATUS_PLAYER } from './entities/player';
 
 import SpawnController from './spawn.js';
 import LevelController from './level.js';
@@ -91,7 +92,7 @@ function create() {
 
   let spawnGroups = SpawnController.create(spawnPositions, gameData.entities, gameData.level.platforms);
 
-  this.physics.add.collider(spawnGroups.enemies, levelGroups.platforms);
+  this.physics.add.collider(spawnGroups.enemies, levelGroups.platforms, null, collider_enemyAndPlatform, this);
   this.physics.add.collider(spawnGroups.bowls, levelGroups.platforms);
   this.physics.add.overlap(spawnGroups.enemies, spawnGroups.bowls, trigger_enemyAndBowl, null, this);
   this.physics.add.overlap(spawnGroups.bowls, levelGroups.leftTrigger, trigger_itemAtStart, null, this);
@@ -107,7 +108,7 @@ function create() {
 
 function trigger_enemyAtEnd(enemy, trigger){
   if(enemy.isAlive){
-    if(enemy.status === enemyStatus.TAME){
+    if(enemy.status === STATUS_ENEMY.TAME){
       enemy.kill();
     }else{
       enemy.kill();
@@ -133,9 +134,21 @@ function trigger_enemyAndBowl(enemy, bowl){
 }
 
 
+function collider_enemyAndPlatform(enemy, platform){
+  // console.log('colliding:', enemy)
+  if(enemy.isGoingUp()){
+    // console.log('false')
+    return false;
+  }else{
+    // console.log('true')
+    return true;
+  }
+}
+
+
 function trigger_enemyAndPlayer(enemy, player){
   if(enemy.isAlive){
-    if(player.checkStatus('HUG_PREP')){
+    if(player.checkStatus(STATUS_PLAYER.HUG_PREP)){
       if(enemy.isFull){
         enemy.hug();
         player.hug();
@@ -144,9 +157,10 @@ function trigger_enemyAndPlayer(enemy, player){
         player.hurt();
         setPoints('bites', 1);
       }
-    }else if(player.checkStatus('KICK_PREP')){
-      enemy.punt ? enemy.punt() : enemy.kill();
-      player.kick();
+    }else if(player.checkStatus(STATUS_PLAYER.KICK_PREP)){
+      // enemy.punt ? enemy.punt() : enemy.kill();
+    }else if(player.checkStatus(STATUS_PLAYER.KICK) && player.getKickStrength() > 0){
+      enemy.punt ? enemy.punt(player.getKickStrength()) : enemy.kill();
     }
   }
 
