@@ -6,8 +6,11 @@ export const createHeader = () => {
     <h2>Phaser 3 test</h2>
     <div class="description">
       <p>Feed the raccoons and give them hugs!</p>
+      <p>Kick the ones who don't love you!</p>
       <p>Arrow Up/Down: Change langes</p>
-      <p>Space / Arrow Left: Throw food</p>
+      <p>Arrow Left: Hug</p>
+      <p>Arrow Right: Charge kick</p>
+      <p>Space: Throw food</p>
       <p>... you can't win or lose right now</p>
     </div>
   `;
