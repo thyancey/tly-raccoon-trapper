@@ -13,7 +13,7 @@ export default createGlobalStyle`
   h1, h2, h3, h4{
     font-family: 'Bevan', cursive;
   }
-  p, span, h5, h6{
+  a, p, span, h5, h6{
     font-family: 'Cabin', sans-serif;
   }
   h1{
@@ -32,7 +32,7 @@ export default createGlobalStyle`
     font-size: 2rem;
   }
   p, span{
-    font-size: 1rem;
+    font-size:2rem;
   }
 
   html{
@@ -40,6 +40,7 @@ export default createGlobalStyle`
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     font-family: 'Cabin', sans-serif;
+    background-color: black;
   }
   
   code {
