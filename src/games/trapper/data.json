@@ -9,50 +9,50 @@
   },
   "levels":[
     {
-      "entities":[
-        {
+      "entities":{
+        "LIL_BOI":{
           "type": "raccoon",
-          "spawnRate": "1",
           "scaleRange": [80, 120],
           "spawnSpeeds": [ 0, 0 ],
+          "spawnRate":1,
           "stats":{
             "speed": [ 50, 90 ],
             "jumpRate": [ 2, 10 ]
           } 
         },
-        {
+        "BIG_BOI":{
           "type": "raccoon",
-          "spawnRate": "1",
           "scaleRange": [250, 350],
           "spawnSpeeds": [ 0, 0 ],
+          "spawnRate":1,
           "stats":{
             "speed": [ 5, 10 ],
             "jumpRate": [ 2, 10 ]
           } 
         }
-      ],
+      },
       "lanes":[
         {
           "spawns":[{
-            "type": "raccoon",
+            "type": "LIL_BOI",
             "rate": "1"
           }]
         },
         {
           "spawns":[{
-            "type": "raccoon",
+            "type": "BIG_BOI",
             "rate": "1"
           }]
         },
         {
           "spawns":[{
-            "type": "raccoon",
+            "type": "BIG_BOI",
             "rate": "1"
           }]
         },
         {
           "spawns":[{
-            "type": "raccoon",
+            "type": "LIL_BOI",
             "rate": "1"
           }]
         }

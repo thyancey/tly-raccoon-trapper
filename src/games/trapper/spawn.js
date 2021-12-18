@@ -47,6 +47,7 @@ export const create = (spawnPos, globalEntities, levelEntities, pData) => {
   globalEntityData = globalEntities;
   levelEntityList = levelEntities;
   spawnProbability = getSpawnProbability(levelEntities);
+
   //- container for bad boyz
   groups.enemies = sceneContext.physics.add.group();
   groups.bowls = sceneContext.physics.add.group();
@@ -63,29 +64,24 @@ export const create = (spawnPos, globalEntities, levelEntities, pData) => {
   return groups;
 }
 
-const getSpawnProbability = (entitiesList) => {
+const getSpawnProbability = (levelEntities) => {
   const probability = [];
 
   let totRate = 0;
-  entitiesList.forEach(e => {
-    if(e.spawnRate){
-      totRate += +e.spawnRate;
+  Object.keys(levelEntities).forEach(k => {
+    if(levelEntities[k].spawnRate){
+      totRate += levelEntities[k].spawnRate;
     }
   })
-  // Object.keys(entitiesList).forEach(k => {
-  //   if(entitiesList[k].spawnRate){
-  //     totRate += +entitiesList[k].spawnRate;
-  //   }
-  // });
+
   let adj = 1 / totRate;
   
   let curVal = 0;
-  entitiesList.forEach((e, idx) => {
-  // Object.keys(entitiesList).forEach(k => {
-    if(e.spawnRate){
-      curVal += +e.spawnRate * adj;
+  Object.keys(levelEntities).forEach(k => {
+    if(levelEntities[k].spawnRate){
+      curVal += levelEntities[k].spawnRate * adj;
       probability.push({
-        entityIdx: idx,
+        enemyKey: k,
         rate: curVal
       });
     }
@@ -94,11 +90,12 @@ const getSpawnProbability = (entitiesList) => {
   return probability;
 }
 
-const getSpawnIdx = spawnProbability => {
+
+const getSpawnKey = spawnProbability => {
   const rando = Math.random();
   for(let i = 0; i < spawnProbability.length; i++){
     if(spawnProbability[i].rate > rando){
-      return spawnProbability[i].entityIdx;
+      return spawnProbability[i].enemyKey;
     }
   }
 
@@ -106,8 +103,8 @@ const getSpawnIdx = spawnProbability => {
 }
 
 const spawnFromProbability = spawnProbability => {
-  const entityIdx = getSpawnIdx(spawnProbability);
-  return levelEntityList[entityIdx];
+  const enemyKey = getSpawnKey(spawnProbability);
+  return levelEntityList[enemyKey];
 }
 
 const spawnAnEnemy = (laneIdx) => {
