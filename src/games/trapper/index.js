@@ -1,18 +1,17 @@
 import Phaser from 'phaser';
 import img_blood from '../../assets/blood.png';
 import gameData from './data.json';
-import { STATUS as STATUS_ENEMY } from './entities/raccoon';
+import { STATUS as STATUS_ENEMY } from './entities/new-raccoon';
 import { STATUS as STATUS_PLAYER } from './entities/player';
 
 import SpawnController from './spawn.js';
 import LevelController from './level.js';
-import player from './entities/player';
 
 let game;
-let enemies;
 let levelGroups;
 let emitter;
 let sceneContext;
+let curLevel = 0;
 
 const scoreElements = {
   bowls:null,
@@ -27,8 +26,6 @@ let points = {
   bites: 0,
   total: 0
 }
-
-let cursors;
 
 export const createGame = () =>{
   const config = {
@@ -76,21 +73,23 @@ function preload() {
   SpawnController.preload();
 }
 
-let bgSprite;
-let bgTexture;
+function getLevel() {
+  return gameData.levels[curLevel];
+}
+
 function create() {
   //- make the level
-  levelGroups = LevelController.create(gameData.level);
+  levelGroups = LevelController.create(getLevel().scene);
   // bgTexture = this.add.renderTexture(this.width, this.height);
   initScoreboard();
   
   //- make the enemies
-  const spawnPositions = gameData.level.platforms.map(pO => ({
+  const spawnPositions = getLevel().scene.platforms.map(pO => ({
     x: parseInt(pO.x),
     y: parseInt(pO.y) - 50
   }));
 
-  let spawnGroups = SpawnController.create(spawnPositions, gameData.entities, gameData.level.platforms);
+  let spawnGroups = SpawnController.create(spawnPositions, gameData.entities, getLevel().scene.platforms);
 
   this.physics.add.collider(spawnGroups.enemies, levelGroups.platforms, null, collider_enemyAndPlatform, this);
   this.physics.add.collider(spawnGroups.bowls, levelGroups.platforms);

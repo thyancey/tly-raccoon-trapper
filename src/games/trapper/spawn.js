@@ -1,24 +1,14 @@
-import Phaser from "phaser";
-import img_raccoonWizard from "../../assets/raccoon-wizard.png";
-import Raccoon from './entities/raccoon.js';
+import Phaser from 'phaser';
 import NewRaccoon from './entities/new-raccoon.js';
-import AnibalCritter from './entities/anibal-critter.js';
 import Player from './entities/player.js';
 import Bowl from './entities/bowl.js';
-import { RaccoonWizard } from '../../entities/raccoon-wizard.js';
-import { getDepthOfLane } from "./utils/values";
+import { getDepthOfLane } from './utils/values';
 import { throttle } from 'throttle-debounce';
 
 const THROTTLE_SPEED = 150;
 const SPAWN_MIN = 1000;
 const SPAWN_MAX = 1;
 const SPAWN_LIMIT = -1;
-const DEFAULT_STATS_OBJ = {
-  "stats":{
-    "speed": [ 10, 40 ],
-    "jumpRate": [ ".005", ".1" ]
-  }
-}
 
 let spawnProbability = [];
 let spawnCount = 0;
@@ -36,19 +26,14 @@ let el_spawnSlider;
 let el_spawnCount;
 
 
-
 export const setContext = (context) => {
   sceneContext = context;
 }
 
 export const preload = () => {
-  Raccoon.initSpritesheet(sceneContext);
   NewRaccoon.initSpritesheet(sceneContext);
   Player.initSpritesheet(sceneContext);
-  AnibalCritter.initSpritesheet(sceneContext);
   Bowl.initSpritesheet(sceneContext);
-  sceneContext.load.spritesheet('raccoonWizard', img_raccoonWizard, { frameWidth: 110, frameHeight: 137 });
-  // sceneContext.load.spritesheet('foodBowl', img_foodBowl, { frameWidth: 70, frameHeight: 40 });
 }
 
 export const create = (spawnPos, eData, pData) => {
@@ -61,11 +46,8 @@ export const create = (spawnPos, eData, pData) => {
   groups.bowls = sceneContext.physics.add.group();
   groups.player = sceneContext.physics.add.staticGroup();
 
-  initSprites();
   Player.initSprites(sceneContext);
   Bowl.initSprites(sceneContext);
-  AnibalCritter.initSprites(sceneContext);
-  Raccoon.initSprites(sceneContext);
   NewRaccoon.initSprites(sceneContext);
 
   initSpawnControls();
@@ -115,11 +97,7 @@ const spawnAnEnemy = (laneIdx) => {
   const spawnKey = getSpawnKey(spawnProbability);
 
   switch(spawnKey){
-    case 'raccoon': spawnIt(Raccoon.Entity, entityData.raccoon, laneIdx);
-      break;
     case 'newRaccoon': spawnIt(NewRaccoon.Entity, entityData.newRaccoon, laneIdx);
-      break;
-    case 'anibal01': spawnIt(AnibalCritter.Entity, entityData.anibal01, laneIdx);
       break;
   }
 }
@@ -175,28 +153,6 @@ export const spawn = (group, key, anim, x, y) => {
 
 
 /* Internal spawn methods */
-const initSprites = () => {
-
-  sceneContext.anims.create({
-    key: 'raccoonWizard_walk',
-    frames: sceneContext.anims.generateFrameNumbers('raccoonWizard', { start: 3, end: 5 }),
-    frameRate: 10,
-    repeat: -1
-  });
-
-  sceneContext.anims.create({
-    key: 'raccoonWizard_dead',
-    frames: sceneContext.anims.generateFrameNumbers('raccoonWizard', { start: 6, end: 8 }),
-    frameRate: 10,
-    repeat: -1
-  });
-}
-
-const spawnRaccoonWizard = () => {
-  const pos = spawnPositions[laneIdx];
-  let enemy = new RaccoonWizard(sceneContext, pos.x, pos.y, groups.enemies);
-  enemy.setVelocity(Phaser.Math.Between(-200, -800), 20);
-}
 
 const randomizeStats = (statsObj = DEFAULT_STATUS_OBJ) => {
   return {

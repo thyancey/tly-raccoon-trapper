@@ -12,50 +12,81 @@
         "jumpRate": [ 2, 10 ]
       } 
     },
-    "raccoon":{
-      "spawnRate": "0",
-      "scaleRange": [80, 110],
-      "spawnSpeeds": [ 25, 100 ]
-    },
-    "anibal01":{
-      "spawnRate": "0",
-      "scaleRange": [40, 60],
-      "spawnSpeeds": [ 25, 100 ]
-    },
     "bowl":{
       "spawnSpeed": -200
     }
   },
-  "level":{
-    "values":{
-      "spawn_width": "100"
-    },
-    "platforms":[
-      {
-        "x": "175",
-        "y": "100",
-        "width": "475",
-        "height": "25"
-      },
-      {
-        "x": "125",
-        "y": "225",
-        "width": "580",
-        "height": "25"
-      },
-      {
-        "x": "85",
-        "y": "350",
-        "width": "670",
-        "height": "25"
-      },
-      {
-        "x": "50",
-        "y": "475",
-        "width": "760",
-        "height": "25"
+  "levels":[
+    {
+      "entities":[
+        {
+          "type": "newRaccoon",
+          "spawnRate": "1",
+          "scaleRange": [95, 110],
+          "spawnSpeeds": [ 0, 0 ],
+          "stats":{
+            "speed": [ 10, 40 ],
+            "jumpRate": [ 2, 10 ]
+          } 
+        }
+      ],
+      "lanes":[
+        {
+          "spawns":[{
+            "type": "newRaccoon",
+            "rate": "1"
+          }]
+        },
+        {
+          "spawns":[{
+            "type": "newRaccoon",
+            "rate": "1"
+          }]
+        },
+        {
+          "spawns":[{
+            "type": "newRaccoon",
+            "rate": "1"
+          }]
+        },
+        {
+          "spawns":[{
+            "type": "newRaccoon",
+            "rate": "1"
+          }]
+        }
+      ],
+      "scene":{
+        "values":{
+          "spawn_width": "100"
+        },
+        "platforms":[
+          {
+            "x": "175",
+            "y": "100",
+            "width": "475",
+            "height": "25"
+          },
+          {
+            "x": "125",
+            "y": "225",
+            "width": "580",
+            "height": "25"
+          },
+          {
+            "x": "85",
+            "y": "350",
+            "width": "670",
+            "height": "25"
+          },
+          {
+            "x": "50",
+            "y": "475",
+            "width": "760",
+            "height": "25"
+          }
+        ]
       }
-    ]
-  }
-
+    }
+  ]
 }
