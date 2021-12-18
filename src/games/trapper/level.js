@@ -36,14 +36,14 @@ export const create = (levelData) => {
     // const w = parseInt(pO.width) / 100;
     const w = 900 - x;
     const h = parseInt(pO.height) / 100;
-    const deadX = parseInt(pO.width) + x + 20;
-    const porchX = parseInt(pO.width) + x - 120;
+    const deadX = parseInt(pO.width) + x + 60;
+    const porchX = parseInt(pO.width) + x - 110;
 
     platforms.create(x, y, 'bar-white').setScale(w, h).setOrigin(0,0).setAlpha(DEBUG_ALPHA).refreshBody();
     platforms.create(x - spawnW, y, 'bar-purple').setScale(1, h).setOrigin(0,0).setAlpha(DEBUG_ALPHA).refreshBody();
     leftTrigger.create(x - (spawnW) - 20, y - 100, 'bar-green').setScale(1, 10).setOrigin(0,0).setAlpha(DEBUG_ALPHA).refreshBody();
     rightTrigger.create(deadX, y - 120, 'bar-red').setScale(1, 3.75).setOrigin(0,0).setAlpha(DEBUG_ALPHA).refreshBody();
-    platforms.create(porchX, y - 10  , 'bar-white').setScale(8, 1).setOrigin(0,0).setAlpha(DEBUG_ALPHA).refreshBody();
+    platforms.create(porchX, y - 10  , 'bar-white').setScale(8, .5).setOrigin(0,0).setAlpha(DEBUG_ALPHA).refreshBody();
   });
 
   return {

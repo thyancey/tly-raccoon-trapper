@@ -1,6 +1,5 @@
 import Phaser from 'phaser';
 import img_raccoon from '../assets/raccoon.png';
-import img_raccoon_red from '../assets/raccoon-red.png';
 
 const KILL_TIMEOUT = 5000;
 
@@ -111,6 +110,8 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
     this.body.offset.y = 25;
     this.setStatus(STATUS.ROAMING, true);
 
+    // testing sounds
+
     //- interaction listeners
     this.setInteractive();
     if(spawnData.misc?.tint){
@@ -188,7 +189,9 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
 
     if(force >= this.puntKillThreshold){
       this.kill();
+      return true;
     }
+    return false;
   }
 
   kill(){
@@ -297,6 +300,10 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
 
       switch(this.status){
         case STATUS.ROAMING: 
+          // if(this.body.velocity.x < 0.1){
+          //   this.setStatus(STATUS.HOPPING_START, true, true);
+          // }
+        
           this.goNormalSpeed();
           break;
         case STATUS.TAME: 
@@ -474,7 +481,6 @@ const initSprites = (sceneContext) => {
 
 const initSpritesheet = (sceneContext) => {
   sceneContext.load.spritesheet('raccoon', img_raccoon, { frameWidth: 56, frameHeight: 56 });
-  sceneContext.load.spritesheet('raccoon-red', img_raccoon_red, { frameWidth: 56, frameHeight: 56 });
 }
 
 export default {

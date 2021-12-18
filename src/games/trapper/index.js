@@ -93,7 +93,7 @@ function create() {
   //- make the level
   levelGroups = LevelController.create(getLevel().scene);
   initScoreboard();
-  
+
   let spawnGroups = SpawnController.create(gameData.entities, getLevel());
 
   this.physics.add.collider(spawnGroups.enemies, levelGroups.platforms, null, collider_enemyAndPlatform, this);
@@ -137,16 +137,14 @@ function trigger_enemyAndBowl(enemy, bowl){
   }
 }
 
-
+// TODO: fix this collision junk - enemies shouldnt collide with platforms above them
 function collider_enemyAndPlatform(enemy, platform){
   // console.log('colliding:', enemy)
-  if(enemy.isGoingUp()){
-    // console.log('false')
-    return false;
-  }else{
+  // if(enemy.isGoingUp()){
+  //   return false;
+  // }
     // console.log('true')
-    return true;
-  }
+  return true;
 }
 
 
@@ -164,7 +162,15 @@ function trigger_enemyAndPlayer(enemy, player){
     }else if(player.checkStatus(STATUS_PLAYER.KICK_PREP)){
       // enemy.punt ? enemy.punt() : enemy.kill();
     }else if(player.checkStatus(STATUS_PLAYER.KICK) && player.getKickStrength() > 0){
-      enemy.punt ? enemy.punt(player.getKickStrength()) : enemy.kill();
+      if(enemy.punt){
+        const wasKilled = enemy.punt(player.getKickStrength());
+        if(wasKilled){
+          showBlood(enemy.body.x, enemy.body.y);
+        }
+      }else{
+        enemy.kill();
+        showBlood(enemy.body.x, enemy.body.y);
+      }
     }
   }
 
@@ -172,7 +178,11 @@ function trigger_enemyAndPlayer(enemy, player){
 }
 
 function onObjectClicked(pointer, gameObject){
-  emitter.setPosition(pointer.worldX, pointer.worldY);
+  showBlood(pointer.worldX, pointer.worldY);
+}
+
+function showBlood(x, y){
+  emitter.setPosition(x, y);
   emitter.explode(20);
   emitter.visible = true;
 }
