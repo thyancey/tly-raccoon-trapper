@@ -50,7 +50,8 @@ export const createGame = () =>{
   game = new Phaser.Game(config);
 }
 
-window.stopGame = () => {[]
+window.stopGame = () => {
+  console.log('STOP!');
   sceneContext.scene.stop();
 }
 

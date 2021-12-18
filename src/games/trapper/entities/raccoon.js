@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import img_raccoon from '../assets/raccoon.png';
+import img_raccoon_red from '../assets/raccoon-red.png';
 
 const KILL_TIMEOUT = 5000;
 
@@ -16,6 +17,8 @@ export const STATUS = {
   HOPPING_END: 9,
   PUNTED: 10
 }
+
+const spriteKey = 'raccoon';
 
 const animationStatus = {
   [STATUS.IDLE]: 'raccoon_idle',
@@ -100,6 +103,9 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
 
     //- interaction listeners
     this.setInteractive();
+    if(spawnData.tint){
+      this.setTint(spawnData.tint);
+    }
     this.on('pointerdown', (thing) => {
       this.kill();
     });
@@ -368,8 +374,8 @@ const initSprites = (sceneContext) => {
   sceneContext.anims.create({
     key: 'raccoon_idle',
     frames: [ 
-      { key: 'raccoon', frame: 0 },  
-      { key: 'raccoon', frame: 1 } 
+      { key: spriteKey, frame: 0 },  
+      { key: spriteKey, frame: 1 } 
     ],
     frameRate: 7,
     repeat: -1
@@ -378,8 +384,8 @@ const initSprites = (sceneContext) => {
   sceneContext.anims.create({
     key: 'raccoon_walk',
     frames: [ 
-      { key: 'raccoon', frame: 2 },  
-      { key: 'raccoon', frame: 3 } 
+      { key: spriteKey, frame: 2 },  
+      { key: spriteKey, frame: 3 } 
     ],
     frameRate: 7,
     repeat: -1
@@ -387,78 +393,78 @@ const initSprites = (sceneContext) => {
 
   sceneContext.anims.create({
     key: 'raccoon_hop_start',
-    frames: [ { key: 'raccoon', frame: 4 } ],
-    // frames: sceneContext.anims.generateFrameNumbers('raccoon', { start: 5, end: 7 }),
+    frames: [ { key: spriteKey, frame: 4 } ],
     frameRate: 7,
     repeat: 0
   });
 
   sceneContext.anims.create({
     key: 'raccoon_hop_up',
-    frames: [ { key: 'raccoon', frame: 5 } ],
+    frames: [ { key: spriteKey, frame: 5 } ],
     frameRate: 7,
     repeat: 0
   });
   
   sceneContext.anims.create({
     key: 'raccoon_hop_down',
-    frames: [ { key: 'raccoon', frame: 6 } ],
+    frames: [ { key: spriteKey, frame: 6 } ],
     frameRate: 7,
     repeat: 0
   });
-[]
+
   sceneContext.anims.create({
     key: 'raccoon_hop_end',
-    frames: [ { key: 'raccoon', frame: 7 } ],
+    frames: [ { key: spriteKey, frame: 7 } ],
     frameRate: 7,
     repeat: 0
   });
   
   sceneContext.anims.create({
     key: 'raccoon_angryWalk',
-    frames: sceneContext.anims.generateFrameNumbers('raccoon', { start: 2, end: 3 }),
+    frames: sceneContext.anims.generateFrameNumbers(spriteKey, { start: 2, end: 3 }),
     frameRate: 7,
     repeat: -1
   });
 
   sceneContext.anims.create({
     key: 'raccoon_loveWalk',
-    frames: sceneContext.anims.generateFrameNumbers('raccoon', { start: 10, end: 11 }),
+    frames: sceneContext.anims.generateFrameNumbers(spriteKey, { start: 10, end: 11 }),
     frameRate: 7,
     repeat: -1
   });
 
   sceneContext.anims.create({
     key: 'raccoon_dead',
-    frames: sceneContext.anims.generateFrameNumbers('raccoon', { start: 14, end: 15 }),
+    frames: sceneContext.anims.generateFrameNumbers(spriteKey, { start: 14, end: 15 }),
     frameRate: 7,
     repeat: -1
   });
 
   sceneContext.anims.create({
     key: 'raccoon_eat',
-    frames: sceneContext.anims.generateFrameNumbers('raccoon', { start: 8, end: 9 }),
+    frames: sceneContext.anims.generateFrameNumbers(spriteKey, { start: 8, end: 9 }),
     frameRate: 7,
     repeat: -1
   });
 
   sceneContext.anims.create({
     key: 'raccoon_hug',
-    frames: sceneContext.anims.generateFrameNumbers('raccoon', { start: 12, end: 13 }),
+    frames: sceneContext.anims.generateFrameNumbers(spriteKey, { start: 12, end: 13 }),
     frameRate: 7,
     repeat: -1
   });
 
   sceneContext.anims.create({
     key: 'raccoon_punted',
-    frames: sceneContext.anims.generateFrameNumbers('raccoon', { start: 2, end: 3 }),
+    frames: sceneContext.anims.generateFrameNumbers(spriteKey, { start: 2, end: 3 }),
     frameRate: 7,
     repeat: -1
   });
 }
 
 const initSpritesheet = (sceneContext) => {
-  const spr = sceneContext.load.spritesheet('raccoon', img_raccoon, { frameWidth: 56, frameHeight: 56 });
+  sceneContext.load.spritesheet('raccoon', img_raccoon, { frameWidth: 56, frameHeight: 56 });
+  sceneContext.load.spritesheet('raccoon-red', img_raccoon_red, { frameWidth: 56, frameHeight: 56 });
 }
 
 export default {

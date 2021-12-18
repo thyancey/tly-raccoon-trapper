@@ -46,8 +46,6 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
     this.isAlive = true;
     this.kickCharge = 0;
 
-    // this.throttledUpdate = throttle(THROTTLE_SPEED, false, this.onThrottledUpdate);
-
     //- parent stuff
     scene.add.existing(this);
     if(physicsGroup){

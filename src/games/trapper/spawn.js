@@ -11,13 +11,12 @@ const SPAWN_MAX = 1;
 const SPAWN_LIMIT = -1;
 
 let spawnCount = 0;
-
 let spawnFrequency = null; // how often to roll dice for spawns
 let curTicker = 0;
 let spawnPositions = [];
 let defGlobalEntities = {};
-let defLevelEntities = [];
-let defLaneSpawn = [];
+let defEnemyEntities = [];
+let defLaneSpawns = [];
 
 const groups = {};
 let player;
@@ -46,9 +45,9 @@ export const create = (globalEntities, levelData) => {
     x: parseInt(pO.x),
     y: parseInt(pO.y) - 50
   }));
-  defGlobalEntities = globalEntities;
-  defLevelEntities = levelData.entities;
-  defLaneSpawn = levelData.lanes.map(l => l.spawns);
+  defGlobalEntities = globalEntities.misc;
+  defEnemyEntities = globalEntities.enemies;
+  defLaneSpawns = levelData.lanes.map(l => l.spawns);
 
   //- container for bad boyz
   groups.enemies = sceneContext.physics.add.group();
@@ -86,10 +85,10 @@ const getSpawnCommands = (laneSpawnData, randSeed) => {
 
 const rollForSpawns = (lsd, randSeed) => {
   const spawnCommands = getSpawnCommands(lsd, randSeed);
-
+  // console.log('randSeed', randSeed)
   let spawnCount = 0;
   spawnCommands.forEach(sData => {
-    const eData = defLevelEntities[sData.type];
+    const eData = defEnemyEntities[sData.type];
     if(entityTypes[eData.type]){
       spawnIt(entityTypes[eData.type], eData, sData.laneIdx);
       spawnCount++;
@@ -116,7 +115,7 @@ export const update = () => {
     if(spawnFrequency !== SPAWN_MIN){
       if(curTicker > spawnFrequency){
         curTicker = 0;
-        spawnCount += rollForSpawns(defLaneSpawn, Math.random());
+        spawnCount += rollForSpawns(defLaneSpawns, Math.random());
       }else{
         curTicker++;
       }
@@ -128,17 +127,16 @@ export const update = () => {
 
 
 export const onThrottledUpdate = () => {
-  groups.enemies.children.each(entity => {
+  groups.enemies.children?.each(entity => {
     entity.throttledUpdate();
   });
   
-  groups.player.children.each(entity => {
+  groups.player.children?.each(entity => {
     entity.throttledUpdate();
   });
 }
 
 const throttledUpdate = throttle(THROTTLE_SPEED, false, onThrottledUpdate);
-
 export const spawn = (group, key, anim, x, y) => {
   // console.log(`spawn ${key} at (${x}, ${y})`)
 
@@ -147,10 +145,7 @@ export const spawn = (group, key, anim, x, y) => {
   return item;
 }
 
-
-
 /* Internal spawn methods */
-
 const randomizeStats = (statsObj = DEFAULT_STATUS_OBJ) => {
   return {
     speed: Phaser.Math.Between(statsObj.speed[0], statsObj.speed[1]),
@@ -166,12 +161,11 @@ const spawnIt = (EntityRef, entityData, laneIdx) => {
     x: pos.x,
     y: pos.y,
     stats: stats,
-    depth: getDepthOfLane(laneIdx)
+    depth: getDepthOfLane(laneIdx),
+    tint: entityData.tint
   });
   const randomScale = Phaser.Math.Between(entityData.scaleRange[0], entityData.scaleRange[1]) / 100;
   entity.setScale(randomScale);
-  
-  // entity.setVelocity(Phaser.Math.Between(entityData.spawnSpeeds[0], entityData.spawnSpeeds[1]), 20);
 }
 
 export const spawnBowl = (x, y) => {
@@ -196,7 +190,6 @@ export const slingBowl = () => {
 const spawnPlayer = (laneData) => {
   player = new Player.Entity(sceneContext, 800, 300, groups.player, laneData);
 }
-
 
 /* Spawn slider thingies */
 const initSpawnControls = () => {

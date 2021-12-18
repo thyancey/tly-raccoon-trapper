@@ -3,34 +3,113 @@
     "name": "Raccoon Trapper"
   },
   "entities":{
-    "bowl":{
-      "spawnSpeed": -200
+    "misc":{
+      "bowl":{
+        "spawnSpeed": -200
+      }
+    },
+    "enemies":{
+      "LIL_BOI":{
+        "type": "raccoon",
+        "tint": "0xffffff",
+        "scaleRange": [80, 120],
+        "stats":{
+          "speed": [ 50, 90 ],
+          "jumpRate": [ 2, 10 ]
+        } 
+      },
+      "MEAN_BOI":{
+        "type": "raccoon",
+        "tint": "0xff0000",
+        "scaleRange": [80, 120],
+        "stats":{
+          "speed": [ 100, 160 ],
+          "jumpRate": [ 2, 10 ]
+        } 
+      },
+      "BIG_BOI":{
+        "type": "raccoon",
+        "tint": "0xff00ff",
+        "scaleRange": [250, 350],
+        "stats":{
+          "speed": [ 30, 40 ],
+          "jumpRate": [ 2, 4 ]
+        }
+      }
     }
   },
   "levels":[
     {
-      "entities":{
-        "LIL_BOI":{
-          "type": "raccoon",
-          "scaleRange": [80, 120],
-          "spawnSpeeds": [ 0, 0 ],
-          "spawnRate":1,
-          "stats":{
-            "speed": [ 50, 90 ],
-            "jumpRate": [ 2, 10 ]
-          } 
+      "lanes":[
+        {
+          "spawns":[
+            {
+              "type": "BIG_BOI",
+              "rate": 0.01
+            }
+          ]
         },
-        "BIG_BOI":{
-          "type": "raccoon",
-          "scaleRange": [250, 350],
-          "spawnSpeeds": [ 0, 0 ],
-          "spawnRate":1,
-          "stats":{
-            "speed": [ 5, 10 ],
-            "jumpRate": [ 2, 10 ]
-          } 
+        {
+          "spawns":[
+            {
+              "type": "LIL_BOI",
+              "rate": 0.05
+            },{
+              "type": "BIG_BOI",
+              "rate": 0.01
+            }
+          ]
+        },
+        {
+          "spawns":[
+            {
+              "type": "MEAN_BOI",
+              "rate": 0.5
+            }
+          ]
+        },
+        {
+          "spawns":[
+            {
+              "type": "LIL_BOI",
+              "rate": 1
+            }
+          ]
         }
-      },
+      ],
+      "scene":{
+        "values":{
+          "spawn_width": "100"
+        },
+        "platforms":[
+          {
+            "x": "175",
+            "y": "100",
+            "width": "475",
+            "height": "25"
+          },
+          {
+            "x": "125",
+            "y": "225",
+            "width": "580",
+            "height": "25"
+          },
+          {
+            "x": "85",
+            "y": "350",
+            "width": "670",
+            "height": "25"
+          },
+          {
+            "x": "50",
+            "y": "475",
+            "width": "760",
+            "height": "25"
+          }
+        ]
+      }
+    },
+    {
       "lanes":[
         {
           "spawns":[
@@ -43,27 +122,24 @@
         {
           "spawns":[
             {
-              "type": "LIL_BOI",
-              "rate": 0.01
-            },{
               "type": "BIG_BOI",
-              "rate": 0.05
+              "rate": 1
             }
           ]
         },
         {
           "spawns":[
             {
-              "type": "LIL_BOI",
-              "rate": 0.2
+              "type": "BIG_BOI",
+              "rate": 1
             }
           ]
         },
         {
           "spawns":[
             {
-              "type": "LIL_BOI",
-              "rate": 0.5
+              "type": "BIG_BOI",
+              "rate": 1
             }
           ]
         }
