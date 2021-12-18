@@ -1,10 +1,3 @@
-import img_bar_red from './assets/bar-red.png';
-import img_bar_yellow from './assets/bar-yellow.png';
-import img_bar_green from './assets/bar-green.png';
-import img_bar_blue from './assets/bar-blue.png';
-import img_bar_purple from './assets/bar-purple.png';
-import img_bar_grey from './assets/bar-grey.png';
-import img_bar_white from './assets/bar-white.png';
 import img_bg_yard from './assets/yard-bg.jpg';
 import img_fg_yard from './assets/yard-fg.png';
 import img_lane4_yard from './assets/yard-lane4.png';
@@ -23,13 +16,6 @@ export const preload = () => {
   sceneContext.load.image('bg-yard', img_bg_yard);
   sceneContext.load.image('fg-yard', img_fg_yard);
   sceneContext.load.image('lane4-yard', img_lane4_yard);
-  sceneContext.load.image('bar-red', img_bar_red);
-  sceneContext.load.image('bar-yellow', img_bar_yellow);
-  sceneContext.load.image('bar-green', img_bar_green);
-  sceneContext.load.image('bar-blue', img_bar_blue);
-  sceneContext.load.image('bar-purple', img_bar_purple);
-  sceneContext.load.image('bar-grey', img_bar_grey);
-  sceneContext.load.image('bar-white', img_bar_white);
 }
 
 export const create = (levelData) => {
