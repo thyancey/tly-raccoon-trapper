@@ -182,7 +182,7 @@ export const spawnBowl = (x, y) => {
 export const slingBowl = () => {
   let bowl = new Bowl.Entity(sceneContext, groups.bowls, {
     x: player.x + 20,
-    y: player.y + 60,
+    y: player.y + 90,
     depth: getDepthOfLane(player.laneIdx, 1)
   });
 
