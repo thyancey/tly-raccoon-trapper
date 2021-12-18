@@ -10,14 +10,14 @@ const SPAWN_MIN = 1000;
 const SPAWN_MAX = 1;
 const SPAWN_LIMIT = -1;
 
-let spawnProbability = [];
 let spawnCount = 0;
 
-let spawnFrequency = null;
+let spawnFrequency = null; // how often to roll dice for spawns
 let curTicker = 0;
 let spawnPositions = [];
-let globalEntityData = {};
-let levelEntityList = [];
+let defGlobalEntities = {};
+let defLevelEntities = [];
+let defLaneSpawn = [];
 
 const groups = {};
 let player;
@@ -41,12 +41,14 @@ export const preload = () => {
   Bowl.initSpritesheet(sceneContext);
 }
 
-export const create = (spawnPos, globalEntities, levelEntities, pData) => {
-
-  spawnPositions = spawnPos;
-  globalEntityData = globalEntities;
-  levelEntityList = levelEntities;
-  spawnProbability = getSpawnProbability(levelEntities);
+export const create = (globalEntities, levelData) => {
+  spawnPositions = levelData.scene.platforms.map(pO => ({
+    x: parseInt(pO.x),
+    y: parseInt(pO.y) - 50
+  }));
+  defGlobalEntities = globalEntities;
+  defLevelEntities = levelData.entities;
+  defLaneSpawn = levelData.lanes.map(l => l.spawns);
 
   //- container for bad boyz
   groups.enemies = sceneContext.physics.add.group();
@@ -60,60 +62,43 @@ export const create = (spawnPos, globalEntities, levelEntities, pData) => {
   initSpawnControls();
   
   
-  spawnPlayer(pData);
+  spawnPlayer(levelData.scene.platforms);
   return groups;
 }
 
-const getSpawnProbability = (levelEntities) => {
-  const probability = [];
-
-  let totRate = 0;
-  Object.keys(levelEntities).forEach(k => {
-    if(levelEntities[k].spawnRate){
-      totRate += levelEntities[k].spawnRate;
-    }
-  })
-
-  let adj = 1 / totRate;
-  
-  let curVal = 0;
-  Object.keys(levelEntities).forEach(k => {
-    if(levelEntities[k].spawnRate){
-      curVal += levelEntities[k].spawnRate * adj;
-      probability.push({
-        enemyKey: k,
-        rate: curVal
-      });
+// from the supplied data and random roll, get a list of entites to spawn, and the lanes they should spawn in
+const getSpawnCommands = (laneSpawnData, randSeed) => {
+  let enemies = [];
+  laneSpawnData.forEach((lane, idx) => {
+    const spawnedFromLane = lane.filter(enemy => randSeed < enemy.rate).map(enemy => {
+      return { 
+        type: enemy.type, 
+        laneIdx: idx 
+      };
+    });
+    if(spawnedFromLane.length > 0){
+      enemies = enemies.concat(spawnedFromLane);
     }
   });
 
-  return probability;
+  return enemies;
 }
 
+const rollForSpawns = (lsd, randSeed) => {
+  const spawnCommands = getSpawnCommands(lsd, randSeed);
 
-const getSpawnKey = spawnProbability => {
-  const rando = Math.random();
-  for(let i = 0; i < spawnProbability.length; i++){
-    if(spawnProbability[i].rate > rando){
-      return spawnProbability[i].enemyKey;
+  let spawnCount = 0;
+  spawnCommands.forEach(sData => {
+    const eData = defLevelEntities[sData.type];
+    if(entityTypes[eData.type]){
+      spawnIt(entityTypes[eData.type], eData, sData.laneIdx);
+      spawnCount++;
+    }else{
+      console.error('unknown entity type:', eData.type);
     }
-  }
+  })
 
-  return null;
-}
-
-const spawnFromProbability = spawnProbability => {
-  const enemyKey = getSpawnKey(spawnProbability);
-  return levelEntityList[enemyKey];
-}
-
-const spawnAnEnemy = (laneIdx) => {
-  const eData = spawnFromProbability(spawnProbability);
-  if(entityTypes[eData.type]){
-    spawnIt(entityTypes[eData.type], eData, laneIdx);
-  }else{
-    console.error('unknown entity type:', eData.type);
-  }
+  return spawnCount;
 }
 
 export const update = () => {
@@ -131,9 +116,7 @@ export const update = () => {
     if(spawnFrequency !== SPAWN_MIN){
       if(curTicker > spawnFrequency){
         curTicker = 0;
-        const laneIdx = Math.floor(Math.random() * spawnPositions.length);
-        spawnAnEnemy(laneIdx);
-        spawnCount++;
+        spawnCount += rollForSpawns(defLaneSpawn, Math.random());
       }else{
         curTicker++;
       }
@@ -197,7 +180,7 @@ export const spawnBowl = (x, y) => {
     y: y
   });
 
-  bowl.setVelocity(globalEntityData.bowl.spawnSpeed, 20);
+  bowl.setVelocity(defGlobalEntities.bowl.spawnSpeed, 20);
 }
 
 export const slingBowl = () => {
@@ -207,7 +190,7 @@ export const slingBowl = () => {
     depth: getDepthOfLane(player.laneIdx, 1)
   });
 
-  bowl.setVelocity(globalEntityData.bowl.spawnSpeed, -100);
+  bowl.setVelocity(defGlobalEntities.bowl.spawnSpeed, -100);
 }
 
 const spawnPlayer = (laneData) => {

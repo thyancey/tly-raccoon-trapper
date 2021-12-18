@@ -80,16 +80,9 @@ function getLevel() {
 function create() {
   //- make the level
   levelGroups = LevelController.create(getLevel().scene);
-  // bgTexture = this.add.renderTexture(this.width, this.height);
   initScoreboard();
   
-  //- make the enemies
-  const spawnPositions = getLevel().scene.platforms.map(pO => ({
-    x: parseInt(pO.x),
-    y: parseInt(pO.y) - 50
-  }));
-
-  let spawnGroups = SpawnController.create(spawnPositions, gameData.entities, getLevel().entities, getLevel().scene.platforms);
+  let spawnGroups = SpawnController.create(gameData.entities, getLevel());
 
   this.physics.add.collider(spawnGroups.enemies, levelGroups.platforms, null, collider_enemyAndPlatform, this);
   this.physics.add.collider(spawnGroups.bowls, levelGroups.platforms);

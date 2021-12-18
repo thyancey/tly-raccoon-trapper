@@ -33,28 +33,39 @@
       },
       "lanes":[
         {
-          "spawns":[{
-            "type": "LIL_BOI",
-            "rate": "1"
-          }]
+          "spawns":[
+            {
+              "type": "BIG_BOI",
+              "rate": 1
+            }
+          ]
         },
         {
-          "spawns":[{
-            "type": "BIG_BOI",
-            "rate": "1"
-          }]
+          "spawns":[
+            {
+              "type": "LIL_BOI",
+              "rate": 0.01
+            },{
+              "type": "BIG_BOI",
+              "rate": 0.05
+            }
+          ]
         },
         {
-          "spawns":[{
-            "type": "BIG_BOI",
-            "rate": "1"
-          }]
+          "spawns":[
+            {
+              "type": "LIL_BOI",
+              "rate": 0.2
+            }
+          ]
         },
         {
-          "spawns":[{
-            "type": "LIL_BOI",
-            "rate": "1"
-          }]
+          "spawns":[
+            {
+              "type": "LIL_BOI",
+              "rate": 0.5
+            }
+          ]
         }
       ],
       "scene":{
