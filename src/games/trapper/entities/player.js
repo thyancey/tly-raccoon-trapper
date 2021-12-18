@@ -6,6 +6,7 @@ import StatBar from './stat-bar';
 const THROTTLE_SPEED = 150;
 
 const KILL_TIMEOUT = 5000;
+const STARTING_LANE = 2;
 
 let statBar;
 
@@ -71,7 +72,8 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
 
     
     statBar = new StatBar.Entity(scene, 150, 150);
-    this.updatePlayerPosition();
+    this.changeLane(STARTING_LANE);
+    // this.updatePlayerPosition();
   }
 
   onKeyUp(e){

@@ -89,7 +89,7 @@ function create() {
     y: parseInt(pO.y) - 50
   }));
 
-  let spawnGroups = SpawnController.create(spawnPositions, gameData.entities, getLevel().scene.platforms);
+  let spawnGroups = SpawnController.create(spawnPositions, gameData.entities, getLevel().entities, getLevel().scene.platforms);
 
   this.physics.add.collider(spawnGroups.enemies, levelGroups.platforms, null, collider_enemyAndPlatform, this);
   this.physics.add.collider(spawnGroups.bowls, levelGroups.platforms);

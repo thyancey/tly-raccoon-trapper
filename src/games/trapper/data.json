@@ -3,15 +3,6 @@
     "name": "Raccoon Trapper"
   },
   "entities":{
-    "raccoon":{
-      "spawnRate": "1",
-      "scaleRange": [95, 110],
-      "spawnSpeeds": [ 0, 0 ],
-      "stats":{
-        "speed": [ 10, 40 ],
-        "jumpRate": [ 2, 10 ]
-      } 
-    },
     "bowl":{
       "spawnSpeed": -200
     }
@@ -22,10 +13,20 @@
         {
           "type": "raccoon",
           "spawnRate": "1",
-          "scaleRange": [95, 110],
+          "scaleRange": [80, 120],
           "spawnSpeeds": [ 0, 0 ],
           "stats":{
-            "speed": [ 10, 40 ],
+            "speed": [ 50, 90 ],
+            "jumpRate": [ 2, 10 ]
+          } 
+        },
+        {
+          "type": "raccoon",
+          "spawnRate": "1",
+          "scaleRange": [250, 350],
+          "spawnSpeeds": [ 0, 0 ],
+          "stats":{
+            "speed": [ 5, 10 ],
             "jumpRate": [ 2, 10 ]
           } 
         }

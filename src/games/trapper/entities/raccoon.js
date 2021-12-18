@@ -108,12 +108,10 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
   canEat(){
     if(this.isAlive && !this.isFull){
       switch(this.status){
-        // case STATUS.ROAMING: return true
-        // case STATUS.IDLE: return true
-        // case STATUS.HOPPING_START: return true
+        case STATUS.HOPPING_START: return false
         case STATUS.EATING: return false;
         case STATUS.HOPPING: return false;
-        // case STATUS.HOPPING_END: return true
+        case STATUS.HOPPING_END: return false;
         default: return true;
       }
     }else{
