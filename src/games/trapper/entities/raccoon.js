@@ -79,6 +79,16 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
     //- custom properties
     this.isAlive = true;
 
+    this.puntKillThreshold = 1;
+    if(spawnData.misc?.puntKillThreshold || spawnData.misc?.puntKillThreshold === 0){
+      this.puntKillThreshold = spawnData.misc.puntKillThreshold;
+    }
+
+    this.feedable = true;
+    if(spawnData.misc?.feedable === false){
+      this.feedable = false;
+    }
+
     //- parent stuff
     if(!isNaN(spawnData.depth)) {
       this.setDepth(spawnData.depth);
@@ -103,8 +113,8 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
 
     //- interaction listeners
     this.setInteractive();
-    if(spawnData.tint){
-      this.setTint(spawnData.tint);
+    if(spawnData.misc?.tint){
+      this.setTint(spawnData.misc.tint);
     }
     this.on('pointerdown', (thing) => {
       this.kill();
@@ -112,7 +122,7 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
   }
 
   canEat(){
-    if(this.isAlive && !this.isFull){
+    if(this.isAlive && this.feedable && !this.isFull){
       switch(this.status){
         case STATUS.HOPPING_START: return false
         case STATUS.EATING: return false;
@@ -176,7 +186,7 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
       vRange.min.y + vRange.diff.y * force,
     );
 
-    if(force >= 1){
+    if(force >= this.puntKillThreshold){
       this.kill();
     }
   }

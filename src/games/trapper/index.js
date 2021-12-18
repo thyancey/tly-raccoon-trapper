@@ -11,7 +11,6 @@ let game;
 let levelGroups;
 let emitter;
 let sceneContext;
-let curLevel = 0;
 
 const scoreElements = {
   bowls:null,
@@ -25,6 +24,10 @@ let points = {
   hugs: 0,
   bites: 0,
   total: 0
+}
+
+global.gameData = {
+  curLevel: 0
 }
 
 export const createGame = () =>{
@@ -48,15 +51,23 @@ export const createGame = () =>{
   };
 
   game = new Phaser.Game(config);
+  global.gameActive = true;
 }
 
-window.stopGame = () => {
-  console.log('STOP!');
+global.stopGame = () => {
+  global.gameActive = false;
   sceneContext.scene.stop();
 }
 
-window.startGame = () => {
+global.startGame = () => {
+  global.gameActive = true;
   sceneContext.scene.start();
+}
+
+global.setLevel = (levelIdx) => {
+  global.stopGame();
+  global.gameData.curLevel = levelIdx;
+  global.startGame();
 }
 
 function setSceneContext(context){
@@ -75,7 +86,7 @@ function preload() {
 }
 
 function getLevel() {
-  return gameData.levels[curLevel];
+  return gameData.levels[global.gameData.curLevel];
 }
 
 function create() {

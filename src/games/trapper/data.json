@@ -11,29 +11,39 @@
     "enemies":{
       "LIL_BOI":{
         "type": "raccoon",
-        "tint": "0xffffff",
         "scaleRange": [80, 120],
         "stats":{
           "speed": [ 50, 90 ],
           "jumpRate": [ 2, 10 ]
-        } 
+        },
+        "misc":{
+          "tint": "0xffffff",
+          "puntKillThreshold": 1
+        }
       },
       "MEAN_BOI":{
         "type": "raccoon",
-        "tint": "0xff0000",
         "scaleRange": [80, 120],
         "stats":{
           "speed": [ 100, 160 ],
           "jumpRate": [ 2, 10 ]
-        } 
+        },
+        "misc":{
+          "tint": "0xff0000",
+          "puntKillThreshold": 0,
+          "feedable": false
+        }
       },
       "BIG_BOI":{
         "type": "raccoon",
-        "tint": "0xff00ff",
         "scaleRange": [250, 350],
         "stats":{
           "speed": [ 30, 40 ],
           "jumpRate": [ 2, 4 ]
+        },
+        "misc":{
+          "tint": "0xff00ff",
+          "puntKillThreshold": 2
         }
       }
     }

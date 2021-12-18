@@ -57,7 +57,7 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
     /* tweak settings here when sprite changes size */
     this.setOrigin(0, 0).refreshBody();
     this.body.setSize(50, 75);
-    this.posOffset = [ -100, 20 ];
+    this.posOffset = [ 0, 20 ];
 
     /* normal phaser way isnt working, so pass this along to offset the sprite a lil */
     this.spriteOffset = [ 12, 6 ];
@@ -216,7 +216,6 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
   }
   
   throttledUpdate(){
-      // console.log('player.thorttled')
     if(this.checkStatus(STATUS.KICK_PREP)){
       this.chargeKick();
     }

@@ -22,6 +22,8 @@ export const createHeader = () => {
         <p>Game</p>
         <button id="start-game" onclick="startGame();">Start</button>
         <button id="stop-game" onclick="stopGame();">Stop</button>
+        <button class="level-button" onclick="setLevel(0);">Set Level 1</button>
+        <button class="level-button" onclick="setLevel(1);">Set Level 2</button>
       </div>
       <div class="control-group">
         <p>Spawn speed</p>

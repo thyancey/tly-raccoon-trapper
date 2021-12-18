@@ -127,13 +127,15 @@ export const update = () => {
 
 
 export const onThrottledUpdate = () => {
-  groups.enemies.children?.each(entity => {
-    entity.throttledUpdate();
-  });
-  
-  groups.player.children?.each(entity => {
-    entity.throttledUpdate();
-  });
+  if(global.gameActive){
+    groups.enemies.children?.each(entity => {
+      entity.throttledUpdate();
+    });
+    
+    groups.player.children?.each(entity => {
+      entity.throttledUpdate();
+    });
+  }
 }
 
 const throttledUpdate = throttle(THROTTLE_SPEED, false, onThrottledUpdate);
@@ -162,7 +164,7 @@ const spawnIt = (EntityRef, entityData, laneIdx) => {
     y: pos.y,
     stats: stats,
     depth: getDepthOfLane(laneIdx),
-    tint: entityData.tint
+    misc: entityData.misc
   });
   const randomScale = Phaser.Math.Between(entityData.scaleRange[0], entityData.scaleRange[1]) / 100;
   entity.setScale(randomScale);
