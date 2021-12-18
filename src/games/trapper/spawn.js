@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import NewRaccoon from './entities/new-raccoon.js';
+import raccoon from './entities/raccoon.js';
 import Player from './entities/player.js';
 import Bowl from './entities/bowl.js';
 import { getDepthOfLane } from './utils/values';
@@ -31,7 +31,7 @@ export const setContext = (context) => {
 }
 
 export const preload = () => {
-  NewRaccoon.initSpritesheet(sceneContext);
+  raccoon.initSpritesheet(sceneContext);
   Player.initSpritesheet(sceneContext);
   Bowl.initSpritesheet(sceneContext);
 }
@@ -48,7 +48,7 @@ export const create = (spawnPos, eData, pData) => {
 
   Player.initSprites(sceneContext);
   Bowl.initSprites(sceneContext);
-  NewRaccoon.initSprites(sceneContext);
+  raccoon.initSprites(sceneContext);
 
   initSpawnControls();
   
@@ -97,7 +97,7 @@ const spawnAnEnemy = (laneIdx) => {
   const spawnKey = getSpawnKey(spawnProbability);
 
   switch(spawnKey){
-    case 'newRaccoon': spawnIt(NewRaccoon.Entity, entityData.newRaccoon, laneIdx);
+    case 'raccoon': spawnIt(raccoon.Entity, entityData.raccoon, laneIdx);
       break;
   }
 }

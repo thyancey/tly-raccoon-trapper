@@ -1,5 +1,5 @@
-import Phaser from "phaser";
-import img_newRaccoon from "../assets/new-raccoon.png";
+import Phaser from 'phaser';
+import img_raccoon from '../assets/raccoon.png';
 
 const KILL_TIMEOUT = 5000;
 
@@ -18,17 +18,17 @@ export const STATUS = {
 }
 
 const animationStatus = {
-  [STATUS.IDLE]: 'newRaccoon_idle',
-  [STATUS.ROAMING]: 'newRaccoon_walk',
-  [STATUS.HOPPING_START]: 'newRaccoon_hop_start',
-  [STATUS.HOPPING]: 'newRaccoon_hop',
-  [STATUS.HOPPING_END]: 'newRaccoon_hop_end',
-  [STATUS.EATING]: 'newRaccoon_eat',
-  [STATUS.ANGRY]: 'newRaccoon_walk',
-  [STATUS.TAME]: 'newRaccoon_loveWalk',
-  [STATUS.DEAD]: 'newRaccoon_dead',
-  [STATUS.HUG]: 'newRaccoon_hug',
-  [STATUS.PUNTED]: 'newRaccoon_punted'
+  [STATUS.IDLE]: 'raccoon_idle',
+  [STATUS.ROAMING]: 'raccoon_walk',
+  [STATUS.HOPPING_START]: 'raccoon_hop_start',
+  [STATUS.HOPPING]: 'raccoon_hop',
+  [STATUS.HOPPING_END]: 'raccoon_hop_end',
+  [STATUS.EATING]: 'raccoon_eat',
+  [STATUS.ANGRY]: 'raccoon_walk',
+  [STATUS.TAME]: 'raccoon_loveWalk',
+  [STATUS.DEAD]: 'raccoon_dead',
+  [STATUS.HUG]: 'raccoon_hug',
+  [STATUS.PUNTED]: 'raccoon_punted'
 }
 
 
@@ -64,7 +64,7 @@ stats = {
 
 class Entity extends Phaser.Physics.Arcade.Sprite {
   constructor (scene, physicsGroup, spawnData) {
-    super(scene, spawnData.x, spawnData.y, 'newRaccoon');
+    super(scene, spawnData.x, spawnData.y, 'raccoon');
 
     // this.status = STATUS.ROAMING;
     // this.love = 0;
@@ -223,23 +223,23 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
   }
 
   checkFallingAnimation(){
-    // console.log("vel", this.body.velocity)
+    // console.log('vel', this.body.velocity)
     if(this.body.velocity.y > 40){
-      this.anims.play('newRaccoon_hop_down');
+      this.anims.play('raccoon_hop_down');
     }else if(this.body.velocity.y < -40){
-      this.anims.play('newRaccoon_hop_up');
+      this.anims.play('raccoon_hop_up');
     }else{
       this.resumeStatus();
     }
   }
   
   checkHoppingAnimation(){
-    // console.log("vel", this.body.velocity)
+    // console.log('vel', this.body.velocity)
     if(this.body.velocity.y > 40){
-      this.anims.play('newRaccoon_hop_down');
+      this.anims.play('raccoon_hop_down');
       this.setVelocityX(150); // this lil boost helps it get over barriers
     }else if(this.body.velocity.y < -40){
-      this.anims.play('newRaccoon_hop_up');
+      this.anims.play('raccoon_hop_up');
     }else if(this.body.velocity.y === 0){
       this.setStatus(STATUS.HOPPING_END);
     }
@@ -333,10 +333,10 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
           this.setStatus(STATUS.IDLE)
         }else{
           if(this.body.velocity.y > 40){
-            this.anims.play('newRaccoon_hop_down');
+            this.anims.play('raccoon_hop_down');
             this.setStatus(STATUS.ROAMING, false, false);
           }else if(this.body.velocity.y < -40){
-            this.anims.play('newRaccoon_hop_up');
+            this.anims.play('raccoon_hop_up');
             this.setStatus(STATUS.ROAMING, false, false);
           }else{
             this.setStatus(STATUS.ROAMING, false, true);
@@ -368,99 +368,99 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
 const initSprites = (sceneContext) => {
   
   sceneContext.anims.create({
-    key: 'newRaccoon_idle',
+    key: 'raccoon_idle',
     frames: [ 
-      { key: 'newRaccoon', frame: 0 },  
-      { key: 'newRaccoon', frame: 1 } 
+      { key: 'raccoon', frame: 0 },  
+      { key: 'raccoon', frame: 1 } 
     ],
     frameRate: 7,
     repeat: -1
   });
 
   sceneContext.anims.create({
-    key: 'newRaccoon_walk',
+    key: 'raccoon_walk',
     frames: [ 
-      { key: 'newRaccoon', frame: 2 },  
-      { key: 'newRaccoon', frame: 3 } 
+      { key: 'raccoon', frame: 2 },  
+      { key: 'raccoon', frame: 3 } 
     ],
     frameRate: 7,
     repeat: -1
   });
 
   sceneContext.anims.create({
-    key: 'newRaccoon_hop_start',
-    frames: [ { key: 'newRaccoon', frame: 4 } ],
-    // frames: sceneContext.anims.generateFrameNumbers('newRaccoon', { start: 5, end: 7 }),
+    key: 'raccoon_hop_start',
+    frames: [ { key: 'raccoon', frame: 4 } ],
+    // frames: sceneContext.anims.generateFrameNumbers('raccoon', { start: 5, end: 7 }),
     frameRate: 7,
     repeat: 0
   });
 
   sceneContext.anims.create({
-    key: 'newRaccoon_hop_up',
-    frames: [ { key: 'newRaccoon', frame: 5 } ],
+    key: 'raccoon_hop_up',
+    frames: [ { key: 'raccoon', frame: 5 } ],
     frameRate: 7,
     repeat: 0
   });
   
   sceneContext.anims.create({
-    key: 'newRaccoon_hop_down',
-    frames: [ { key: 'newRaccoon', frame: 6 } ],
+    key: 'raccoon_hop_down',
+    frames: [ { key: 'raccoon', frame: 6 } ],
     frameRate: 7,
     repeat: 0
   });
 []
   sceneContext.anims.create({
-    key: 'newRaccoon_hop_end',
-    frames: [ { key: 'newRaccoon', frame: 7 } ],
+    key: 'raccoon_hop_end',
+    frames: [ { key: 'raccoon', frame: 7 } ],
     frameRate: 7,
     repeat: 0
   });
   
   sceneContext.anims.create({
-    key: 'newRaccoon_angryWalk',
-    frames: sceneContext.anims.generateFrameNumbers('newRaccoon', { start: 2, end: 3 }),
+    key: 'raccoon_angryWalk',
+    frames: sceneContext.anims.generateFrameNumbers('raccoon', { start: 2, end: 3 }),
     frameRate: 7,
     repeat: -1
   });
 
   sceneContext.anims.create({
-    key: 'newRaccoon_loveWalk',
-    frames: sceneContext.anims.generateFrameNumbers('newRaccoon', { start: 10, end: 11 }),
+    key: 'raccoon_loveWalk',
+    frames: sceneContext.anims.generateFrameNumbers('raccoon', { start: 10, end: 11 }),
     frameRate: 7,
     repeat: -1
   });
 
   sceneContext.anims.create({
-    key: 'newRaccoon_dead',
-    frames: sceneContext.anims.generateFrameNumbers('newRaccoon', { start: 14, end: 15 }),
+    key: 'raccoon_dead',
+    frames: sceneContext.anims.generateFrameNumbers('raccoon', { start: 14, end: 15 }),
     frameRate: 7,
     repeat: -1
   });
 
   sceneContext.anims.create({
-    key: 'newRaccoon_eat',
-    frames: sceneContext.anims.generateFrameNumbers('newRaccoon', { start: 8, end: 9 }),
+    key: 'raccoon_eat',
+    frames: sceneContext.anims.generateFrameNumbers('raccoon', { start: 8, end: 9 }),
     frameRate: 7,
     repeat: -1
   });
 
   sceneContext.anims.create({
-    key: 'newRaccoon_hug',
-    frames: sceneContext.anims.generateFrameNumbers('newRaccoon', { start: 12, end: 13 }),
+    key: 'raccoon_hug',
+    frames: sceneContext.anims.generateFrameNumbers('raccoon', { start: 12, end: 13 }),
     frameRate: 7,
     repeat: -1
   });
 
   sceneContext.anims.create({
-    key: 'newRaccoon_punted',
-    frames: sceneContext.anims.generateFrameNumbers('newRaccoon', { start: 2, end: 3 }),
+    key: 'raccoon_punted',
+    frames: sceneContext.anims.generateFrameNumbers('raccoon', { start: 2, end: 3 }),
     frameRate: 7,
     repeat: -1
   });
 }
 
 const initSpritesheet = (sceneContext) => {
-  const spr = sceneContext.load.spritesheet('newRaccoon', img_newRaccoon, { frameWidth: 56, frameHeight: 56 });
+  const spr = sceneContext.load.spritesheet('raccoon', img_raccoon, { frameWidth: 56, frameHeight: 56 });
 }
 
 export default {

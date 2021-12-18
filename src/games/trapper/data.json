@@ -3,7 +3,7 @@
     "name": "Raccoon Trapper"
   },
   "entities":{
-    "newRaccoon":{
+    "raccoon":{
       "spawnRate": "1",
       "scaleRange": [95, 110],
       "spawnSpeeds": [ 0, 0 ],
@@ -20,7 +20,7 @@
     {
       "entities":[
         {
-          "type": "newRaccoon",
+          "type": "raccoon",
           "spawnRate": "1",
           "scaleRange": [95, 110],
           "spawnSpeeds": [ 0, 0 ],
@@ -33,25 +33,25 @@
       "lanes":[
         {
           "spawns":[{
-            "type": "newRaccoon",
+            "type": "raccoon",
             "rate": "1"
           }]
         },
         {
           "spawns":[{
-            "type": "newRaccoon",
+            "type": "raccoon",
             "rate": "1"
           }]
         },
         {
           "spawns":[{
-            "type": "newRaccoon",
+            "type": "raccoon",
             "rate": "1"
           }]
         },
         {
           "spawns":[{
-            "type": "newRaccoon",
+            "type": "raccoon",
             "rate": "1"
           }]
         }

@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
-import img_blood from '../../assets/blood.png';
+import img_blood from './assets/blood.png';
 import gameData from './data.json';
-import { STATUS as STATUS_ENEMY } from './entities/new-raccoon';
+import { STATUS as STATUS_ENEMY } from './entities/raccoon';
 import { STATUS as STATUS_PLAYER } from './entities/player';
 
 import SpawnController from './spawn.js';
