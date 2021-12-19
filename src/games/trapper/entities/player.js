@@ -6,6 +6,7 @@ import StatBar from './stat-bar';
 const THROTTLE_SPEED = 150;
 
 const KILL_TIMEOUT = 5000;
+const STARTING_LANE = 2;
 
 let statBar;
 
@@ -45,8 +46,6 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
     this.isAlive = true;
     this.kickCharge = 0;
 
-    // this.throttledUpdate = throttle(THROTTLE_SPEED, false, this.onThrottledUpdate);
-
     //- parent stuff
     scene.add.existing(this);
     if(physicsGroup){
@@ -57,11 +56,15 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
 
     /* tweak settings here when sprite changes size */
     this.setOrigin(0, 0).refreshBody();
-    this.body.setSize(50, 75);
-    this.posOffset = [ -100, 20 ];
-
+    // this.body.setSize(50, 75);
+    // this.posOffset = [ 0, 20 ];
     /* normal phaser way isnt working, so pass this along to offset the sprite a lil */
+    // this.spriteOffset = [ 12, 6 ];
+
+    this.body.setSize(60, 100);
+    this.posOffset = [ -50, -10 ];
     this.spriteOffset = [ 12, 6 ];
+    this.setScale(1.3);
 
     this.updatePlayerPosition();
     this.setStatus(STATUS.IDLE, true);
@@ -71,7 +74,8 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
 
     
     statBar = new StatBar.Entity(scene, 150, 150);
-    this.updatePlayerPosition();
+    this.changeLane(STARTING_LANE);
+    // this.updatePlayerPosition();
   }
 
   onKeyUp(e){
@@ -216,7 +220,6 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
   }
   
   throttledUpdate(){
-      // console.log('player.thorttled')
     if(this.checkStatus(STATUS.KICK_PREP)){
       this.chargeKick();
     }

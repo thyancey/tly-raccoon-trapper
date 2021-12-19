@@ -3,57 +3,155 @@
     "name": "Raccoon Trapper"
   },
   "entities":{
-    "raccoon":{
-      "spawnRate": "1",
-      "scaleRange": [95, 110],
-      "spawnSpeeds": [ 0, 0 ],
-      "stats":{
-        "speed": [ 10, 40 ],
-        "jumpRate": [ 2, 10 ]
-      } 
+    "misc":{
+      "bowl":{
+        "spawnSpeed": -200
+      }
     },
-    "bowl":{
-      "spawnSpeed": -200
+    "enemies":{
+      "LIL_BOI":{
+        "type": "raccoon",
+        "scaleRange": [80, 120],
+        "stats":{
+          "speed": [ 50, 90 ],
+          "jumpRate": [ 2, 10 ]
+        },
+        "misc":{
+          "tint": "0xffffff",
+          "puntKillThreshold": 1
+        }
+      },
+      "MEAN_BOI":{
+        "type": "raccoon",
+        "scaleRange": [80, 120],
+        "stats":{
+          "speed": [ 100, 160 ],
+          "jumpRate": [ 2, 10 ]
+        },
+        "misc":{
+          "tint": "0xff0000",
+          "puntKillThreshold": 0,
+          "feedable": false
+        }
+      },
+      "BIG_BOI":{
+        "type": "raccoon",
+        "scaleRange": [250, 350],
+        "stats":{
+          "speed": [ 30, 40 ],
+          "jumpRate": [ 2, 4 ]
+        },
+        "misc":{
+          "tint": "0xff00ff",
+          "puntKillThreshold": 2
+        }
+      }
     }
   },
   "levels":[
     {
-      "entities":[
-        {
-          "type": "raccoon",
-          "spawnRate": "1",
-          "scaleRange": [95, 110],
-          "spawnSpeeds": [ 0, 0 ],
-          "stats":{
-            "speed": [ 10, 40 ],
-            "jumpRate": [ 2, 10 ]
-          } 
-        }
-      ],
       "lanes":[
         {
-          "spawns":[{
-            "type": "raccoon",
-            "rate": "1"
-          }]
+          "spawns":[
+            {
+              "type": "BIG_BOI",
+              "rate": 0.01
+            }
+          ]
         },
         {
-          "spawns":[{
-            "type": "raccoon",
-            "rate": "1"
-          }]
+          "spawns":[
+            {
+              "type": "LIL_BOI",
+              "rate": 0.05
+            },{
+              "type": "BIG_BOI",
+              "rate": 0.01
+            }
+          ]
         },
         {
-          "spawns":[{
-            "type": "raccoon",
-            "rate": "1"
-          }]
+          "spawns":[
+            {
+              "type": "MEAN_BOI",
+              "rate": 0.5
+            }
+          ]
         },
         {
-          "spawns":[{
-            "type": "raccoon",
-            "rate": "1"
-          }]
+          "spawns":[
+            {
+              "type": "LIL_BOI",
+              "rate": 1
+            }
+          ]
+        }
+      ],
+      "scene":{
+        "values":{
+          "spawn_width": "100"
+        },
+        "platforms":[
+          {
+            "x": "175",
+            "y": "100",
+            "width": "475",
+            "height": "25"
+          },
+          {
+            "x": "125",
+            "y": "225",
+            "width": "580",
+            "height": "25"
+          },
+          {
+            "x": "85",
+            "y": "350",
+            "width": "670",
+            "height": "25"
+          },
+          {
+            "x": "50",
+            "y": "475",
+            "width": "760",
+            "height": "25"
+          }
+        ]
+      }
+    },
+    {
+      "lanes":[
+        {
+          "spawns":[
+            {
+              "type": "BIG_BOI",
+              "rate": 1
+            }
+          ]
+        },
+        {
+          "spawns":[
+            {
+              "type": "BIG_BOI",
+              "rate": 1
+            }
+          ]
+        },
+        {
+          "spawns":[
+            {
+              "type": "BIG_BOI",
+              "rate": 1
+            }
+          ]
+        },
+        {
+          "spawns":[
+            {
+              "type": "BIG_BOI",
+              "rate": 1
+            }
+          ]
         }
       ],
       "scene":{
