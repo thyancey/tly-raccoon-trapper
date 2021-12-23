@@ -5,6 +5,10 @@ import img_lane4_yard from './assets/yard-lane4.png';
 import Values from './utils/values';
 
 const DEBUG_ALPHA = 0;
+const TRIGGER_DIMS = {
+  width: 25,
+  height: 100
+};
 
 let sceneContext;
 
@@ -28,22 +32,13 @@ export const create = (levelData) => {
   sceneContext.add.image(0, 0, 'bg-yard').setOrigin(0).setScale(1).setDepth(Values.zindex.BACKGROUND);
   sceneContext.add.image(0, 0, 'fg-yard').setOrigin(0).setScale(1).setDepth(Values.zindex.FOREGROUND);
   sceneContext.add.image(0, 0, 'lane4-yard').setOrigin(0).setScale(1).setDepth(Values.zindex.LANE_4);
+  const GAME_WIDTH = 900;
 
-  const spawnW = parseInt(levelData.values.spawn_width);
-  levelData.platforms.forEach(pO => {
-    const x = parseInt(pO.x);
-    const y = parseInt(pO.y);
-    // const w = parseInt(pO.width) / 100;
-    const w = 900 - x;
-    const h = parseInt(pO.height) / 100;
-    const deadX = parseInt(pO.width) + x + 60;
-    const porchX = parseInt(pO.width) + x - 110;
-
-    platforms.create(x, y, 'bar-white').setScale(w, h).setOrigin(0,0).setAlpha(DEBUG_ALPHA).refreshBody();
-    platforms.create(x - spawnW, y, 'bar-purple').setScale(1, h).setOrigin(0,0).setAlpha(DEBUG_ALPHA).refreshBody();
-    leftTrigger.create(x - (spawnW) - 20, y - 100, 'bar-green').setScale(1, 10).setOrigin(0,0).setAlpha(DEBUG_ALPHA).refreshBody();
-    rightTrigger.create(deadX, y - 120, 'bar-red').setScale(1, 3.75).setOrigin(0,0).setAlpha(DEBUG_ALPHA).refreshBody();
-    platforms.create(porchX, y - 10  , 'bar-white').setScale(8, .5).setOrigin(0,0).setAlpha(DEBUG_ALPHA).refreshBody();
+  levelData.lanes.forEach(pO => {
+    const triggerY = pO.y - TRIGGER_DIMS.height;
+    platforms.create(pO.x, pO.y, 'platform-floor').setDisplaySize(pO.width, pO.height).setOrigin(0,0).setAlpha(DEBUG_ALPHA).refreshBody();
+    leftTrigger.create(pO.x, triggerY, 'trigger-spawn').setDisplaySize(TRIGGER_DIMS.width, TRIGGER_DIMS.height).setOrigin(0,0).setAlpha(DEBUG_ALPHA).refreshBody();
+    rightTrigger.create(pO.x + pO.width - TRIGGER_DIMS.width, triggerY, 'trigger-end').setDisplaySize(TRIGGER_DIMS.width, TRIGGER_DIMS.height).setOrigin(0,0).setAlpha(DEBUG_ALPHA).refreshBody();
   });
 
   return {

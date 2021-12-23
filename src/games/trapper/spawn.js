@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import raccoon from './entities/raccoon.js';
+import Raccoon from './entities/raccoon-simple.js';
 import Player from './entities/player.js';
 import Bowl from './entities/bowl.js';
 import { getDepthOfLane } from './utils/values';
@@ -26,7 +26,7 @@ let el_spawnSlider;
 let el_spawnCount;
 
 const entityTypes = {
-  'raccoon': raccoon.Entity
+  'raccoon': Raccoon.Entity
 }
 
 
@@ -35,13 +35,13 @@ export const setContext = (context) => {
 }
 
 export const preload = () => {
-  raccoon.initSpritesheet(sceneContext);
+  Raccoon.initSpritesheet(sceneContext);
   Player.initSpritesheet(sceneContext);
   Bowl.initSpritesheet(sceneContext);
 }
 
-export const create = (globalEntities, levelData) => {
-  spawnPositions = levelData.scene.platforms.map(pO => ({
+export const create = (globalEntities, levelData, sceneData) => {
+  spawnPositions = sceneData.lanes.map(pO => ({
     x: parseInt(pO.x),
     y: parseInt(pO.y) - 50
   }));
@@ -56,12 +56,12 @@ export const create = (globalEntities, levelData) => {
 
   Player.initSprites(sceneContext);
   Bowl.initSprites(sceneContext);
-  raccoon.initSprites(sceneContext);
+  Raccoon.initSprites(sceneContext);
 
   initSpawnControls();
   
   
-  spawnPlayer(levelData.scene.platforms);
+  spawnPlayer(sceneData.lanes);
   return groups;
 }
 

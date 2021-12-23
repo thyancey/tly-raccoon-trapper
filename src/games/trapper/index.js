@@ -40,7 +40,7 @@ export const createGame = () =>{
       default: 'arcade',
       arcade: {
         gravity: { y: 800 },
-        debug: false
+        debug: true
       }
     },
     scene: {
@@ -89,12 +89,17 @@ function getLevel() {
   return gameData.levels[global.gameData.curLevel];
 }
 
+function getScene(){
+  const level = gameData.levels[global.gameData.curLevel];
+  return gameData.scenes[level.sceneKey];
+}
+
 function create() {
   //- make the level
-  levelGroups = LevelController.create(getLevel().scene);
+  levelGroups = LevelController.create(getScene());
   initScoreboard();
 
-  let spawnGroups = SpawnController.create(gameData.entities, getLevel());
+  let spawnGroups = SpawnController.create(gameData.entities, getLevel(), getScene());
 
   this.physics.add.collider(spawnGroups.enemies, levelGroups.platforms, null, collider_enemyAndPlatform, this);
   this.physics.add.collider(spawnGroups.bowls, levelGroups.platforms);

@@ -75,7 +75,6 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
     
     statBar = new StatBar.Entity(scene, 150, 150);
     this.changeLane(STARTING_LANE);
-    // this.updatePlayerPosition();
   }
 
   onKeyUp(e){
