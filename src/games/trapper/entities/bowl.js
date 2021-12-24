@@ -105,12 +105,12 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
     }, KILL_TIMEOUT);
   }
 
-  touched(entity){
-    if(this.feeding.indexOf(entity) === -1){
-      entity.body.velocity.x = 0;
+  eatenBy(enemyEntity){
+    if(this.feeding.indexOf(enemyEntity) === -1){
+      enemyEntity.body.velocity.x = 0;
       //- new feeder
       this.addToDrainRate(20);
-      this.feeding.push(entity);
+      this.feeding.push(enemyEntity);
       if(this.feeding.length >= MAX_FEEDING){
         this.canBeEaten = false;
       }

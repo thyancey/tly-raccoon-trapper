@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import img_blood from './assets/blood.png';
 import gameData from './data.json';
-import { STATUS as STATUS_ENEMY } from './entities/raccoon';
+import { STATUS as STATUS_ENEMY } from './entities/raccoon-simple';
 import { STATUS as STATUS_PLAYER } from './entities/player';
 
 import SpawnController from './spawn.js';
@@ -116,29 +116,28 @@ function create() {
 }
 
 function trigger_enemyAtEnd(enemy, trigger){
-  if(enemy.isAlive){
-    if(enemy.status === STATUS_ENEMY.TAME){
-      enemy.kill();
-    }else{
-      enemy.kill();
+  switch(enemy.status){
+    case STATUS_ENEMY.ROAMING_TAME: enemy.captured();
+      break;
+    case STATUS_ENEMY.ROAMING_ANGRY: enemy.escaped();
+      break;
+    case STATUS_ENEMY.ROAMING: {
       setPoints('bites', 1);
+      enemy.kill();
     }
+      break;
   }
 }
 
 function trigger_itemAtStart(item, trigger){
   item.destroy();
   setPoints('bowls', 1);
-  // enemy.kill();
-  // enemy.touched('bowl');
-  // enemy.body.x = item.x;
 }
 
 function trigger_enemyAndBowl(enemy, bowl){
   if(enemy.canEat() && bowl.canBeEaten){
-    enemy.touched(bowl.body);
-    // enemy.body.x = bowl.x;
-    bowl.touched(enemy);
+    enemy.eatAtBowl(bowl.body);
+    bowl.eatenBy(enemy);
   }
 }
 
@@ -154,7 +153,7 @@ function collider_enemyAndPlatform(enemy, platform){
 
 
 function trigger_enemyAndPlayer(enemy, player){
-  if(enemy.isAlive){
+  if(enemy.isAlive()){
     if(player.checkStatus(STATUS_PLAYER.HUG_PREP)){
       if(enemy.isFull){
         enemy.hug();

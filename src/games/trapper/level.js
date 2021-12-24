@@ -36,7 +36,10 @@ export const create = (levelData) => {
 
   levelData.lanes.forEach(pO => {
     const triggerY = pO.y - TRIGGER_DIMS.height;
-    platforms.create(pO.x, pO.y, 'platform-floor').setDisplaySize(pO.width, pO.height).setOrigin(0,0).setAlpha(DEBUG_ALPHA).refreshBody();
+    // lets animals keep walkin past trigger, otherwise keep it at pO.width
+    const platformWidth = GAME_WIDTH - pO.x;
+
+    platforms.create(pO.x, pO.y, 'platform-floor').setDisplaySize(platformWidth, pO.height).setOrigin(0,0).setAlpha(DEBUG_ALPHA).refreshBody();
     leftTrigger.create(pO.x, triggerY, 'trigger-spawn').setDisplaySize(TRIGGER_DIMS.width, TRIGGER_DIMS.height).setOrigin(0,0).setAlpha(DEBUG_ALPHA).refreshBody();
     rightTrigger.create(pO.x + pO.width - TRIGGER_DIMS.width, triggerY, 'trigger-end').setDisplaySize(TRIGGER_DIMS.width, TRIGGER_DIMS.height).setOrigin(0,0).setAlpha(DEBUG_ALPHA).refreshBody();
   });

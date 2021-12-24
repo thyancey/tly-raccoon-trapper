@@ -6,28 +6,16 @@ const KILL_TIMEOUT = 5000;
 export const STATUS = {
   ROAMING: 0,
   EATING: 1,
-  ANGRY: 2,
-  TAME: 3,
+  ROAMING_TAME: 3,
   DEAD: 4,
   HUG: 5,
   IDLE: 6,
-  PUNTED: 10
+  ROAMING_ANGRY: 11,
+  CAPTURED: 12,
+  ESCAPED: 13
 }
 
 const spriteKey = 'raccoon';
-
-const animationStatus = {
-  [STATUS.IDLE]: 'raccoon_idle',
-  [STATUS.ROAMING]: 'raccoon_walk',
-  [STATUS.EATING]: 'raccoon_eat',
-  [STATUS.ANGRY]: 'raccoon_walk',
-  [STATUS.TAME]: 'raccoon_loveWalk',
-  [STATUS.DEAD]: 'raccoon_dead',
-  [STATUS.HUG]: 'raccoon_hug',
-  [STATUS.PUNTED]: 'raccoon_punted'
-}
-
-
 const velocityRanges = {
   LIL_PUNT: {
     min: { x: -75, y: -50 },
@@ -50,14 +38,11 @@ velocityRanges.BIG_PUNT.diff = {
   y: velocityRanges.BIG_PUNT.max.y - velocityRanges.BIG_PUNT.min.y
 }
 
-
-
 /*
 stats = {
   speed: [ minSpeedX, maxSpeedX ]
 }
 */
-
 class Entity extends Phaser.Physics.Arcade.Sprite {
   constructor (scene, physicsGroup, spawnData) {
     super(scene, spawnData.x, spawnData.y, 'raccoon');
@@ -69,11 +54,11 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
     this.status = null;
     this.isFull = false;
 
-    this.curAnimState = null;
-    this.curPhysState = null;
+    // move bowl to the right, relative to entity
+    this.eatOffset = 11;
 
-    //- custom properties
-    this.isAlive = true;
+    this.curPhysState = null;
+    this.curAnimState = null;
 
     this.puntKillThreshold = 1;
     if(spawnData.misc?.puntKillThreshold || spawnData.misc?.puntKillThreshold === 0){
@@ -107,8 +92,6 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
     this.body.offset.y = 25;
     this.setStatus(STATUS.ROAMING, true);
 
-    // testing sounds
-
     //- interaction listeners
     this.setInteractive();
     if(spawnData.misc?.tint){
@@ -120,7 +103,7 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
   }
 
   canEat(){
-    if(this.isAlive && this.feedable && !this.isFull){
+    if(this.isAlive() && this.feedable && !this.isFull){
       switch(this.status){
         case STATUS.EATING: return false;
         default: return true;
@@ -131,7 +114,7 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
   }
   
   canIdle(){
-    if(this.isAlive && this.body.touching.down && this.body.velocity.x === 0){
+    if(this.isAlive() && this.body.touching.down && this.body.velocity.x === 0){
       switch(this.status){
         case STATUS.ROAMING: return true;
         case STATUS.IDLE: return true;
@@ -145,10 +128,7 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
   // right now, its a %, later should be actual power
   punt(force){
     // console.log('force', force)
-    //- (1 - 100)
-
-    this.setStatus(STATUS.PUNTED);
-    this.body.setDrag(200);
+    this.body.setDrag(0);
 
     let vRange;
     if(force < .5){
@@ -180,15 +160,68 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
 
   update(){
     //- turn if facing left
-    if(this.flipX){
+    if(this.isAlive() && this.flipX){
       if(this.body.velocity.x >= 0) this.flipX = false;
     }else{
       if(this.body.velocity.x < 0) this.flipX = true;
     }
 
-    if(this.isAlive){
-
+    const animKey = this.getAnimationForState();
+    if(animKey !== this.curAnim){
+      this.curAnim = animKey;
+      this.playAnimationForKey(animKey);
     }
+    
+    this.adjustMovementForState();
+  }
+
+  isAlive(){
+    return this.status !== STATUS.DEAD;
+  }
+
+  isMovingStatus(given){
+    switch (given || this.status){
+      case STATUS.ROAMING: return true;
+      case STATUS.ROAMING_ANGRY: return true;
+      case STATUS.ROAMING_TAME: return true;
+    }
+    return false;
+  }
+
+  adjustMovementForState(){
+    if(this.body.velocity.x < 1 && this.body.velocity.x > -1){
+      //- if still, but in a moving status (most likely after falling), force it again to get movin!
+      if(this.isMovingStatus(this.status)){
+        this.setStatus(this.status, true);
+      };
+    }
+
+    //- attempt to readjust after landing from a punt
+    if(this.body.touching.down && this.body.velocity.x < 0){
+      this.moveStop();
+    }
+  }
+
+  getAnimationForState(){
+    if(this.status === STATUS.DEAD){
+      return 'raccoon_dead';
+    } else {
+      if (this.body.velocity.y < -50) {
+        return 'raccoon_hop_up';
+      } else if (this.body.velocity.y > 50) {
+        return 'raccoon_hop_down';
+      } else if (this.status === STATUS.EATING){
+        return 'raccoon_eat';
+      } else if (this.status === STATUS.ROAMING_TAME){
+        return 'raccoon_loveWalk';
+      } else if (this.status === STATUS.ROAMING_ANGRY){
+        return 'raccoon_angryWalk';
+      } else if (this.status === STATUS.ROAMING){
+        return 'raccoon_walk';
+      }
+    }
+
+    return null;
   }
 
   setPhysState(){
@@ -204,23 +237,20 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
 
   }
   
-  //- if 
-  touched(otherBody){
-    // console.log('touched')
-    // if(this.canEat()){ //- redundant, now that checking in collison checker
-      this.setStatus(STATUS.EATING);
-      this.body.x = otherBody.x;
-    // }
+  eatAtBowl(bowlBody){
+    // align with the food bowl
+    this.body.x = bowlBody.x - this.eatOffset;
+
+    this.setStatus(STATUS.EATING);
   }
 
   bowlEmpty(){
-    if(this.isAlive){
-      this.setStatus(STATUS.TAME);
+    if(this.isAlive()){
+      this.setStatus(STATUS.ROAMING_TAME);
     }
   }
 
-  playAnimationForStatus(){
-    const animKey = animationStatus[this.status];
+  playAnimationForKey(animKey){
     if(animKey){
       this.anims.play(animKey);
     }
@@ -230,11 +260,16 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
     return this.status === STATUS[statusKey];
   }
 
-  goNormalSpeed(modifier = 1){
+  moveNormal(modifier = 1){
     this.body.setDrag(0);
     // this.body.velocity.x = 10; 
     this.body.velocity.x = this.stats.speed * modifier;
   }
+
+  moveStop(){
+    this.body.setDrag(500);
+  }
+
 
   setStatus(status, force, playStatusAnimation = true){
     if(force || this.status !== status){
@@ -242,53 +277,62 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
 
       switch(this.status){
         case STATUS.ROAMING: 
-          this.goNormalSpeed();
+          this.moveNormal();
           break;
-        case STATUS.TAME: 
+        case STATUS.ROAMING_TAME: 
           this.isFull = true;
-          this.body.setDrag(0);
-          this.goNormalSpeed(.6);
+          this.moveNormal(.6);
           break;
         case STATUS.EATING: 
-          this.body.setDrag(500);
+          this.moveStop();
           break;
         case STATUS.DEAD:
-          this.body.setDrag(500);
-          this.isAlive = false;
+          this.moveStop();
           break;
       }
-      if(playStatusAnimation) this.playAnimationForStatus();
     }
   }
 
-  resumeStatus(){
-    if(this.isAlive){
+  assumeStatus(){
+    if(this.isAlive()){
       if(this.isFull){
-        this.setStatus(STATUS.TAME);
+        return STATUS.ROAMING_TAME;
       }else{
         if(this.canIdle()){
-          this.setStatus(STATUS.IDLE)
+          return STATUS.IDLE;
         }else{
-          this.setStatus(STATUS.ROAMING, false, true);
+          return STATUS.ROAMING;
         }
       }
     }
   }
 
-  escape(){
+  resumeStatus(){
+    const statusKey = this.resumeStatus;
+    this.setStatus(statusKey)
+  }
 
+  escaped(){
+    this.setStatus(STATUS.ESCAPED);
+    this.delayedDestroy();
+  }
+
+  captured(){
+    this.setStatus(STATUS.CAPTURED);
+    this.delayedDestroy();
   }
   
   hug(){
     this.setStatus(STATUS.HUG);
-    this.body.setDrag(500);
+    this.moveStop();
+    this.delayedDestroy();
+  }
 
+  delayedDestroy(){
     global.setTimeout(() => {
-      this.isAlive = false;
       this.destroy();
     }, 1000);
   }
-
 }
 
 const initSprites = (sceneContext) => {
