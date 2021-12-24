@@ -5,30 +5,30 @@ import StatBar from './stat-bar';
 
 const THROTTLE_SPEED = 150;
 
-const KILL_TIMEOUT = 5000;
 const STARTING_LANE = 2;
+const KICK_DURATION = 500; // becomes variable based on kick power
+const ATTACKED_DURATION = 1000;
+const KILLED_DURATION = 5000;
 
 let statBar;
 
 export const STATUS = {
   IDLE: 0,
   FEED: 1,
-  HUG_PREP: 2,
-  HUG: 3,
-  KICK_PREP: 4,
-  KICK: 5,
-  HURT: 6,
-  DEAD: 7
+  HUGGING: 2,
+  KICK_PREP: 3,
+  KICK: 4,
+  ATTACKED: 5,
+  DEAD: 6
 }
 
 const animationStatus = {
   [STATUS.IDLE]: 'player_idle',
   [STATUS.FEED]: 'player_idle',
-  [STATUS.HUG_PREP]: 'player_hug_prep',
-  [STATUS.HUG]: 'player_hug',
+  [STATUS.HUGGING]: 'player_hug',
   [STATUS.KICK_PREP]: 'player_kick_prep',
   [STATUS.KICK]: 'player_kick',
-  [STATUS.HURT]: 'player_hurt',
+  [STATUS.ATTACKED]: 'player_hurt',
   [STATUS.DEAD]: 'player_idle'
 }
 
@@ -44,7 +44,7 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
     this.laneValues = this.parseLaneData(laneData);
     this.posOffset = [];
     this.spriteOffset = [];
-    // this.playerIntents = [];
+    this.lastIntent;
 
     this.isAlive = true;
     this.kickCharge = 0;
@@ -73,55 +73,10 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
     this.setStatus(STATUS.IDLE, true);
     
     gameState.cursors = scene.input.keyboard.createCursorKeys();
-    scene.input.keyboard.on('keydown', this.onKeyDown.bind(this));
-    scene.input.keyboard.on('keyup', this.onKeyUp.bind(this));
-
-    this.keyboard = scene.input.keyboard;
-
     
     statBar = new StatBar.Entity(scene, 150, 150);
     this.changeLane(STARTING_LANE);
   }
-
-  onKeyUp(e){
-    switch(e.code){
-      // case 'ArrowDown': this.changeLane(1);
-      // break;
-      // case 'ArrowUp': this.changeLane(-1);
-      //   break;
-      case 'ArrowRight': this.kick();
-        break;
-      // case 'ArrowLeft': this.setStatus(STATUS.HUG_PREP);
-      //   break;
-    }
-  }
-
-  onKeyDown(e){
-    // console.log('onKeyDown', e.code)
-    switch(e.code){
-      case 'ArrowDown': 
-        // this.pushIntent('laneDown');
-        this.changeLane(1);
-      break;
-      case 'ArrowUp': 
-        // this.pushIntent('laneUp');
-        this.changeLane(-1);
-        break;
-      case 'ArrowRight':
-        // this.pushIntent('kick');  
-        this.startKick();
-        break;
-      case 'ArrowLeft': 
-        // this.pushIntent('hug');
-        this.startHug();
-        break;
-    }
-  }
-
-  // pushIntent(intent){
-  //   this.playerIntents = [ intent, ...this.playerIntents.filter(i => i !== intent)];
-  //   console.log('intents', this.playerIntents)
-  // }
 
   setLaneDepth(){
     this.setDepth(getDepthOfLane(this.laneIdx) - 1);
@@ -158,8 +113,9 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
     this.setPosition(realPos.x, realPos.y);
     statBar && statBar.setOffsetPosition(realPos.x, realPos.y);
 
+    // OK to cancel a kick animation, not OK to cancel a charge
     if(this.status === STATUS.KICK){
-      this.stopKick();
+      this.cancelKick();
     }
     
     this.setLaneDepth();
@@ -187,13 +143,14 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
     return statusKeys.indexOf(this.status) > -1;
   }
   
-  hurt(enemy){
+  onAttackedByEnemy(enemy){
     // console.log('hurt')
-    this.setStatus(STATUS.HURT);
+    this.setStatus(STATUS.ATTACKED);
 
     this.startRecoveryTimer(() => {
+      console.log('all better')
       this.setStatus(STATUS.IDLE);
-    }, 1000);
+    }, ATTACKED_DURATION);
   }
   
   kill(){
@@ -201,7 +158,7 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
 
     global.setTimeout(() => {
       this.destroy();
-    }, KILL_TIMEOUT)
+    }, KILLED_DURATION)
   }
 
   chargeKick(){
@@ -224,11 +181,11 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
     // console.log('KICK: ', this.kickCharge);
 
     this.startRecoveryTimer(() => {
-      this.stopKick();
-    }, 500);
+      this.cancelKick();
+    }, this.kickCharge * KICK_DURATION);
   }
 
-  stopKick(){
+  cancelKick(){
     this.killRecoveryTimer();
     this.kickCharge = 0;
     statBar.setProgress(this.kickCharge);
@@ -240,28 +197,50 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
     return this.kickCharge;
   }
 
+
   startHug(){
-    if(!this.checkStatuses([STATUS.HUG, STATUS.HUG_PREP])){
-      this.setStatus(STATUS.HUG_PREP);
+    if(!this.checkStatus(STATUS.HUGGING)){
+      this.setStatus(STATUS.HUGGING);
+    }
+  }
+  cancelHug(){
+    if(this.checkStatus(STATUS.HUGGING)){
+      this.setStatus(STATUS.IDLE);
     }
   }
 
-  hug(enemy){
-    if(this.isAlive){
-      this.setStatus(STATUS.HUG);
+
+  onHugEnemy(enemy){
+    // if(this.isAlive){
+      // this.setStatus(STATUS.HUG);
       
-      this.startRecoveryTimer(() => {
-        this.setStatus(STATUS.IDLE);
-      }, 500);
-    }
+      // this.startRecoveryTimer(() => {
+      //   this.setStatus(STATUS.IDLE);
+      // }, 500);
+    // }
   }
 
   update(){
-    // const intent = getIntentFromStateAndKeys();
+    const intent = this.getIntentFromStateAndKeys();
+    if(intent !== this.lastIntent){
+      this.lastIntent = intent;
+      switch(intent){
+        case 'attacked': break; //too bad, youre being attacked
+        case 'moveUp': this.changeLane(-1); break;
+        case 'moveDown': this.changeLane(1); break;
+        case 'startKick': this.startKick(); break;
+        case 'releaseKick': this.kick(); break;
+        case 'startHug': this.startHug(); break;
+        case 'cancelHug': this.cancelHug(); break;
+      }
+    }
   }
 
   getIntentFromStateAndKeys(){
     if(this.isAlive){
+      if(this.checkStatus(STATUS.ATTACKED)){
+        return 'attacked';
+      }
       // moving up and down cancel most other events
       if(gameState.cursors.up.isDown){
         return 'moveUp';
@@ -271,41 +250,33 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
       }
 
 
+      // if chargin a kick, see if you let it go
+      if(this.checkStatus(STATUS.KICK_PREP)){
+        if(!gameState.cursors.right.isDown){
+          return 'releaseKick';
+        }
+      } else if(gameState.cursors.right.isDown){
+        return 'startKick';
+      }
+
+      // now hugggs
+      if(this.checkStatus(STATUS.HUGGING)){
+        if(!gameState.cursors.left.isDown){
+          return 'cancelHug';
+        }
+      } else if(gameState.cursors.left.isDown){
+        return 'startHug';
+      }
+
       // no other keys mattered so..?
-      // if hugging or kicking, stop doing em?
-      return null;
     }
-  }
-
-  logKeys(){
-    const keys = [];
-    if (gameState.cursors.left.isDown) {
-      keys.push('left');
-    }
-    if (gameState.cursors.right.isDown) {
-      keys.push('right');
-    }
-    if (gameState.cursors.up.isDown) {
-      keys.push('up');
-    }
-    if (gameState.cursors.down.isDown) {
-      keys.push('down');
-    }
-    if (gameState.cursors.space.isDown) {
-      keys.push('space');
-    }
-
-    if(keys.length > 0){
-      console.log('KEYS:')
-      console.log(keys.join(','))
-    }
+    return null;
   }
   
   throttledUpdate(){
     if(this.checkStatus(STATUS.KICK_PREP)){
       this.chargeKick();
     }
-    // this.logKeys();
   }
 
 
@@ -319,6 +290,10 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
   setStatus(status, force, playStatusAnimation = true){
     // console.log('setStatus', status);
     if(force || this.status !== status){
+      if(this.status === STATUS.ATTACKED){
+        //- youre not attacked anymore, reset tint
+        this.setTint(0xffffff);
+      }
       this.status = status;
 
       switch(this.status){
@@ -326,16 +301,12 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
           break;
         case STATUS.FEED: 
           break;
-        case STATUS.HUG_PREP: 
-          break;
-        case STATUS.HUG: 
-          console.error("HUG TIME")
-          break;
         case STATUS.KICK_PREP: 
           break;
         case STATUS.KICK: 
           break;
-        case STATUS.HURT: 
+        case STATUS.ATTACKED: 
+          this.setTint(0xff0000);
           break;
         case STATUS.DEAD: 
           this.isAlive = false;
@@ -361,16 +332,10 @@ const initSprites = (sceneContext) => {
     repeat: -1
   });
   sceneContext.anims.create({
-    key: 'player_hug_prep',
-    frames: [ { key: 'player', frame: 2 } ],
-    frameRate: 5,
-    repeat: 0
-  });
-  sceneContext.anims.create({
     key: 'player_hug',
-    frames: [ { key: 'player', frame: 2 } ],
-    frameRate: 5,
-    repeat: 0
+    frames: [ { key: 'player', frame: 2 }, { key: 'player', frame: 3 } ],
+    frameRate: 4,
+    repeat: -1
   });
   sceneContext.anims.create({
     key: 'player_kick_prep',

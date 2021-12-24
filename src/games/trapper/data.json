@@ -13,7 +13,7 @@
         "type": "raccoon",
         "scaleRange": [150, 150],
         "stats":{
-          "speed": [ 50, 50 ],
+          "speed": [ 150, 150 ],
           "jumpRate": [ 2, 10 ]
         },
         "misc":{

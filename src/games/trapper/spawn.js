@@ -65,27 +65,25 @@ export const create = (globalEntities, levelData, sceneData) => {
   return groups;
 }
 
-// from the supplied data and random roll, get a list of entites to spawn, and the lanes they should spawn in
-const getSpawnCommands = (laneSpawnData, randSeed) => {
+// from the supplied data and random rolls, get a list of entites to spawn, and the lanes they should spawn in
+export const getSpawnCommands = laneSpawnData => {
   let enemies = [];
   laneSpawnData.forEach((lane, idx) => {
-    const spawnedFromLane = lane.filter(enemy => randSeed < enemy.rate).map(enemy => {
-      return { 
-        type: enemy.type, 
-        laneIdx: idx 
-      };
-    });
-    if(spawnedFromLane.length > 0){
-      enemies = enemies.concat(spawnedFromLane);
-    }
+    lane.forEach(enemy => {
+      if(Math.random() < enemy.rate){
+        enemies.push({ 
+          type: enemy.type, 
+          laneIdx: idx 
+        });
+      }
+    })
   });
 
   return enemies;
 }
 
-const rollForSpawns = (lsd, randSeed) => {
-  const spawnCommands = getSpawnCommands(lsd, randSeed);
-  // console.log('randSeed', randSeed)
+export const rollForSpawns = laneSpawnData => {
+  const spawnCommands = getSpawnCommands(laneSpawnData);
   let spawnCount = 0;
   spawnCommands.forEach(sData => {
     const eData = defEnemyEntities[sData.type];
@@ -115,7 +113,7 @@ export const update = () => {
     if(spawnFrequency !== SPAWN_MIN){
       if(curTicker > spawnFrequency){
         curTicker = 0;
-        spawnCount += rollForSpawns(defLaneSpawns, Math.random());
+        spawnCount += rollForSpawns(defLaneSpawns);
       }else{
         curTicker++;
       }

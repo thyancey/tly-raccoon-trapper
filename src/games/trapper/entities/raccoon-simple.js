@@ -246,6 +246,7 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
 
   bowlEmpty(){
     if(this.isAlive()){
+      console.log('fromBowlEmpty')
       this.isFull = true;
       this.setStatus(STATUS.ROAMING_TAME);
     }
@@ -258,7 +259,7 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
   }
 
   checkStatus(statusKey){
-    return this.status === STATUS[statusKey];
+    return this.status === statusKey;
   }
 
   moveNormal(modifier = 1){
@@ -299,19 +300,19 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
     }
   }
 
-  assumeStatus(){
-    if(this.isAlive()){
-      if(this.isFull){
-        return STATUS.ROAMING_TAME;
-      }else{
-        if(this.canIdle()){
-          return STATUS.IDLE;
-        }else{
-          return STATUS.ROAMING;
-        }
-      }
-    }
-  }
+  // assumeStatus(){
+  //   if(this.isAlive()){
+  //     if(this.isFull){
+  //       return STATUS.ROAMING_TAME;
+  //     }else{
+  //       if(this.canIdle()){
+  //         return STATUS.IDLE;
+  //       }else{
+  //         return STATUS.ROAMING;
+  //       }
+  //     }
+  //   }
+  // }
 
   resumeStatus(){
     const statusKey = this.resumeStatus;

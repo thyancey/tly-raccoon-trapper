@@ -155,13 +155,19 @@ function collider_enemyAndPlatform(enemy, platform){
 
 function trigger_enemyAndPlayer(enemy, player){
   if(enemy.isAlive()){
-    if(player.checkStatus(STATUS_PLAYER.HUG_PREP)){
+    // if player has arms open for a hug
+    if(player.checkStatus(STATUS_PLAYER.HUGGING)){
+        // hug happy raccoons that havent been hugged yet
       if(enemy.isFull){
-        enemy.hug();
-        player.hug();
-        setPoints('hugs', 1);
+        if(!enemy.checkStatus(STATUS_ENEMY.HUGGING)){
+          enemy.hug();
+          player.onHugEnemy();
+          setPoints('hugs', 1);
+        }
+        // already got your hug lil dude, move along
       }else{
-        player.hurt();
+        // get bitten by mean boys. shouldnt trigger twice cause player moves out of hugging state
+        player.onAttackedByEnemy();
         setPoints('bites', 1);
       }
     }else if(player.checkStatus(STATUS_PLAYER.KICK_PREP)){
