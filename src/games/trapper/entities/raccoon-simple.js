@@ -282,7 +282,7 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
           this.moveNormal();
           break;
         case STATUS.ROAMING_TAME: 
-          this.moveNormal(1.5);
+          this.moveNormal(3);
           break;
         case STATUS.EATING: 
           this.moveStop();

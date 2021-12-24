@@ -10,6 +10,8 @@ const KICK_DURATION = 500; // becomes variable based on kick power
 const ATTACKED_DURATION = 1000;
 const KILLED_DURATION = 5000;
 
+const MIN_KICK_FORCE = .3;
+
 let statBar;
 
 export const STATUS = {
@@ -148,7 +150,6 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
     this.setStatus(STATUS.ATTACKED);
 
     this.startRecoveryTimer(() => {
-      console.log('all better')
       this.setStatus(STATUS.IDLE);
     }, ATTACKED_DURATION);
   }
@@ -176,13 +177,19 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
     }
   }
 
+  // helps to give a minimum kick strength, helps for tapping kick and not getting 0 strength
+  // normalizes 0-1 between [ MIN_KICK_FORCE, 1 ]
+  getModifiedKickCharge(){
+    return MIN_KICK_FORCE + (this.kickCharge * (1 - MIN_KICK_FORCE));
+  }
+
   kick(){
     this.setStatus(STATUS.KICK);
     // console.log('KICK: ', this.kickCharge);
 
     this.startRecoveryTimer(() => {
       this.cancelKick();
-    }, this.kickCharge * KICK_DURATION);
+    }, this.getModifiedKickCharge() * KICK_DURATION);
   }
 
   cancelKick(){
@@ -194,7 +201,7 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
 
   //- eventually this should be % charge * stats
   getKickStrength(){
-    return this.kickCharge;
+    return this.getModifiedKickCharge();
   }
 
 
