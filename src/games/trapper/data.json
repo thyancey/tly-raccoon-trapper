@@ -86,6 +86,46 @@
         {
           "spawns":[
             {
+              "type": "LIL_BOI",
+              "rate": 0.05
+            }
+          ]
+        },
+        {
+          "spawns":[
+            {
+              "type": "LIL_BOI",
+              "rate": 0.05
+            },{
+              "type": "MEAN_BOI",
+              "rate": 0.05
+            }
+          ]
+        },
+        {
+          "spawns":[
+            {
+              "type": "LIL_BOI",
+              "rate": 0.1
+            }
+          ]
+        },
+        {
+          "spawns":[
+            {
+              "type": "LIL_BOI",
+              "rate": 0.1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sceneKey": "GRASS_01",
+      "lanes":[
+        {
+          "spawns":[
+            {
               "type": "BIG_BOI",
               "rate": 0.01
             }
@@ -114,42 +154,6 @@
           "spawns":[
             {
               "type": "LIL_BOI",
-              "rate": 1
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "lanes":[
-        {
-          "spawns":[
-            {
-              "type": "BIG_BOI",
-              "rate": 1
-            }
-          ]
-        },
-        {
-          "spawns":[
-            {
-              "type": "BIG_BOI",
-              "rate": 1
-            }
-          ]
-        },
-        {
-          "spawns":[
-            {
-              "type": "BIG_BOI",
-              "rate": 1
-            }
-          ]
-        },
-        {
-          "spawns":[
-            {
-              "type": "BIG_BOI",
               "rate": 1
             }
           ]

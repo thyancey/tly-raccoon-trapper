@@ -32,6 +32,8 @@ const animationStatus = {
   [STATUS.DEAD]: 'player_idle'
 }
 
+const gameState = {};
+
 class Entity extends Phaser.Physics.Arcade.Sprite {
   constructor (scene, x, y, physicsGroup, laneData) {
     super(scene, x, y, 'player');
@@ -42,6 +44,7 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
     this.laneValues = this.parseLaneData(laneData);
     this.posOffset = [];
     this.spriteOffset = [];
+    // this.playerIntents = [];
 
     this.isAlive = true;
     this.kickCharge = 0;
@@ -69,8 +72,11 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
     this.updatePlayerPosition();
     this.setStatus(STATUS.IDLE, true);
     
+    gameState.cursors = scene.input.keyboard.createCursorKeys();
     scene.input.keyboard.on('keydown', this.onKeyDown.bind(this));
     scene.input.keyboard.on('keyup', this.onKeyUp.bind(this));
+
+    this.keyboard = scene.input.keyboard;
 
     
     statBar = new StatBar.Entity(scene, 150, 150);
@@ -91,17 +97,31 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
   }
 
   onKeyDown(e){
+    // console.log('onKeyDown', e.code)
     switch(e.code){
-      case 'ArrowDown': this.changeLane(1);
+      case 'ArrowDown': 
+        // this.pushIntent('laneDown');
+        this.changeLane(1);
       break;
-      case 'ArrowUp': this.changeLane(-1);
+      case 'ArrowUp': 
+        // this.pushIntent('laneUp');
+        this.changeLane(-1);
         break;
-      case 'ArrowRight': this.setStatus(STATUS.KICK_PREP);
+      case 'ArrowRight':
+        // this.pushIntent('kick');  
+        this.startKick();
         break;
-      case 'ArrowLeft': this.setStatus(STATUS.HUG_PREP);
+      case 'ArrowLeft': 
+        // this.pushIntent('hug');
+        this.startHug();
         break;
     }
   }
+
+  // pushIntent(intent){
+  //   this.playerIntents = [ intent, ...this.playerIntents.filter(i => i !== intent)];
+  //   console.log('intents', this.playerIntents)
+  // }
 
   setLaneDepth(){
     this.setDepth(getDepthOfLane(this.laneIdx) - 1);
@@ -163,6 +183,9 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
     // console.log('check', statusKey, this.status, STATUS[statusKey])
     return this.status === statusKey;
   }
+  checkStatuses(statusKeys){
+    return statusKeys.indexOf(this.status) > -1;
+  }
   
   hurt(enemy){
     // console.log('hurt')
@@ -190,6 +213,12 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
     statBar.setProgress(this.kickCharge);
   }
 
+  startKick(){
+    if(!this.checkStatuses([STATUS.KICK, STATUS.KICK_PREP])){
+      this.setStatus(STATUS.KICK_PREP);
+    }
+  }
+
   kick(){
     this.setStatus(STATUS.KICK);
     // console.log('KICK: ', this.kickCharge);
@@ -211,6 +240,12 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
     return this.kickCharge;
   }
 
+  startHug(){
+    if(!this.checkStatuses([STATUS.HUG, STATUS.HUG_PREP])){
+      this.setStatus(STATUS.HUG_PREP);
+    }
+  }
+
   hug(enemy){
     if(this.isAlive){
       this.setStatus(STATUS.HUG);
@@ -222,12 +257,55 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
   }
 
   update(){
+    // const intent = getIntentFromStateAndKeys();
+  }
+
+  getIntentFromStateAndKeys(){
+    if(this.isAlive){
+      // moving up and down cancel most other events
+      if(gameState.cursors.up.isDown){
+        return 'moveUp';
+      }
+      if(gameState.cursors.down.isDown){
+        return 'moveDown';
+      }
+
+
+      // no other keys mattered so..?
+      // if hugging or kicking, stop doing em?
+      return null;
+    }
+  }
+
+  logKeys(){
+    const keys = [];
+    if (gameState.cursors.left.isDown) {
+      keys.push('left');
+    }
+    if (gameState.cursors.right.isDown) {
+      keys.push('right');
+    }
+    if (gameState.cursors.up.isDown) {
+      keys.push('up');
+    }
+    if (gameState.cursors.down.isDown) {
+      keys.push('down');
+    }
+    if (gameState.cursors.space.isDown) {
+      keys.push('space');
+    }
+
+    if(keys.length > 0){
+      console.log('KEYS:')
+      console.log(keys.join(','))
+    }
   }
   
   throttledUpdate(){
     if(this.checkStatus(STATUS.KICK_PREP)){
       this.chargeKick();
     }
+    // this.logKeys();
   }
 
 
@@ -251,6 +329,7 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
         case STATUS.HUG_PREP: 
           break;
         case STATUS.HUG: 
+          console.error("HUG TIME")
           break;
         case STATUS.KICK_PREP: 
           break;
