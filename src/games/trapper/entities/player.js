@@ -62,7 +62,7 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
     // this.spriteOffset = [ 12, 6 ];
 
     this.body.setSize(60, 100);
-    this.posOffset = [ -50, -10 ];
+    this.posOffset = [ -80, 4 ];
     this.spriteOffset = [ 12, 6 ];
     this.setScale(1.3);
 
@@ -123,6 +123,7 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
       this.laneIdx = maxIdx;
     }
 
+
     this.updatePlayerPosition();
   }
 
@@ -136,6 +137,10 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
     this.body.y = realPos.y + this.spriteOffset[1];
     this.setPosition(realPos.x, realPos.y);
     statBar && statBar.setOffsetPosition(realPos.x, realPos.y);
+
+    if(this.status === STATUS.KICK){
+      this.stopKick();
+    }
     
     this.setLaneDepth();
   }
@@ -195,6 +200,7 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
   }
 
   stopKick(){
+    this.killRecoveryTimer();
     this.kickCharge = 0;
     statBar.setProgress(this.kickCharge);
     this.setStatus(STATUS.IDLE);

@@ -41,6 +41,8 @@ export const createHeader = () => {
         <div class="score score-bowls"><span>Lost bowls:</span><span id="score-bowls">0</span></div>
         <div class="score score-bites"><span>Bites:</span><span id="score-bites">0</span></div>
         <div class="score score-hugs"><span>Hugs:</span><span id="score-hugs">0</span></div>
+        <div class="score score-captures"><span>Captures:</span><span id="score-captures">0</span></div>
+        <div class="score score-escapes"><span>Escapes:</span><span id="score-escapes">0</span></div>
         <div class="score score-total"><span>Score:</span><span id="score-total">0</span></div>
       </div>
     </div>

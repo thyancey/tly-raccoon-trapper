@@ -23,7 +23,9 @@ let points = {
   bowls: 0,
   hugs: 0,
   bites: 0,
-  total: 0
+  total: 0,
+  captures: 0,
+  escapes: 0
 }
 
 global.gameData = {
@@ -40,7 +42,7 @@ export const createGame = () =>{
       default: 'arcade',
       arcade: {
         gravity: { y: 800 },
-        debug: true
+        debug: false
       }
     },
     scene: {
@@ -117,14 +119,20 @@ function create() {
 
 function trigger_enemyAtEnd(enemy, trigger){
   switch(enemy.status){
-    case STATUS_ENEMY.ROAMING_TAME: enemy.captured();
+    case STATUS_ENEMY.ROAMING_TAME: {
+        setPoints('captures', 1);
+        enemy.captured();
+      }
       break;
-    case STATUS_ENEMY.ROAMING_ANGRY: enemy.escaped();
+    case STATUS_ENEMY.ROAMING_ANGRY: {
+        setPoints('escapes', 1);
+        enemy.escaped();
+      }
       break;
     case STATUS_ENEMY.ROAMING: {
-      setPoints('bites', 1);
-      enemy.kill();
-    }
+        setPoints('escapes', 1);
+        enemy.escaped();
+      }
       break;
   }
 }
@@ -141,16 +149,9 @@ function trigger_enemyAndBowl(enemy, bowl){
   }
 }
 
-// TODO: fix this collision junk - enemies shouldnt collide with platforms above them
 function collider_enemyAndPlatform(enemy, platform){
-  // console.log('colliding:', enemy)
-  // if(enemy.isGoingUp()){
-  //   return false;
-  // }
-    // console.log('true')
   return true;
 }
-
 
 function trigger_enemyAndPlayer(enemy, player){
   if(enemy.isAlive()){
@@ -233,6 +234,8 @@ const initScoreboard = () => {
   scoreElements.bowls = document.querySelector('#score-bowls');
   scoreElements.bites = document.querySelector('#score-bites');
   scoreElements.hugs = document.querySelector('#score-hugs');
+  scoreElements.escapes = document.querySelector('#score-escapes');
+  scoreElements.captures = document.querySelector('#score-captures');
   scoreElements.total = document.querySelector('#score-total');
 }
 

@@ -8,7 +8,7 @@ export const STATUS = {
   EATING: 1,
   ROAMING_TAME: 3,
   DEAD: 4,
-  HUG: 5,
+  HUGGING: 5,
   IDLE: 6,
   ROAMING_ANGRY: 11,
   CAPTURED: 12,
@@ -83,7 +83,7 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
     
     //- physics
     this.setBounce(0);
-    this.setCollideWorldBounds(true);
+    this.setCollideWorldBounds(false);
     this.allowGravity = false;
 
     //- squeeze in hit box from edge of sprite
@@ -246,6 +246,7 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
 
   bowlEmpty(){
     if(this.isAlive()){
+      this.isFull = true;
       this.setStatus(STATUS.ROAMING_TAME);
     }
   }
@@ -280,13 +281,18 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
           this.moveNormal();
           break;
         case STATUS.ROAMING_TAME: 
-          this.isFull = true;
-          this.moveNormal(.6);
+          this.moveNormal(1.5);
           break;
         case STATUS.EATING: 
           this.moveStop();
           break;
         case STATUS.DEAD:
+          this.moveStop();
+          break;
+        case STATUS.HUGGING: 
+          this.moveStop();
+          break;
+        case STATUS.CAPTURED: 
           this.moveStop();
           break;
       }
@@ -323,8 +329,7 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
   }
   
   hug(){
-    this.setStatus(STATUS.HUG);
-    this.moveStop();
+    this.setStatus(STATUS.HUGGING);
     this.delayedDestroy();
   }
 
