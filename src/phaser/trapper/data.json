@@ -1,0 +1,168 @@
+{
+  "info":{ 
+    "name": "Raccoon Trapper"
+  },
+  "entities":{
+    "misc":{
+      "bowl":{
+        "spawnSpeed": -200
+      }
+    },
+    "enemies":{
+      "LIL_BOI":{
+        "type": "raccoon",
+        "scaleRange": [150, 150],
+        "stats":{
+          "speed": [ 80, 80 ],
+          "jumpRate": [ 2, 10 ]
+        },
+        "misc":{
+          "tint": "0xffffff",
+          "puntKillThreshold": 1
+        }
+      },
+      "MEAN_BOI":{
+        "type": "raccoon",
+        "scaleRange": [80, 120],
+        "stats":{
+          "speed": [ 100, 160 ],
+          "jumpRate": [ 2, 10 ]
+        },
+        "misc":{
+          "tint": "0xff0000",
+          "puntKillThreshold": 0,
+          "feedable": false
+        }
+      },
+      "BIG_BOI":{
+        "type": "raccoon",
+        "scaleRange": [250, 350],
+        "stats":{
+          "speed": [ 30, 40 ],
+          "jumpRate": [ 2, 4 ]
+        },
+        "misc":{
+          "tint": "0xff00ff",
+          "puntKillThreshold": 2
+        }
+      }
+    }
+  },
+  "scenes":{
+    "GRASS_01":{
+      "img":{},
+      "lanes":[
+        {
+          "x": 175.0,
+          "y": 100.0,
+          "width": 500.0,
+          "height": 25.0
+        },
+        {
+          "x": 125.0,
+          "y": 225.0,
+          "width": 620.0,
+          "height": 25.0
+        },
+        {
+          "x": 85.0,
+          "y": 350.0,
+          "width": 710.0,
+          "height": 25.0
+        },
+        {
+          "x": 50.0,
+          "y": 475.0,
+          "width": 800.0,
+          "height": 25.0
+        }
+      ]
+    }
+  },
+  "levels":[
+    {
+      "sceneKey": "GRASS_01",
+      "lanes":[
+        {
+          "spawns":[
+            {
+              "type": "LIL_BOI",
+              "rate": 0.1
+            },
+            {
+              "type": "LIL_BOI",
+              "rate": 0.01
+            }
+          ]
+        },
+        {
+          "spawns":[
+            {
+              "type": "LIL_BOI",
+              "rate": 0.1
+            },{
+              "type": "MEAN_BOI",
+              "rate": 0.05
+            }
+          ]
+        },
+        {
+          "spawns":[
+            {
+              "type": "LIL_BOI",
+              "rate": 0.2
+            }
+          ]
+        },
+        {
+          "spawns":[
+            {
+              "type": "LIL_BOI",
+              "rate": 0.3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sceneKey": "GRASS_01",
+      "lanes":[
+        {
+          "spawns":[
+            {
+              "type": "BIG_BOI",
+              "rate": 0.01
+            }
+          ]
+        },
+        {
+          "spawns":[
+            {
+              "type": "LIL_BOI",
+              "rate": 0.05
+            },{
+              "type": "BIG_BOI",
+              "rate": 0.01
+            }
+          ]
+        },
+        {
+          "spawns":[
+            {
+              "type": "MEAN_BOI",
+              "rate": 0.5
+            }
+          ]
+        },
+        {
+          "spawns":[
+            {
+              "type": "LIL_BOI",
+              "rate": 1
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

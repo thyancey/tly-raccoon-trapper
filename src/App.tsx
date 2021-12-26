@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import ReactDOM from 'react-dom';
-import { Counter } from './examples/counter/Counter';
+// import ReactDOM from 'react-dom';
 import { Template } from './experiments/template';
+import { PhaserContainer } from './experiments/phaser';
 import { getColor } from './themes/';
 // import { Route, Link, withRouter, Redirect } from 'react-router-dom';
 import { HashRouter, Route, Routes, Link } from 'react-router-dom';
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 
 export const GroupContainer = styled.div`
   background-color: ${getColor('blue')};
@@ -59,14 +59,14 @@ function App() {
   const [ collapsed, setCollapsed ] = useState(false);
   const pages = [
     {
-      route: '/example1',
-      text: 'Example',
-      element: <Counter/>
-    },
-    {
       route: '/experiment1',
       text: 'Experiment 1',
       element: <Template/>
+    },
+    {
+      route: '/phaser',
+      text: 'Phaser container',
+      element: <PhaserContainer/>
     }
   ]
   
