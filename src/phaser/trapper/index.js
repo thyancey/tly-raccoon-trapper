@@ -32,6 +32,10 @@ global.gameData = {
   curLevel: 0
 }
 
+export const killGame = () => {
+  global.stopGame();
+}
+
 export const createGame = () =>{
   const config = {
     type: Phaser.AUTO,
@@ -58,8 +62,11 @@ export const createGame = () =>{
 }
 
 global.stopGame = () => {
-  global.gameActive = false;
-  sceneContext.scene.stop();
+  // if not, hasnt been loaded yet
+  if(sceneContext){
+    global.gameActive = false;
+    sceneContext.scene.stop();
+  }
 }
 
 global.startGame = () => {
@@ -82,10 +89,6 @@ function setSceneContext(context){
 
 function preload() {
   this.load.audioSprite('sfx', './assets/sfx/mixdown.json', [ 'assets/sfx/splat.ogg', 'assets/sfx/splat.mp3'] );
-  this.load.audio('bg-music', [
-    './assets/sfx/mash.ogg',
-    './assets/sfx/mash.mp3'
-]);
   setSceneContext(this);
   this.load.image('blood', './assets/blood.png');
   LevelController.preload();
@@ -105,9 +108,6 @@ function create() {
   //- make the level
   levelGroups = LevelController.create(getScene());
   initScoreboard();
-
-  var music = this.sound.add('bg-music');
-  music.play();
 
   // var spritemap = this.cache.json.get('sfx').spritemap;
 

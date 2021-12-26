@@ -1,15 +1,23 @@
+// slightly evolving from create-react-app example
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState, AppThunk } from '../../app/store';
-import { fetchCount } from './counterAPI';
 
-export interface CounterState {
-  value: number;
-  status: 'idle' | 'loading' | 'failed';
+export function fetchThing(amount = 1) {
+  return new Promise<{ data: number }>((resolve) =>
+    setTimeout(() => resolve({ data: amount }), 500)
+  );
 }
 
-const initialState: CounterState = {
+export interface MenuState {
+  value: number;
+  status: 'idle' | 'loading' | 'failed';
+  gameStatus: boolean;
+}
+
+const initialState: MenuState = {
   value: 0,
   status: 'idle',
+  gameStatus: false
 };
 
 // The function below is called a thunk and allows us to perform async logic. It
@@ -18,19 +26,25 @@ const initialState: CounterState = {
 // code can then be executed and other actions can be dispatched. Thunks are
 // typically used to make async requests.
 export const incrementAsync = createAsyncThunk(
-  'counter/fetchCount',
+  'menu/fetchThing',
   async (amount: number) => {
-    const response = await fetchCount(amount);
+    const response = await fetchThing(amount);
     // The value we return becomes the `fulfilled` action payload
     return response.data;
   }
 );
 
-export const counterSlice = createSlice({
-  name: 'counter',
+export const menuSlice = createSlice({
+  name: 'menu',
   initialState,
   // The `reducers` field lets us define reducers and generate associated actions
   reducers: {
+    startGame: state => {
+      state.gameStatus = true;
+    },
+    exitGame: state => {
+      state.gameStatus = false;
+    },
     increment: (state) => {
       // Redux Toolkit allows us to write "mutating" logic in reducers. It
       // doesn't actually mutate the state because it uses the Immer library,
@@ -60,12 +74,13 @@ export const counterSlice = createSlice({
   },
 });
 
-export const { increment, decrement, incrementByAmount } = counterSlice.actions;
+export const { startGame, exitGame, increment, decrement, incrementByAmount } = menuSlice.actions;
 
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of
 // in the slice file. For example: `useSelector((state: RootState) => state.counter.value)`
-export const selectCount = (state: RootState) => state.counter.value;
+export const selectCount = (state: RootState) => state.menu.value;
+export const selectGameStatus = (state: RootState) => state.menu.gameStatus;
 
 // We can also write thunks by hand, which may contain both sync and async logic.
 // Here's an example of conditionally dispatching actions based on current state.
@@ -79,4 +94,4 @@ export const incrementIfOdd = (amount: number): AppThunk => (
   }
 };
 
-export default counterSlice.reducer;
+export default menuSlice.reducer;

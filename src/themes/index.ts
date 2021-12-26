@@ -11,7 +11,7 @@ export default createGlobalStyle`
     margin:0 auto;
   }
   h1, h2, h3, h4{
-    font-family: 'Bevan', cursive;
+    font-family: 'Ranchers', cursive;
   }
   a, p, span, h5, h6{
     font-family: 'Cabin', sans-serif;
@@ -82,17 +82,21 @@ const shadows = {
   z2: '-0.1rem 0.1rem .25rem .1rem rgba(0,0,0,0.36)',
   z3: '-.2rem .5rem 1rem .2rem rgba(0,0,0,.36)'
 }
-type tColor = 'black' | 'grey' | 'grey_light' | 'white' | 'blue' | 'green' | 'yellow' | 'red' | 'purple';
+type tColor = 'black' | 'white' | 'grey' | 'grey_light' | 'grey_dark' | 'pink' | 'brown' | 'brown_light' | 'brown_dark' | 'brown_beige' | 'red' | 'green' | 'green_light';
 const colors = {
   black: '#000000',
-  grey: '#373737',
-  grey_light: '#A39F8E',
-  white: '#fef8dd',
-  blue: '#1fb9f3',
-  green: '#51f249',
-  yellow: '#fff249',
-  red: '#F55658',
-  purple: '#6b1ff3'
+  white: '#FFFFFF',
+  grey: '#847E87',
+  grey_light: '#9BADB7',
+  grey_dark: '#222034',
+  pink: '#D77BBA',
+  brown: '#915539',
+  brown_light: '#D8A065',
+  brown_dark: '#663A31',
+  brown_beige: '#EEC39A',
+  red: '#AE3232',
+  green: '#6BBE30',
+  green_light: '#99E54F'
 }
 
 type tBreakpoint = 'mobile_tiny' | 'mobile_medium' | 'mobile_large' | 'tablet' | 'desktop';

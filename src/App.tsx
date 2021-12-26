@@ -1,50 +1,12 @@
-import React, { useState } from 'react';
-// import ReactDOM from 'react-dom';
-import { Template } from './experiments/template';
-import { PhaserContainer } from './experiments/phaser';
-import { getColor } from './themes/';
-// import { Route, Link, withRouter, Redirect } from 'react-router-dom';
-import { HashRouter, Route, Routes, Link } from 'react-router-dom';
+import { useEffect } from 'react';
+import { HashRouter, Route, Routes, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 
-export const GroupContainer = styled.div`
-  background-color: ${getColor('blue')};
-  border: 1rem solid ${getColor('white')};
-  border-radius: 5rem;
-  margin: 3rem;
-  padding: 2rem 3.3rem;
-`;
-
-export const ScHeader = styled.div`
-  position:fixed;
-  top:0;
-  left:0;
-  transition: top .5s ease-in-out;
-
-  width: 100%;
-  height:10rem;
-  border-bottom:1rem solid blue;
-  color:white;
-  z-index:1;
-  background-color:black;
-
-  &.collapsed{
-    top:-8rem;
-    transition: top .5s ease-in-out;
-  }
-
-  >.link-button{
-    color:white;
-    display:inline-block;
-    vertical-align:middle;
-    margin:1.4rem 1.8rem;
-    transition: color .5s ease-in;
-    &:hover{
-      color: ${getColor('yellow')};
-      transition: color .2s ease-out;
-    }
-  }
-`;
+import { PhaserContainer } from './components/phasercontainer';
+import { Menu } from './components/menu';
+import { useAppDispatch } from './app/hooks';
+import { startGame, exitGame } from './components/menu/menu-slice';
+import Header from './components/header';
 
 export const ScStage = styled.div`
   position:absolute;
@@ -52,33 +14,42 @@ export const ScStage = styled.div`
   top:0;
   right:0;
   bottom:0;
-  padding-top:5rem;
+  padding-top:1rem;
 `
 
+export const RouteReader = () => {
+  let location = useLocation();
+  const dispatch = useAppDispatch();
+  
+  useEffect(() => {
+    if(location.pathname.indexOf('game') > -1){
+      dispatch(startGame())
+    }else{
+      dispatch(exitGame())
+    }
+  }, [ location, dispatch ]);
+
+  return null;
+}
+
 function App() {
-  const [ collapsed, setCollapsed ] = useState(false);
   const pages = [
     {
-      route: '/experiment1',
-      text: 'Experiment 1',
-      element: <Template/>
+      route: '',
+      text: 'MENU',
+      element: <Menu />
     },
     {
-      route: '/phaser',
-      text: 'Phaser container',
+      route: '/game',
+      text: 'RACCOON TRAPPER',
       element: <PhaserContainer/>
     }
   ]
   
   return (
     <HashRouter>
-      <ScHeader className={ collapsed ? 'collapsed' : ''} onClick={() => setCollapsed(!collapsed)}>
-        {pages.map((p, i) => (
-          <Link key={i} to={p.route} className="link-button">
-            <h2>{p.text}</h2>
-          </Link>
-        ))}
-      </ScHeader>
+      <RouteReader />
+      <Header pages={pages} />
       <ScStage>
         <Routes>
           {pages.map((p, i) => (
