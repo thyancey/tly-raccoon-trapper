@@ -15,7 +15,7 @@ const ScSidebar = styled.div`
   width:40rem;
   height:100%;
   margin:0;
-  color:white;
+  color:${getColor('tan')};
   z-index:1;
 
   &.collapsed{
@@ -87,22 +87,33 @@ const ScBody = styled.div`
   height:100%;
 `
 
+
+const ScBottom = styled.div`
+  flex-grow:1;
+  overflow-y:auto;
+  padding:1rem;
+`
+
 const ScTop = styled.div`
   min-height:20rem;
   position:relative;
   cursor:pointer;
   border-bottom:.5rem solid ${getColor('brown')};
   padding:1rem;
+  display:flex;
+  flex-direction:column;
 `
 
-const ScBottom = styled.div`
-  flex-grow:1;
-  padding:1rem;
-`
+const ScLogo = styled.div`
+  background: center / contain no-repeat url('./assets/logo.png');
+  /* max-height: 21rem; */
+  margin:-1rem;
+  flex:1;
+`;
 
 const ScLink = styled(Link)`
   color:${getColor('tan')};
-  margin:2rem;
+  text-align:center;
   font-size:2rem;
 
   &:hover{
@@ -113,6 +124,7 @@ const ScLink = styled(Link)`
 const ScHelp = styled.div`
   
 `
+
 
 const HelpList = () => {
   const instructions = [
@@ -126,9 +138,10 @@ const HelpList = () => {
   ];
   return (
     <ScHelp>
+      <h4>{'Instructions'}</h4>
       <ul>
         {instructions.map((i, idx) => (
-          <li key={idx}>${i}</li>
+          <li key={idx}>{i}</li>
         ))}
       </ul>
     </ScHelp>
@@ -142,14 +155,15 @@ function Sidebar() {
     <ScSidebar className={ collapsed ? 'collapsed' : ''} >
       <ScBody>
         <ScTop>
-          <h2>{'RACCOON TRAPPER'}</h2>
+          <ScLogo />
           <ScLink to={'/'} >
-            {'menu'}
+            {'back to main menu'}
           </ScLink>
-          <HelpList />
           <ScTab onClick={() => setCollapsed(!collapsed)}><span>{'MENU'}</span></ScTab>
         </ScTop>
         <ScBottom>
+          <HelpList />
+          <hr/>
           <Controls/>
           <hr/>
           <Stats/>

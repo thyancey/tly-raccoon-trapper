@@ -7,7 +7,7 @@ export const ScPhaserContainer = styled.div`
   position:relative;
   width:100%;
   height:100%;
-  background-color: ${getColor('black')};
+  /* background-color: ${getColor('black')}; */
 
   >canvas{
     border: 1rem solid ${getColor('brown')};

@@ -42,6 +42,13 @@ export const ScButtons = styled.div`
 
 
 `;
+const ScLogo = styled.div`
+  background: center / contain no-repeat url('./assets/logo.png');
+  width: 60rem;
+  height: 40rem;
+  margin:-2rem;
+`;
+
 
 const onGameClick = (navigate: NavigateFunction) => {
   // dispatch(startGame())
@@ -54,7 +61,7 @@ export function Splash() {
   return (
     <ScSplash>
       <ScBody>
-        <ScTitle>{'RACCOON TRAPPER'}</ScTitle>
+        <ScLogo title="RACCOON TRAPPER" />
       </ScBody>
       <ScButtons>
         <Button onClick={(e) => onGameClick(navigate)} text={'NEW GAME'} />;
