@@ -8,7 +8,7 @@ export const ScButton = styled.div`
   padding: 2rem;
   border: .5rem solid ${getColor('brown')};
   border-radius: 1rem;
-  background-color: ${getColor('brown_beige')};
+  background-color: ${getColor('tan')};
   width:auto;
 
   cursor:pointer;

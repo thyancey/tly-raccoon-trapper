@@ -31,9 +31,23 @@ export const killGame = () => {
 export const createGame = () =>{
   const config = {
     type: Phaser.AUTO,
-    parent: 'game-container',
-    width: 900,
-    height: 500,
+    scale: {
+      parent: 'game-container',
+      mode: Phaser.Scale.FIT,
+      autoCenter: Phaser.Scale.CENTER_BOTH,
+      width: 900,
+      height: 500,
+      min: {
+        width: 90,
+        height: 50
+      },
+      max: {
+        width: 1600,
+        height: 1200
+      },
+      zoom: 1,  // Size of game canvas = game size * zoom
+    },
+    autoRound: false,
     physics: {
       default: 'arcade',
       arcade: {
@@ -121,7 +135,6 @@ function update (){
 }
 
 function onInterface(event, data){
-  // console.log('onInterface', event, data);
   global.gameInterface && global.gameInterface(event, data)
 }
 

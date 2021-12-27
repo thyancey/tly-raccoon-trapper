@@ -1,23 +1,18 @@
-import { useEffect } from 'react';
 import styled from 'styled-components';
-
-import { createGame, killGame } from '../../phaser/trapper';
-import { selectGameStatus } from '../ui/ui-slice';
 import { setStat } from '../ui/stats-slice';
-import { useAppDispatch, useAppSelector } from '../../app/hooks';
+import { useAppDispatch } from '../../app/hooks';
 import { getColor } from '../../themes';
 
-export const Container = styled.div`
-  position:absolute;
-  left:0;
-  top:0;
-  bottom:0;
-  right:0;
+export const ScPhaserContainer = styled.div`
+  position:relative;
+  width:100%;
+  height:100%;
   background-color: ${getColor('black')};
-  z-index:-1;
-  padding-top:10rem;
-  text-align:center;
-`
+
+  >canvas{
+    border: 1rem solid ${getColor('brown')};
+  }
+`;
 
 export const createGameInterface = dispatch => {
   if(!(global as any).gameInterface){
@@ -34,22 +29,10 @@ export const createGameInterface = dispatch => {
 }
 
 export function PhaserContainer() {
-  const gameStatus = useAppSelector(selectGameStatus);
   const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    if(gameStatus){
-      console.log('gameStatus true, creating game!');
-      createGameInterface(dispatch);
-      createGame();
-    }else{
-      console.log('gameStatus false, stopping game!');
-      killGame();
-    }
-  }, [ gameStatus, dispatch ]);
+  createGameInterface(dispatch);
 
   return (
-    <Container id="game-container">
-    </Container>
+      <ScPhaserContainer id="game-container" />
   );
 }

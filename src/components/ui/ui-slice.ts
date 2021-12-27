@@ -12,13 +12,13 @@ export function fetchThing(amount = 1) {
 export interface UiState {
   value: number;
   status: 'idle' | 'loading' | 'failed';
-  gameStatus: boolean;
+  gameStatus: 'active' | 'inactive';
 }
 
 const initialState: UiState = {
   value: 0,
   status: 'idle',
-  gameStatus: false
+  gameStatus: 'inactive'
 };
 
 // The function below is called a thunk and allows us to perform async logic. It
@@ -41,10 +41,10 @@ export const uiSlice = createSlice({
   // The `reducers` field lets us define reducers and generate associated actions
   reducers: {
     startGame: state => {
-      state.gameStatus = true;
+      state.gameStatus = 'active';
     },
     exitGame: state => {
-      state.gameStatus = false;
+      state.gameStatus = 'inactive';
     },
     increment: (state) => {
       // Redux Toolkit allows us to write "mutating" logic in reducers. It

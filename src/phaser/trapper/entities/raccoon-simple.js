@@ -246,7 +246,6 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
 
   bowlEmpty(){
     if(this.isAlive()){
-      console.log('fromBowlEmpty')
       this.isFull = true;
       this.setStatus(STATUS.ROAMING_TAME);
     }

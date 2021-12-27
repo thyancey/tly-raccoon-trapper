@@ -4,26 +4,25 @@ import styled from 'styled-components';
 
 import { PhaserContainer } from '../components/phasercontainer';
 import { Splash } from '../components/ui/splash';
-import { useAppDispatch } from '../app/hooks';
-import { startGame, exitGame } from '../components/ui/ui-slice';
+import { useAppDispatch, useAppSelector } from '../app/hooks';
+import { startGame, exitGame, selectGameStatus } from '../components/ui/ui-slice';
 import Sidebar from '../components/ui/sidebar';
+import { createGame, killGame } from '../phaser/trapper';
 
 export const ScStage = styled.div`
   position:absolute;
-  left:0;
-  top:0;
-  right:0;
-  bottom:0;
-  padding-top:1rem;
+  left:1rem;
+  top:1rem;
+  right:1rem;
+  bottom:1rem;
 `
 
-export const RouteReader = () => {
+export const RouteReader = ({ dispatch }) => {
   let location = useLocation();
-  const dispatch = useAppDispatch();
   
   useEffect(() => {
     if(location.pathname.indexOf('game') > -1){
-      dispatch(startGame())
+      dispatch(startGame());
     }else{
       dispatch(exitGame())
     }
@@ -33,6 +32,9 @@ export const RouteReader = () => {
 }
 
 function App() {
+  const gameStatus = useAppSelector(selectGameStatus);
+  const dispatch = useAppDispatch();
+  
   const pages = [
     {
       route: '',
@@ -45,11 +47,19 @@ function App() {
       element: <PhaserContainer/>
     }
   ]
+
+  useEffect(() => {
+    if(gameStatus === 'active'){
+      createGame();
+    }else{
+      killGame();
+    }
+  }, [ gameStatus, dispatch ]);
   
   return (
     <HashRouter>
-      <RouteReader />
-      <Sidebar pages={pages} />
+      <RouteReader dispatch={dispatch}/>
+      <Sidebar />
       <ScStage>
         <Routes>
           {pages.map((p, i) => (
