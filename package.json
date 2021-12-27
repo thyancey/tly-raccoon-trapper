@@ -1,6 +1,6 @@
 {
   "name": "tly-raccoon-trapper",
-  "homepage": "./somethin/",
+  "homepage": "./",
   "version": "0.1.0",
   "private": true,
   "main": "src/index.js",
