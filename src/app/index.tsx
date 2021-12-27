@@ -10,11 +10,10 @@ import Sidebar from '../components/ui/sidebar';
 
 export const ScStage = styled.div`
   position:absolute;
-  left:0;
-  top:0;
-  right:0;
-  bottom:0;
-  padding-top:1rem;
+  left:1rem;
+  top:1rem;
+  right:1rem;
+  bottom:1rem;
 `
 
 export const RouteReader = () => {
@@ -23,8 +22,10 @@ export const RouteReader = () => {
   
   useEffect(() => {
     if(location.pathname.indexOf('game') > -1){
+      console.log('start Game!')
       dispatch(startGame())
     }else{
+      console.log('exit Game!')
       dispatch(exitGame())
     }
   }, [ location, dispatch ]);
@@ -49,7 +50,7 @@ function App() {
   return (
     <HashRouter>
       <RouteReader />
-      <Sidebar pages={pages} />
+      <Sidebar />
       <ScStage>
         <Routes>
           {pages.map((p, i) => (

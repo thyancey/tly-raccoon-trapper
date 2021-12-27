@@ -82,7 +82,7 @@ const shadows = {
   z2: '-0.1rem 0.1rem .25rem .1rem rgba(0,0,0,0.36)',
   z3: '-.2rem .5rem 1rem .2rem rgba(0,0,0,.36)'
 }
-type tColor = 'black' | 'white' | 'grey' | 'grey_light' | 'grey_dark' | 'pink' | 'brown' | 'brown_light' | 'brown_dark' | 'brown_beige' | 'red' | 'green' | 'green_light';
+type tColor = 'black' | 'white' | 'grey' | 'grey_light' | 'grey_dark' | 'pink' | 'brown' | 'brown_light' | 'brown_dark' | 'tan' | 'red' | 'green' | 'green_light';
 const colors = {
   black: '#000000',
   white: '#FFFFFF',
@@ -93,7 +93,7 @@ const colors = {
   brown: '#915539',
   brown_light: '#D8A065',
   brown_dark: '#663A31',
-  brown_beige: '#EEC39A',
+  tan: '#EEC39A',
   red: '#AE3232',
   green: '#6BBE30',
   green_light: '#99E54F'

@@ -34,7 +34,7 @@ export const ScBody = styled.div`
 export const ScTitle = styled.h1`
   text-align:center;
   font-size:8rem;
-  color: ${getColor('brown_beige')};
+  color: ${getColor('tan')};
 `;
 export const ScButtons = styled.div`
   margin-top:1rem;

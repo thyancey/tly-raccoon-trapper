@@ -41,9 +41,11 @@ export const uiSlice = createSlice({
   // The `reducers` field lets us define reducers and generate associated actions
   reducers: {
     startGame: state => {
+      console.log('reducer, startGame:')
       state.gameStatus = true;
     },
     exitGame: state => {
+      console.log('reducer, exitGame:')
       state.gameStatus = false;
     },
     increment: (state) => {

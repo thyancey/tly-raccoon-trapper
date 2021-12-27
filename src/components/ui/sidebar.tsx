@@ -7,8 +7,9 @@ import { useAppDispatch } from '../../app/hooks';
 import { startGame, exitGame } from './ui-slice';
 import Stats from './components/stats';
 import Controls from './components/controls';
+import { killGame } from '../../phaser/trapper';
 
-const ScHeader = styled.div`
+const ScSidebar = styled.div`
   position:fixed;
   top:0;
   left:0;
@@ -32,7 +33,7 @@ const ScHeader = styled.div`
     margin:0rem 1.8rem;
     margin-top:1.5rem;
     transition:color .5s ease-in;
-    color:${getColor('brown_beige')};
+    color:${getColor('tan')};
     
     h4{
       font-size:2.5rem;
@@ -73,8 +74,14 @@ const ScTab = styled.div`
 
   &:hover{
     background-color: ${getColor('brown')};
+    color: ${getColor('white')};
   }
   
+  color: ${getColor('brown_light')};
+  padding-right:1rem;
+  text-align:center;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
 `;
 
 const ScBody = styled.div`
@@ -97,7 +104,7 @@ const ScBottom = styled.div`
 `
 
 const ScLink = styled(Link)`
-  color:${getColor('brown_beige')};
+  color:${getColor('tan')};
   margin:2rem;
   font-size:2rem;
 
@@ -131,21 +138,11 @@ const HelpList = () => {
   )
 }
 
-function Header( { pages }) {
-  const [ collapsed, setCollapsed ] = useState(false);
-  let location = useLocation();
-  const dispatch = useAppDispatch();
-  
-  useEffect(() => {
-    if(location.pathname.indexOf('game') > -1){
-      dispatch(startGame())
-    }else{
-      dispatch(exitGame())
-    }
-  }, [ location, dispatch ]);
+function Sidebar() {
+  const [ collapsed, setCollapsed ] = useState(true);
 
   return (
-    <ScHeader className={ collapsed ? 'collapsed' : ''} >
+    <ScSidebar className={ collapsed ? 'collapsed' : ''} >
       <ScBody>
         <ScTop>
           <h2>{'RACCOON TRAPPER'}</h2>
@@ -153,7 +150,7 @@ function Header( { pages }) {
             {'menu'}
           </ScLink>
           <HelpList />
-          <ScTab onClick={() => setCollapsed(!collapsed)} />
+          <ScTab onClick={() => setCollapsed(!collapsed)}><span>{'MENU'}</span></ScTab>
         </ScTop>
         <ScBottom>
           <Controls/>
@@ -162,8 +159,8 @@ function Header( { pages }) {
         </ScBottom>
       </ScBody>
       <ScBg />
-    </ScHeader>
+    </ScSidebar>
   )
 }
 
-export default Header;
+export default Sidebar;
