@@ -135,7 +135,6 @@ function update (){
 }
 
 function onInterface(event, data){
-  // console.log('onInterface', event, data);
   global.gameInterface && global.gameInterface(event, data)
 }
 

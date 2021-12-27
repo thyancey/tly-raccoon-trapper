@@ -1,13 +1,10 @@
-import { useEffect, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { getColor } from '../../themes/';
-import { useAppDispatch } from '../../app/hooks';
-import { startGame, exitGame } from './ui-slice';
 import Stats from './components/stats';
 import Controls from './components/controls';
-import { killGame } from '../../phaser/trapper';
 
 const ScSidebar = styled.div`
   position:fixed;
