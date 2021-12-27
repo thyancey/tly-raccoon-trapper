@@ -12,14 +12,14 @@ const ScSidebar = styled.div`
   left:0;
   transition:left .5s ease-in-out;
 
-  width:40rem;
+  width:30rem;
   height:100%;
   margin:0;
   color:${getColor('tan')};
   z-index:1;
 
   &.collapsed{
-    left:-40rem;
+    left:-30rem;
     transition:left .5s ease-in-out;
   }
 
@@ -100,15 +100,24 @@ const ScTop = styled.div`
   cursor:pointer;
   border-bottom:.5rem solid ${getColor('brown')};
   padding:1rem;
-  display:flex;
-  flex-direction:column;
 `
 
 const ScLogo = styled.div`
-  background: center / contain no-repeat url('./assets/logo.png');
-  /* max-height: 21rem; */
-  margin:-1rem;
-  flex:1;
+  background: center / contain no-repeat url('./assets/logo.gif');
+  position:absolute;
+  left:100%;
+  top:0;
+  width:30rem;
+  height:20rem;
+  z-index:1;
+
+  -webkit-filter: drop-shadow(.5rem .5rem .5rem ${getColor('grey_dark')});
+  filter: drop-shadow(.5rem .5rem .5rem ${getColor('grey_dark')});
+
+  &:hover{
+    -webkit-filter: drop-shadow(1rem 1rem 1rem ${getColor('tan')});
+    filter: drop-shadow(1rem 1rem 1rem ${getColor('tan')});
+  }
 `;
 
 const ScLink = styled(Link)`
@@ -122,7 +131,27 @@ const ScLink = styled(Link)`
 `
 
 const ScHelp = styled.div`
-  
+  li{
+    font-size:1.5rem;
+    margin-left:1rem;
+  }
+`
+
+const ScSideImage = styled.div`
+background: center / contain no-repeat url('./assets/raccoon-on-branch.gif');
+  position:absolute;
+  left:100%;
+  width:20rem;
+  height:50rem;
+  -webkit-filter: drop-shadow(.5rem .5rem .5rem ${getColor('grey_dark')});
+  filter: drop-shadow(.5rem .5rem .5rem ${getColor('grey_dark')});
+
+  &:hover{
+    -webkit-filter: drop-shadow(1rem 1rem 1rem ${getColor('tan')});
+    filter: drop-shadow(1rem 1rem 1rem ${getColor('tan')});
+  }
+  top:0;
+  margin-left:-12rem;
 `
 
 
@@ -155,14 +184,14 @@ function Sidebar() {
     <ScSidebar className={ collapsed ? 'collapsed' : ''} >
       <ScBody>
         <ScTop>
-          <ScLogo />
+          <ScLogo onClick={() => setCollapsed(!collapsed)} /> 
+          <ScSideImage onClick={() => setCollapsed(!collapsed)} />
+          <HelpList />
           <ScLink to={'/'} >
             {'back to main menu'}
           </ScLink>
-          <ScTab onClick={() => setCollapsed(!collapsed)}><span>{'MENU'}</span></ScTab>
         </ScTop>
         <ScBottom>
-          <HelpList />
           <hr/>
           <Controls/>
           <hr/>

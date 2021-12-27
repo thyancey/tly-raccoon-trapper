@@ -1,12 +1,41 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 import { useAppSelector } from '../../../app/hooks';
+import { getColor } from '../../../themes';
 import { selectStats, selectScore } from '../stats-slice';
 
+type StatsProps = {
+  statType: StatType;
+}
+
+type StatType = 'good' | 'bad' | 'neutral'
+
+const statMap = {
+  bowls: 'bad',
+  hugs: 'good',
+  bites: 'bad',
+  captures: 'good',
+  escapes: 'bad'
+}
+
+const getStatType = (statKey: string): StatType => {
+  return statMap[statKey] || 'neutral';
+}
+
 const ScStats = styled.div`
+  margin-top:1rem;
+  text-align:right;
+  padding-right:8rem;
 `;
 
-const ScStat = styled.div`
+const ScStat = styled.div<StatsProps>`
+  color:grey;
+  ${p => p.statType === 'good' && css`
+    color:${getColor('green')};
+  `}
+  ${p => p.statType === 'bad' && css`
+  color:${getColor('pink')};
+  `}
 `
 
 const ScScore = styled.div`
@@ -21,13 +50,14 @@ function Stats() {
 
   return (
     <ScStats>
+      <h4>{'Score'}</h4>
       {stats.map((s, idx) => (
-        <ScStat key={idx}>
+        <ScStat key={idx} statType={getStatType(s.key)}>
           <span>{`${s.key}:`}</span><span>{s.value}</span>
         </ScStat>
       ))}
       <ScScore>
-        <span>{'Score:'}</span>
+        <span>{'Total:'}</span>
         <span>{score}</span>
       </ScScore>
     </ScStats>
