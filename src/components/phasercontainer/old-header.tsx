@@ -166,18 +166,6 @@ export const ScHeader = styled.div`
 export default function OldHeader() {
   return (
     <ScHeader>
-      <div className="header-left">
-        <h2>Raccoon Trapper</h2>
-        <div className="description">
-          <p>Feed the raccoons and give them hugs!</p>
-          <p>Kick the ones who don't love you!</p>
-          <p>Arrow Up/Down: Change langes</p>
-          <p>Arrow Left: Hug</p>
-          <p>Arrow Right: Charge kick</p>
-          <p>Space: Throw food</p>
-          <p>... you can't win or lose right now</p>
-        </div>
-      </div>
       <div className="header-right">
         <div id="controls">
           <h4>Controls</h4>

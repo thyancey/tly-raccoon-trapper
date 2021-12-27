@@ -6,7 +6,7 @@ import { getColor } from '../../themes/';
 import { useAppDispatch } from '../../app/hooks';
 import { startGame, exitGame } from '../menu/menu-slice';
 
-export const ScHeader = styled.div`
+const ScHeader = styled.div`
   position:fixed;
   top:0;
   left:0;
@@ -17,7 +17,6 @@ export const ScHeader = styled.div`
   margin:0;
   color:white;
   z-index:1;
-  background-color: ${getColor('brown_dark')};
 
   &.collapsed{
     top:-4rem;
@@ -43,6 +42,38 @@ export const ScHeader = styled.div`
   }
 `;
 
+const ScBg = styled.div`
+  position:absolute;
+  left:0;
+  right:0;
+  top:0;
+  bottom:0;
+  z-index:-1;
+  
+  background-color: ${getColor('brown_dark')};
+  border-bottom: .5rem solid ${getColor('brown')};
+`
+
+const ScTab = styled.div`
+  width:5rem;
+  height:calc(100% + 2rem);
+  position:absolute;
+  top:0%;
+  right:2rem;
+  background-color:${getColor('brown_dark')};
+  border:.5rem solid ${getColor('brown')};
+  border-top:0;
+  border-radius: 0 0 1rem 1rem;
+
+  cursor:pointer;
+`;
+
+const ScLink = styled(Link)`
+  color:white;
+  margin:2rem;
+  font-size:3rem;
+`
+
 function Header( { pages }) {
   const [ collapsed, setCollapsed ] = useState(false);
   let location = useLocation();
@@ -57,12 +88,16 @@ function Header( { pages }) {
   }, [ location, dispatch ]);
 
   return (
-    <ScHeader className={ collapsed ? 'collapsed' : ''} onClick={() => setCollapsed(!collapsed)}>
-      {pages.map((p, i) => (
-        <Link key={i} to={p.route} className="link-button">
-          <h4>{p.text}</h4>
-        </Link>
-      ))}
+    <ScHeader className={ collapsed ? 'collapsed' : ''} >
+      <div>
+        {pages.map((p, i:integer) => (
+          <ScLink key={i} to={p.route} >
+            {p.text}
+          </ScLink>
+        ))}
+      </div>
+      <ScBg />
+      <ScTab onClick={() => setCollapsed(!collapsed)} />
     </ScHeader>
   )
 }

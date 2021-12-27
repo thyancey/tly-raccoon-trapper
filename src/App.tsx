@@ -7,6 +7,7 @@ import { Menu } from './components/menu';
 import { useAppDispatch } from './app/hooks';
 import { startGame, exitGame } from './components/menu/menu-slice';
 import Header from './components/header';
+import Sidebar from './components/header/sidebar';
 
 export const ScStage = styled.div`
   position:absolute;
@@ -49,7 +50,7 @@ function App() {
   return (
     <HashRouter>
       <RouteReader />
-      <Header pages={pages} />
+      <Sidebar pages={pages} />
       <ScStage>
         <Routes>
           {pages.map((p, i) => (
