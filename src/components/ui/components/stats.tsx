@@ -1,6 +1,7 @@
 import styled from 'styled-components';
-import { useAppSelector } from '../../app/hooks';
-import { selectStats, selectScore } from './stats-slice';
+
+import { useAppSelector } from '../../../app/hooks';
+import { selectStats, selectScore } from '../stats-slice';
 
 const ScStats = styled.div`
 `;

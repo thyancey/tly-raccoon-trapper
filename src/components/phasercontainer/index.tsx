@@ -1,11 +1,12 @@
 import { useEffect } from 'react';
 import styled from 'styled-components';
-import { getColor } from '../../themes';
-import { createGame, killGame, externalCommand } from '../../phaser/trapper';
-import { selectGameStatus } from '../menu/menu-slice';
-import { setStat } from '../header/stats-slice';
 
+import { createGame, killGame } from '../../phaser/trapper';
+import { selectGameStatus } from '../ui/ui-slice';
+import { setStat } from '../ui/stats-slice';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
+import { getColor } from '../../themes';
+
 export const Container = styled.div`
   position:absolute;
   left:0;

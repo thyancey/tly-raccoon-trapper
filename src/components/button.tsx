@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { MouseEventHandler } from 'hoist-non-react-statics/node_modules/@types/react';
+
 import { getColor } from '../themes';
 
 export const ScButton = styled.div`

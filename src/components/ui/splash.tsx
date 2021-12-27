@@ -1,11 +1,11 @@
 import styled from 'styled-components';
-import { getColor } from '../../themes';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
+
+import { getColor } from '../../themes';
 import { Button } from '../button';
 
 
-export const ScMenu = styled.div`
-  /* position:absolute; */
+export const ScSplash = styled.div`
   margin: 0;
   position: absolute;
   top: 50%;
@@ -48,11 +48,11 @@ const onGameClick = (navigate: NavigateFunction) => {
   navigate('/game');
 }
 
-export function Menu() {
+export function Splash() {
   const navigate = useNavigate();
 
   return (
-    <ScMenu>
+    <ScSplash>
       <ScBody>
         <ScTitle>{'RACCOON TRAPPER'}</ScTitle>
       </ScBody>
@@ -60,6 +60,6 @@ export function Menu() {
         <Button onClick={(e) => onGameClick(navigate)} text={'NEW GAME'} />;
       </ScButtons>
       <ScBg />
-    </ScMenu>
+    </ScSplash>
   )
 }

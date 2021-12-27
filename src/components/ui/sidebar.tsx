@@ -4,9 +4,9 @@ import styled from 'styled-components';
 
 import { getColor } from '../../themes/';
 import { useAppDispatch } from '../../app/hooks';
-import { startGame, exitGame } from '../menu/menu-slice';
-import Stats from './stats';
-import Controls from './controls';
+import { startGame, exitGame } from './ui-slice';
+import Stats from './components/stats';
+import Controls from './components/controls';
 
 const ScHeader = styled.div`
   position:fixed;

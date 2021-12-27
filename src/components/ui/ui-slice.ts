@@ -1,5 +1,6 @@
 // slightly evolving from create-react-app example
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+
 import { RootState, AppThunk } from '../../app/store';
 
 export function fetchThing(amount = 1) {
@@ -8,13 +9,13 @@ export function fetchThing(amount = 1) {
   );
 }
 
-export interface MenuState {
+export interface UiState {
   value: number;
   status: 'idle' | 'loading' | 'failed';
   gameStatus: boolean;
 }
 
-const initialState: MenuState = {
+const initialState: UiState = {
   value: 0,
   status: 'idle',
   gameStatus: false
@@ -26,7 +27,7 @@ const initialState: MenuState = {
 // code can then be executed and other actions can be dispatched. Thunks are
 // typically used to make async requests.
 export const incrementAsync = createAsyncThunk(
-  'menu/fetchThing',
+  'ui/fetchThing',
   async (amount: number) => {
     const response = await fetchThing(amount);
     // The value we return becomes the `fulfilled` action payload
@@ -34,8 +35,8 @@ export const incrementAsync = createAsyncThunk(
   }
 );
 
-export const menuSlice = createSlice({
-  name: 'menu',
+export const uiSlice = createSlice({
+  name: 'ui',
   initialState,
   // The `reducers` field lets us define reducers and generate associated actions
   reducers: {
@@ -74,13 +75,13 @@ export const menuSlice = createSlice({
   },
 });
 
-export const { startGame, exitGame, increment, decrement, incrementByAmount } = menuSlice.actions;
+export const { startGame, exitGame, increment, decrement, incrementByAmount } = uiSlice.actions;
 
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of
 // in the slice file. For example: `useSelector((state: RootState) => state.counter.value)`
-export const selectCount = (state: RootState) => state.menu.value;
-export const selectGameStatus = (state: RootState) => state.menu.gameStatus;
+export const selectCount = (state: RootState) => state.ui.value;
+export const selectGameStatus = (state: RootState) => state.ui.gameStatus;
 
 // We can also write thunks by hand, which may contain both sync and async logic.
 // Here's an example of conditionally dispatching actions based on current state.
@@ -94,4 +95,4 @@ export const incrementIfOdd = (amount: number): AppThunk => (
   }
 };
 
-export default menuSlice.reducer;
+export default uiSlice.reducer;

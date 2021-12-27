@@ -1,10 +1,9 @@
 import Phaser from 'phaser';
-// import img_blood from './assets/blood.png';
+
 import gameData from './data.json';
 import { STATUS as STATUS_ENEMY } from './entities/raccoon-simple';
 import { STATUS as STATUS_PLAYER } from './entities/player';
 import Events from '../event-emitter';
-
 import SpawnController from './spawn.js';
 import LevelController from './level.js';
 
@@ -12,7 +11,6 @@ let game;
 let levelGroups;
 let emitter;
 let sceneContext;
-
 
 let points = {
   bowls: 0,
