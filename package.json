@@ -1,7 +1,19 @@
 {
-  "name": "tly-experiments",
+  "name": "tly-raccoon-trapper",
+  "homepage": "./somethin/",
   "version": "0.1.0",
   "private": true,
+  "main": "src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:thyancey/tly-raccoon-trapper.git"
+  },
+  "author": "Tom Yancey <thyancey84@gmail.com> (http://www.thomasyancey.com)",
+  "license": "MIT",
+  "licenseUrl": "http://www.opensource.org/licenses/mit-license.php",
+  "bugs": {
+    "url": "https://github.com/thyancey/tly-raccoon-trapper"
+  },
   "dependencies": {
     "@material-ui/core": "^4.12.3",
     "@material-ui/icons": "^4.11.2",
@@ -14,7 +26,6 @@
     "@types/react": "^16.9.0",
     "@types/react-dom": "^16.9.0",
     "@types/react-redux": "^7.1.7",
-    "gh-pages": "^3.2.3",
     "phaser": "^3.55.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
@@ -29,7 +40,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "predeploy": "yarn run build",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -47,6 +60,7 @@
     ]
   },
   "devDependencies": {
-    "@types/styled-components": "^5.1.16"
+    "@types/styled-components": "^5.1.16",
+    "gh-pages": "^3.2.3"
   }
 }
