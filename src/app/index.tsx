@@ -2,11 +2,11 @@ import { useEffect } from 'react';
 import { HashRouter, Route, Routes, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { PhaserContainer } from './components/phasercontainer';
-import { Splash } from './components/ui/splash';
-import { useAppDispatch } from './app/hooks';
-import { startGame, exitGame } from './components/ui/ui-slice';
-import Sidebar from './components/ui/sidebar';
+import { PhaserContainer } from '../components/phasercontainer';
+import { Splash } from '../components/ui/splash';
+import { useAppDispatch } from '../app/hooks';
+import { startGame, exitGame } from '../components/ui/ui-slice';
+import Sidebar from '../components/ui/sidebar';
 
 export const ScStage = styled.div`
   position:absolute;
