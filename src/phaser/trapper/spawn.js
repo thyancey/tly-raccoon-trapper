@@ -4,6 +4,7 @@ import Player from './entities/player.js';
 import Bowl from './entities/bowl.js';
 import { getDepthOfLane } from './utils/values';
 import { throttle } from 'throttle-debounce';
+import Events from '../event-emitter';
 
 const THROTTLE_SPEED = 150;
 const SPAWN_MIN = 1000;
@@ -11,6 +12,7 @@ const SPAWN_MAX = 1;
 const SPAWN_LIMIT = -1;
 
 let spawnCount = 0;
+let lastSentActiveEnemies = 0;
 let spawnFrequency = null; // how often to roll dice for spawns
 let curTicker = 0;
 let spawnPositions = [];
@@ -21,9 +23,6 @@ let defLaneSpawns = [];
 const groups = {};
 let player;
 let sceneContext;
-
-let el_spawnSlider;
-let el_spawnCount;
 
 const entityTypes = {
   'raccoon': Raccoon.Entity
@@ -58,9 +57,6 @@ export const create = (globalEntities, levelData, sceneData) => {
   Bowl.initSprites(sceneContext);
   Raccoon.initSprites(sceneContext);
 
-  initSpawnControls();
-  
-  
   spawnPlayer(sceneData.lanes);
   return groups;
 }
@@ -99,7 +95,6 @@ export const rollForSpawns = laneSpawnData => {
 }
 
 export const update = () => {
-  updateSpawnCount();
   groups.enemies.children.each(entity => {
     entity.update();
   });
@@ -123,9 +118,9 @@ export const update = () => {
   throttledUpdate();
 }
 
-
 export const onThrottledUpdate = () => {
   if(global.gameActive){
+    updateSpawnCount();
     groups.enemies.children?.each(entity => {
       entity.throttledUpdate();
     });
@@ -191,37 +186,24 @@ const spawnPlayer = (laneData) => {
   player = new Player.Entity(sceneContext, 800, 300, groups.player, laneData);
 }
 
-/* Spawn slider thingies */
-const initSpawnControls = () => {
-  el_spawnSlider = document.querySelector('#spawn-slider');
-  onSpawnSlider(el_spawnSlider.value);
-  el_spawnSlider.oninput = (e) => {
-    onSpawnSlider(e.target.value);
-  }
-  el_spawnCount = document.querySelector('#spawn-count');
-}
-
 const updateSpawnCount = () => {
-  if(parseInt(el_spawnCount.innerHTML) !== groups.enemies.countActive()){
-    el_spawnCount.innerHTML = groups.enemies.countActive();
+  const activeEnemies = groups.enemies.countActive();
+  if(lastSentActiveEnemies !== activeEnemies){
+    lastSentActiveEnemies = activeEnemies;
+    Events.emit('interface', 'setStat', { 'key': 'activeEnemies', 'value': activeEnemies });
   }
 }
 
-const onSpawnSlider = sliderVal => {
-  spawnFrequency = Math.round(getValue(sliderVal));
-  document.querySelector('#spawn-display').innerHTML = `${sliderVal}%`;
-}
+const formatSliderValue = sliderPosition => {
+  var minPerc = 0;
+  var maxPerc = 100;
 
-const getValue = position => {
-  var minp = 0;
-  var maxp = 100;
-
-  var minv = Math.log(SPAWN_MIN);
-  var maxv = Math.log(SPAWN_MAX);
+  var minV = Math.log(SPAWN_MIN);
+  var maxV = Math.log(SPAWN_MAX);
   
-  var scale = (maxv-minv) / (maxp-minp);
+  var scale = (maxV-minV) / (maxPerc-minPerc);
   
-  return Math.exp(minv + scale*(position-minp));
+  return Math.round(Math.exp(minV + scale*(sliderPosition-minPerc)));
 }
 
 
@@ -246,6 +228,10 @@ const basicSpawn = () => {
 }
  */
 
+export const external_setSpawnFrequency = (newValue) => {
+  spawnFrequency = formatSliderValue(newValue);
+}
+
 const exportMap = {
   setContext,
   preload,
@@ -253,6 +239,7 @@ const exportMap = {
   update,
   spawn,
   spawnBowl,
-  slingBowl
+  slingBowl,
+  external_setSpawnFrequency
 }
 export default exportMap; 

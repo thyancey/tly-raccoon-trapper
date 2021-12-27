@@ -1,14 +1,35 @@
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { getColor } from '../../themes/';
+import { useAppSelector } from '../../app/hooks';
+import { selectActiveEnemies } from './stats-slice';
+import { external_setSpawnFrequency } from '../../phaser/trapper/spawn';
 
 const ScControls = styled.div`
 `;
 
+const ScEnemies = styled.div`
+`;
+
 function Controls() {
+  const activeEnemies = useAppSelector(selectActiveEnemies);
+  const [ spawnSpeed, setSpawnSpeed ] = useState(20);
+
+  useEffect(() => {
+    external_setSpawnFrequency(spawnSpeed);
+  }, [ spawnSpeed ])
+
   return (
     <ScControls>
+  {/* <button className="level-button" onClick="setLevel(0);">Set Level 1</button>
+      <button className="level-button" onClick="setLevel(1);">Set Level 2</button> */}
       <p>{'spawn speed'}</p>
-      <p>{'spawn count:0'}</p>
+      
+      <input id="spawn-slider" className="slider" type="range" min="0" max="100" value={spawnSpeed} onChange={e => setSpawnSpeed(e.target.value)}/>
+      <p>{`spawn rate: ${spawnSpeed}%`}</p>
+      <ScEnemies>
+        <span>{'Enemies:'}</span>
+        <span>{activeEnemies}</span>
+      </ScEnemies>
     </ScControls>
   )
 }

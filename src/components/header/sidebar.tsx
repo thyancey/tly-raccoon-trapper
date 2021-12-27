@@ -74,6 +74,7 @@ const ScTab = styled.div`
   &:hover{
     background-color: ${getColor('brown')};
   }
+  
 `;
 
 const ScBody = styled.div`
@@ -87,10 +88,12 @@ const ScTop = styled.div`
   position:relative;
   cursor:pointer;
   border-bottom:.5rem solid ${getColor('brown')};
+  padding:1rem;
 `
 
 const ScBottom = styled.div`
   flex-grow:1;
+  padding:1rem;
 `
 
 const ScLink = styled(Link)`

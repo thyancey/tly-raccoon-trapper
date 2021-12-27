@@ -1,5 +1,6 @@
 import styled from 'styled-components';
-import { getColor } from '../../themes/';
+import { useAppSelector } from '../../app/hooks';
+import { selectStats, selectScore } from './stats-slice';
 
 const ScStats = styled.div`
 `;
@@ -7,33 +8,27 @@ const ScStats = styled.div`
 const ScStat = styled.div`
 `
 
+const ScScore = styled.div`
+  span{
+    font-size: 3rem;
+  }
+`;
+
 function Stats() {
-  const stats = [
-    {
-      name: 'Lost bowls',
-      value: 0
-    },{
-      name: 'Bites',
-      value: 10
-    },{
-      name: 'Hugs',
-      value: 0
-    },{
-      name: 'Captures',
-      value: 0
-    },{
-      name: 'Score',
-      value: 0
-    },
-  ]
+  const stats = useAppSelector(selectStats);
+  const score = useAppSelector(selectScore);
 
   return (
     <ScStats>
       {stats.map((s, idx) => (
         <ScStat key={idx}>
-          <span>{`${s.name}:`}</span><span>{s.value}</span>
+          <span>{`${s.key}:`}</span><span>{s.value}</span>
         </ScStat>
       ))}
+      <ScScore>
+        <span>{'Score:'}</span>
+        <span>{score}</span>
+      </ScScore>
     </ScStats>
   )
 }

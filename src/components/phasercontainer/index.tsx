@@ -1,13 +1,11 @@
 import { useEffect } from 'react';
 import styled from 'styled-components';
 import { getColor } from '../../themes';
-import { createGame, killGame } from '../../phaser/trapper';
-import {
-  selectGameStatus
-} from '../menu/menu-slice';
+import { createGame, killGame, externalCommand } from '../../phaser/trapper';
+import { selectGameStatus } from '../menu/menu-slice';
+import { setStat } from '../header/stats-slice';
 
-import OldHeader from './old-header';
-import { useAppSelector } from '../../app/hooks';
+import { useAppDispatch, useAppSelector } from '../../app/hooks';
 export const Container = styled.div`
   position:absolute;
   left:0;
@@ -20,25 +18,37 @@ export const Container = styled.div`
   text-align:center;
 `
 
+export const createGameInterface = dispatch => {
+  if(!(global as any).gameInterface){
+    (global as any).gameInterface = (event, payload) => {
+      switch(event){
+        case 'setStat': 
+          dispatch(setStat(payload))
+          break;
+        default: console.error('invalid interface command', event);
+      }
+    }
+  }
+  return;
+}
+
 export function PhaserContainer() {
   const gameStatus = useAppSelector(selectGameStatus);
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     if(gameStatus){
       console.log('gameStatus true, creating game!');
+      createGameInterface(dispatch);
       createGame();
     }else{
       console.log('gameStatus false, stopping game!');
       killGame();
     }
-  }, [ gameStatus ]);
+  }, [ gameStatus, dispatch ]);
 
   return (
-    <Container>
-      <h1>{'Phaser container'}</h1>
-        <OldHeader />
-      <div id="game-container" >
-      </div>
+    <Container id="game-container">
     </Container>
   );
 }

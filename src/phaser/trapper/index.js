@@ -3,6 +3,7 @@ import Phaser from 'phaser';
 import gameData from './data.json';
 import { STATUS as STATUS_ENEMY } from './entities/raccoon-simple';
 import { STATUS as STATUS_PLAYER } from './entities/player';
+import Events from '../event-emitter';
 
 import SpawnController from './spawn.js';
 import LevelController from './level.js';
@@ -12,18 +13,11 @@ let levelGroups;
 let emitter;
 let sceneContext;
 
-const scoreElements = {
-  bowls:null,
-  bites:null,
-  hugs:null,
-  total: null
-}
 
 let points = {
   bowls: 0,
   hugs: 0,
   bites: 0,
-  total: 0,
   captures: 0,
   escapes: 0
 }
@@ -107,8 +101,7 @@ function getScene(){
 function create() {
   //- make the level
   levelGroups = LevelController.create(getScene());
-  initScoreboard();
-
+  Events.on('interface', onInterface, this);
   // var spritemap = this.cache.json.get('sfx').spritemap;
 
   let spawnGroups = SpawnController.create(gameData.entities, getLevel(), getScene());
@@ -127,6 +120,11 @@ function create() {
 }
 function update (){
   SpawnController.update();
+}
+
+function onInterface(event, data){
+  // console.log('onInterface', event, data);
+  global.gameInterface && global.gameInterface(event, data)
 }
 
 function trigger_enemyAtEnd(enemy, trigger){
@@ -241,24 +239,11 @@ const setPoints = (key, change) => {
   updateScoreboard(key, points[key]);
 }
 
-const initScoreboard = () => {
-  scoreElements.bowls = document.querySelector('#score-bowls');
-  scoreElements.bites = document.querySelector('#score-bites');
-  scoreElements.hugs = document.querySelector('#score-hugs');
-  scoreElements.escapes = document.querySelector('#score-escapes');
-  scoreElements.captures = document.querySelector('#score-captures');
-  scoreElements.total = document.querySelector('#score-total');
+const updateScoreboard = (key, value) => {
+  Events.emit('interface', 'setStat', { 'key': key, 'value': value });
 }
 
-const updateScoreboard = (key, value) => {
-  scoreElements[key].innerHTML = value;
-  const total = points.hugs - points.bowls - points.bites;
-  scoreElements.total.innerHTML = total;
-  if(total > 0){
-    scoreElements.total.className = "good"
-  }else if (total < 0){
-    scoreElements.total.className = "bad"
-  }else{
-    scoreElements.total.className = ""
-  }
+
+export const externalCommand = (event, payload) => {
+  console.log('externalCommand:', event, payload);
 }
