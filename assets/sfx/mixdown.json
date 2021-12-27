@@ -1,0 +1,18 @@
+{
+  "resources": [
+    "./assets/sfx/splat.ogg",
+    "./assets/sfx/splat.mp3"
+  ],
+  "spritemap": {
+    "splat1": {
+      "start": 0,
+      "end": 2,
+      "loop": false
+    },
+    "splat2": {
+      "start": 0.5,
+      "end": 0.5,
+      "loop": false
+    }
+  }
+}
