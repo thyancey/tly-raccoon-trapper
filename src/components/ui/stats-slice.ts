@@ -66,10 +66,19 @@ export const getScore = stats => {
 
 export const { setStat } = statsSlice.actions;
 export const selectStats = (state: RootState) => {
-  return Object.keys(state.stats).map(k => ({
+  return Object.keys(state.stats)
+  .filter(sKey => scoreModifiers[sKey] !== undefined)
+  .map(k => ({
     key: k,
-    value: state.stats[k]
-  })).filter(s => scoreModifiers[s.key] !== undefined);
+    value: state.stats[k],
+    isGood: scoreModifiers[k] > 0
+  }));
+};
+export const selectGoodStats = (state: RootState) => {
+  return selectStats(state).filter(s => s.isGood);
+};
+export const selectBadStats = (state: RootState) => {
+  return selectStats(state).filter(s => !s.isGood);
 };
 export const selectScore = (state: RootState) => state.stats.score;
 export const selectActiveEnemies = (state: RootState) => state.stats.activeEnemies;

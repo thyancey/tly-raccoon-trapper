@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { getColor } from '../../themes/';
-import Stats from './components/stats';
 import Controls from './components/controls';
+import { DebugStats } from './components/debugstats';
 
 const ScSidebar = styled.div`
   position:fixed;
@@ -53,33 +53,6 @@ const ScBg = styled.div`
   background-color: ${getColor('brown_dark')};
   border-right: .5rem solid ${getColor('brown')};
 `
-
-const ScTab = styled.div`
-  width:5rem;
-  height:calc(100% + .5rem);
-  position:absolute;
-  top:0rem;
-  left:calc(100% - 1rem);
-  background-color:${getColor('brown_dark')};
-  border:.5rem solid ${getColor('brown')};
-  border-radius: 0 0 1rem 0;
-  border-left:0;
-  border-top:0;
-  transition:background-color .2s ease-out;
-
-  z-index:1;
-
-  &:hover{
-    background-color: ${getColor('brown')};
-    color: ${getColor('white')};
-  }
-  
-  color: ${getColor('brown_light')};
-  padding-right:1rem;
-  text-align:center;
-  writing-mode: vertical-rl;
-  text-orientation: mixed;
-`;
 
 const ScBody = styled.div`
   display:flex;
@@ -195,7 +168,7 @@ function Sidebar() {
           <hr/>
           <Controls/>
           <hr/>
-          <Stats/>
+          <DebugStats/>
         </ScBottom>
       </ScBody>
       <ScBg />

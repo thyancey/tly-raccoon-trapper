@@ -7,8 +7,11 @@ export const ScPhaserContainer = styled.div`
   position:relative;
   width:100%;
   height:100%;
-  /* background-color: ${getColor('black')}; */
 
+  overflow-y:hidden;
+`;
+
+export const ScWrapper = styled.div`
   >canvas{
     border: 1rem solid ${getColor('brown')};
   }
@@ -33,6 +36,9 @@ export function PhaserContainer() {
   createGameInterface(dispatch);
 
   return (
-      <ScPhaserContainer id="game-container" />
+    <ScPhaserContainer>
+      <ScWrapper id="game-container">
+      </ScWrapper>
+    </ScPhaserContainer>
   );
 }

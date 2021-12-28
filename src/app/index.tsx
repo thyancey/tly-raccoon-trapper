@@ -46,7 +46,7 @@ function App() {
     {
       route: '/game',
       text: 'RACCOON TRAPPER',
-      element: <PhaserContainer/>
+      element: <PhaserContainer />
     }
   ]
 
