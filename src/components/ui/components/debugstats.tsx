@@ -1,8 +1,8 @@
 import styled, { css } from 'styled-components';
 
-import { useAppSelector } from '../../../app/hooks';
+import { useAppSelector } from '../../../services/hooks';
 import { getColor } from '../../../themes';
-import { selectGoodMetrics, selectScore, selectBadMetrics } from '../../game/store/metrics-slice';
+import { selectGoodMetrics, selectScore, selectBadMetrics } from '../../../services/game/metrics-slice';
 
 type StatsProps = {
   statType: StatType;

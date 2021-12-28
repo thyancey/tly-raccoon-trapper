@@ -1,6 +1,6 @@
 import styled from 'styled-components';
-import { setMetric } from './store/metrics-slice';
-import { useAppDispatch } from '../../app/hooks';
+import { setMetric } from '../../services/game/metrics-slice';
+import { useAppDispatch } from '../../services/hooks';
 import { getColor } from '../../themes';
 
 export const ScPhaserContainer = styled.div`

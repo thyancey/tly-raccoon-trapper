@@ -2,9 +2,9 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 import App from './app';
-import { store } from './app/store';
+import { store } from './services/store';
 import { Provider } from 'react-redux';
-import * as serviceWorker from './serviceWorker';
+import * as serviceWorker from './services/serviceWorker';
 import './themes/fonts.css';
 import GlobalStyle from './themes/';
 

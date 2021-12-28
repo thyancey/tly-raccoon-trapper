@@ -1,7 +1,7 @@
 // slightly evolving from create-react-app example
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { RootState, AppThunk } from '../../app/store';
+import { RootState, AppThunk } from '../store';
 
 export function fetchThing(amount = 1) {
   return new Promise<{ data: number }>((resolve) =>

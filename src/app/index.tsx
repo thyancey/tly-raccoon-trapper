@@ -4,8 +4,8 @@ import styled from 'styled-components';
 
 import { PhaserContainer } from '../components/game/phaser-container';
 import { Splash } from '../components/ui/splash';
-import { useAppDispatch, useAppSelector } from '../app/hooks';
-import { startGame, exitGame, selectGameStatus } from '../components/game/store/status-slice';
+import { useAppDispatch, useAppSelector } from '../services/hooks';
+import { startGame, exitGame, selectGameStatus } from '../services/game/status-slice';
 import Sidebar from '../components/ui/sidebar';
 import { createGame, killGame } from '../phaser/trapper';
 import { getColor } from '../themes';
