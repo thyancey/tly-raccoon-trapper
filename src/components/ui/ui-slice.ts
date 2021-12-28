@@ -12,13 +12,11 @@ export function fetchThing(amount = 1) {
 export interface UiState {
   value: number;
   status: 'idle' | 'loading' | 'failed';
-  gameStatus: 'active' | 'inactive';
 }
 
 const initialState: UiState = {
   value: 0,
-  status: 'idle',
-  gameStatus: 'inactive'
+  status: 'idle'
 };
 
 // The function below is called a thunk and allows us to perform async logic. It
@@ -40,12 +38,6 @@ export const uiSlice = createSlice({
   initialState,
   // The `reducers` field lets us define reducers and generate associated actions
   reducers: {
-    startGame: state => {
-      state.gameStatus = 'active';
-    },
-    exitGame: state => {
-      state.gameStatus = 'inactive';
-    },
     increment: (state) => {
       // Redux Toolkit allows us to write "mutating" logic in reducers. It
       // doesn't actually mutate the state because it uses the Immer library,
@@ -75,13 +67,12 @@ export const uiSlice = createSlice({
   },
 });
 
-export const { startGame, exitGame, increment, decrement, incrementByAmount } = uiSlice.actions;
+export const { increment, decrement, incrementByAmount } = uiSlice.actions;
 
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of
 // in the slice file. For example: `useSelector((state: RootState) => state.counter.value)`
 export const selectCount = (state: RootState) => state.ui.value;
-export const selectGameStatus = (state: RootState) => state.ui.gameStatus;
 
 // We can also write thunks by hand, which may contain both sync and async logic.
 // Here's an example of conditionally dispatching actions based on current state.

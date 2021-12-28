@@ -191,7 +191,7 @@ const updateSpawnCount = () => {
   const activeEnemies = groups.enemies.countActive();
   if(lastSentActiveEnemies !== activeEnemies){
     lastSentActiveEnemies = activeEnemies;
-    Events.emit('interface', 'setStat', { 'key': 'activeEnemies', 'value': activeEnemies });
+    Events.emit('interface', 'setMetric', { 'key': 'activeEnemies', 'value': activeEnemies });
   }
 }
 

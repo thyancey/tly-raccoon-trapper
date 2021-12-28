@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { setStat } from '../ui/stats-slice';
+import { setMetric } from './store/metrics-slice';
 import { useAppDispatch } from '../../app/hooks';
 import { getColor } from '../../themes';
 
@@ -21,8 +21,8 @@ export const createGameInterface = dispatch => {
   if(!(global as any).gameInterface){
     (global as any).gameInterface = (event, payload) => {
       switch(event){
-        case 'setStat': 
-          dispatch(setStat(payload))
+        case 'setMetric': 
+          dispatch(setMetric(payload))
           break;
         default: console.error('invalid interface command', event);
       }

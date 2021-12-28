@@ -2,10 +2,10 @@ import { useEffect } from 'react';
 import { HashRouter, Route, Routes, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { PhaserContainer } from '../components/phasercontainer';
+import { PhaserContainer } from '../components/game/phaser-container';
 import { Splash } from '../components/ui/splash';
 import { useAppDispatch, useAppSelector } from '../app/hooks';
-import { startGame, exitGame, selectGameStatus } from '../components/ui/ui-slice';
+import { startGame, exitGame, selectGameStatus } from '../components/game/store/status-slice';
 import Sidebar from '../components/ui/sidebar';
 import { createGame, killGame } from '../phaser/trapper';
 import { getColor } from '../themes';

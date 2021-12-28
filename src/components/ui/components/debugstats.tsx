@@ -2,7 +2,7 @@ import styled, { css } from 'styled-components';
 
 import { useAppSelector } from '../../../app/hooks';
 import { getColor } from '../../../themes';
-import { selectGoodStats, selectScore, selectBadStats } from '../stats-slice';
+import { selectGoodMetrics, selectScore, selectBadMetrics } from '../../game/store/metrics-slice';
 
 type StatsProps = {
   statType: StatType;
@@ -64,8 +64,8 @@ const ScDebug = styled.div`
 `
 
 export function DebugStats() {
-  const goodStats = useAppSelector(selectGoodStats);
-  const badStats = useAppSelector(selectBadStats);
+  const goodStats = useAppSelector(selectGoodMetrics);
+  const badStats = useAppSelector(selectBadMetrics);
   const score = useAppSelector(selectScore);
 
   return (
