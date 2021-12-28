@@ -8,13 +8,15 @@ import { useAppDispatch, useAppSelector } from '../app/hooks';
 import { startGame, exitGame, selectGameStatus } from '../components/ui/ui-slice';
 import Sidebar from '../components/ui/sidebar';
 import { createGame, killGame } from '../phaser/trapper';
+import { getColor } from '../themes';
 
 export const ScStage = styled.div`
   position:absolute;
-  left:1rem;
-  top:1rem;
-  right:1rem;
-  bottom:1rem;
+  left:0rem;
+  top:0rem;
+  right:0rem;
+  bottom:0rem;
+  background-color:${getColor('brown_dark')};
 `
 
 export const RouteReader = ({ dispatch }) => {
@@ -44,7 +46,7 @@ function App() {
     {
       route: '/game',
       text: 'RACCOON TRAPPER',
-      element: <PhaserContainer/>
+      element: <PhaserContainer />
     }
   ]
 
