@@ -251,7 +251,7 @@ const setPoints = (key, change) => {
 }
 
 const updateScoreboard = (key, value) => {
-  Events.emit('interface', 'setStat', { 'key': key, 'value': value });
+  Events.emit('interface', 'setMetric', { 'key': key, 'value': value });
 }
 
 

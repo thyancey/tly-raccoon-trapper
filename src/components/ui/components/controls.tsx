@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
-import { useAppSelector } from '../../../app/hooks';
-import { selectActiveEnemies } from '../stats-slice';
+import { useAppSelector } from '../../../services/hooks';
+import { selectActiveEnemies } from '../../../services/game/metrics-slice';
 import { external_setSpawnFrequency } from '../../../phaser/trapper/spawn';
 
 const ScControls = styled.div`

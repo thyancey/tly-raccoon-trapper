@@ -1,6 +1,6 @@
 import styled from 'styled-components';
-import { setStat } from '../ui/stats-slice';
-import { useAppDispatch } from '../../app/hooks';
+import { setMetric } from '../../services/game/metrics-slice';
+import { useAppDispatch } from '../../services/hooks';
 import { getColor } from '../../themes';
 
 export const ScPhaserContainer = styled.div`
@@ -21,8 +21,8 @@ export const createGameInterface = dispatch => {
   if(!(global as any).gameInterface){
     (global as any).gameInterface = (event, payload) => {
       switch(event){
-        case 'setStat': 
-          dispatch(setStat(payload))
+        case 'setMetric': 
+          dispatch(setMetric(payload))
           break;
         default: console.error('invalid interface command', event);
       }

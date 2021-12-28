@@ -1,11 +1,11 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
-import uiReducer from '../components/ui/ui-slice';
-import statsReducer from '../components/ui/stats-slice';
+import uiReducer from './ui/ui-slice';
+import gameReducer from './game/reducer';
 
 export const store = configureStore({
   reducer: {
     ui: uiReducer,
-    stats: statsReducer,
+    game: gameReducer,
   },
 });
 
