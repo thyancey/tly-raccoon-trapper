@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 
 import gameData from './data.json';
-import { STATUS as STATUS_ENEMY } from './entities/raccoon-simple';
+import { STATUS as STATUS_ENEMY } from './entities/raccoon';
 import { STATUS as STATUS_PLAYER } from './entities/player';
 import Events from '../event-emitter';
 import SpawnController from './spawn.js';
@@ -24,11 +24,10 @@ global.gameData = {
   curLevel: 0
 }
 
-export const killGame = () => {
-  global.stopGame();
-}
+
 
 export const createGame = () =>{
+  console.log('GAME: createGame');
   const config = {
     type: Phaser.AUTO,
     scale: {
@@ -189,7 +188,7 @@ function trigger_enemyAndPlayer(enemy, player){
         player.onAttackedByEnemy();
         setPoints('bites', 1);
       }
-    }else if(player.checkStatus(STATUS_PLAYER.KICK_PREP)){
+    }else if(player.checkStatus([STATUS_PLAYER.KICK_PREP])){
       // enemy.punt ? enemy.punt() : enemy.kill();
     }else if(player.checkStatus(STATUS_PLAYER.KICK) && player.getKickStrength() > 0){
       if(enemy.punt){
@@ -235,7 +234,6 @@ function setupMouseEmitter(){
   });
 }
 
-
 const onKeyDown = (e) => {
   switch(e.code){
     case 'Space': SpawnController.slingBowl();
@@ -257,4 +255,28 @@ const updateScoreboard = (key, value) => {
 
 export const externalCommand = (event, payload) => {
   console.log('externalCommand:', event, payload);
+}
+
+export const pauseGame = () => {
+  console.log('GAME: pauseGame');
+  sceneContext?.scene?.pause();
+}
+
+export const resumeGame = () => {
+  console.log('GAME: resumeGame');
+  if(global.gameActive){
+    sceneContext?.scene?.resume();
+  }
+}
+
+export const killGame = () => {
+  console.log('GAME: killGame');
+  if(global.gameActive){
+    global.stopGame();
+    game.destroy();
+    game = null;
+    sceneContext = null;
+    emitter = null;
+    levelGroups = null;
+  }
 }

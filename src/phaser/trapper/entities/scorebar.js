@@ -36,7 +36,6 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
     this.hp = this.hpRange[1];
     this.laneIdx = 0;
     this.laneValues = this.parseLaneData(laneData);
-    console.log('lv', this.laneValues)
     this.posOffset = [];
     this.spriteOffset = [];
 
@@ -197,7 +196,7 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
       
       this.startRecoveryTimer(() => {
         this.setStatus(STATUS.IDLE);
-      }, KICK_RECOVERY;
+      }, KICK_RECOVERY)
     }
   }
 

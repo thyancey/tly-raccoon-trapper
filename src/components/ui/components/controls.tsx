@@ -25,7 +25,7 @@ function Controls() {
       <button className="level-button" onClick="setLevel(1);">Set Level 2</button> */}
       <p>{'spawn speed'}</p>
       
-      <input id="spawn-slider" className="slider" type="range" min="0" max="100" value={spawnSpeed} onChange={e => setSpawnSpeed(e.target.value)}/>
+      <input id="spawn-slider" className="slider" type="range" min="0" max="100" value={spawnSpeed} onChange={e => setSpawnSpeed(+(e.target.value))}/>
       <p>{`spawn rate: ${spawnSpeed}%`}</p>
       <ScEnemies>
         <span>{'Enemies:'}</span>

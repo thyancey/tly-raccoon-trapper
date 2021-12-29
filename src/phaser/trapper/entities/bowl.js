@@ -1,8 +1,9 @@
 import Phaser from "phaser";
 
-const KILL_TIMEOUT = 1000;
+const DESTROY_TIMEOUT = 1000;
 const DRAIN_TIMER_INTERVAL = 500;
 const MAX_FEEDING = 1;
+let sceneRef;
 
 export const STATUS = {
   FULL: 0,
@@ -19,10 +20,13 @@ const animationStatus = {
 class Entity extends Phaser.Physics.Arcade.Sprite {
     constructor (scene, physicsGroup, spawnData) {
     super(scene, spawnData.x, spawnData.y, 'foodBowl');
+    sceneRef = scene;
 
     this.drainRate = 0;
     this.drainStart = null;
     this.drainTimer = null;
+    this.destroyTimer = null;
+
     this.hpRange = [ 0, 100 ];
     this.hp = this.hpRange[1];
 
@@ -66,11 +70,11 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
   }
 
   startDrainTimer(){
-    this.drainStart = new Date();
-    this.killDrainTimer();
-    this.drainTimer = global.setTimeout(() => {
+    this.drainTimer = sceneRef.time.delayedCall(DRAIN_TIMER_INTERVAL, () => {
       this.onDrainTimer();
-    }, DRAIN_TIMER_INTERVAL);
+    });
+
+    this.drainStart = new Date();
   }
 
   onDrainTimer(){
@@ -80,7 +84,6 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
     // console.log(`hp: ${this.hp}, drainRate: ${this.drainRate}, drainAmount: ${drainAmount}`);
     if(this.hp <= this.hpRange[0]){
       this.hp = this.hpRange[0];
-      this.killDrainTimer();
       this.emptyBowl();
     }else{
       if(this.hp > this.hpRange[1]){
@@ -90,18 +93,11 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
     }
   }
 
-  killDrainTimer(){
-    if(this.drainTimer){
-      global.clearTimeout(this.drainTimer);
-      this.drainTimer = null;
-    }
-  }
-
   emptyBowl(){
     this.setStatus(STATUS.EMPTY);
-    global.setTimeout(() => {
+    this.destroyTimer = sceneRef.time.delayedCall(DESTROY_TIMEOUT, () => {
       this.destroy();
-    }, KILL_TIMEOUT);
+    });
   }
 
   eatenBy(enemyEntity){

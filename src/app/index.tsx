@@ -5,10 +5,12 @@ import styled from 'styled-components';
 import { PhaserContainer } from '../components/game/phaser-container';
 import { Splash } from '../components/ui/splash';
 import { useAppDispatch, useAppSelector } from '../services/hooks';
-import { startGame, exitGame, selectGameStatus } from '../services/game/status-slice';
+import { startGame, exitGame, selectGameStatus, selectPlayStatus } from '../services/game/status-slice';
 import Sidebar from '../components/ui/sidebar';
-import { createGame, killGame } from '../phaser/trapper';
+import { createGame, killGame, resumeGame, pauseGame } from '../phaser/trapper';
 import { getColor } from '../themes';
+import { createGameInterface } from '../components/game/game-interface';
+import { Modals } from '../components/ui/modals';
 
 export const ScStage = styled.div`
   position:absolute;
@@ -19,7 +21,7 @@ export const ScStage = styled.div`
   background-color:${getColor('brown_dark')};
 `
 
-export const RouteReader = ({ dispatch }) => {
+export const RouteReader = ({ dispatch }: any) => {
   let location = useLocation();
   
   useEffect(() => {
@@ -35,7 +37,11 @@ export const RouteReader = ({ dispatch }) => {
 
 function App() {
   const gameStatus = useAppSelector(selectGameStatus);
+  const playStatus = useAppSelector(selectPlayStatus);
   const dispatch = useAppDispatch();
+  
+  // only need to do this once, hence the []
+  useEffect(() => {createGameInterface();}, [])
   
   const pages = [
     {
@@ -51,17 +57,26 @@ function App() {
   ]
 
   useEffect(() => {
+    if(playStatus === 'playing'){
+      resumeGame();
+    }else if(['won', 'lost', 'paused'].some(s => s === playStatus)){
+      pauseGame();
+    }
+  }, [ playStatus ]);
+
+  useEffect(() => {
     if(gameStatus === 'active'){
       createGame();
     }else{
       killGame();
     }
-  }, [ gameStatus, dispatch ]);
+  }, [ gameStatus ]);
   
   return (
     <HashRouter>
       <RouteReader dispatch={dispatch}/>
       <Sidebar />
+      <Modals />
       <ScStage>
         <Routes>
           {pages.map((p, i) => (
