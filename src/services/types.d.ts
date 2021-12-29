@@ -40,3 +40,8 @@ type GameCondition = {
   reason: string,
   halt: boolean
 }
+
+type PlayStatusObj = {
+  status: string,
+  reason: string
+}

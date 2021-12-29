@@ -2,6 +2,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { RootState } from '../store';
+import { exitGame } from './status-slice';
 
 
 export interface StatsState {
@@ -45,7 +46,13 @@ export const metricsSlice = createSlice({
 
       // state.score = getScore(state);
     }
-  }
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(exitGame, (state) => {
+        return initialState;
+      })
+  },
 });
 
 export const getScore = metrics => {
