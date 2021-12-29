@@ -21,7 +21,7 @@ export const ScStage = styled.div`
   background-color:${getColor('brown_dark')};
 `
 
-export const RouteReader = ({ dispatch }) => {
+export const RouteReader = ({ dispatch }: any) => {
   let location = useLocation();
   
   useEffect(() => {

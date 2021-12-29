@@ -12,14 +12,14 @@ const ScSidebar = styled.div`
   left:0;
   transition:left .5s ease-in-out;
 
-  width:30rem;
+  width:40rem;
   height:100%;
   margin:0;
   color:${getColor('tan')};
   z-index:1;
 
   &.collapsed{
-    left:-30rem;
+    left:-40rem;
     transition:left .5s ease-in-out;
   }
 
@@ -73,6 +73,7 @@ const ScTop = styled.div`
   cursor:pointer;
   border-bottom:.5rem solid ${getColor('brown')};
   padding:1rem;
+  padding-right:10rem;
 `
 
 const ScLogo = styled.div`
@@ -129,20 +130,33 @@ background: center / contain no-repeat url('./assets/raccoon-on-branch.gif');
 
 
 const HelpList = () => {
-  const instructions = [
-    'Feed the raccoons and give them hugs!',
-    'Kick the ones who don\'t love you!',
+  const controls = [
     'Arrow Up/Down: Change langes',
     'Arrow Left: Hug',
     'Arrow Right: Charge kick',
-    'Space: Throw food',
-    '... you can\'t win or lose right now'
+    'Space: Throw food'
   ];
+
+  const rules = [
+    'Feed the raccoons and give them hugs',
+    '>>> 3 hugs wins the game',
+    'Don\'t let unfed raccoons in your house',
+    '>>> 3 escapes loses the game',
+    'When you try to hug, you expose yourself, don\'t even think about hugging wild raccoons',
+    '>>> If you get bit once you lose',
+    'Kick any raccoon you want, especially the little red ones',
+  ]
   return (
     <ScHelp>
-      <h4>{'Instructions'}</h4>
+      <h4>{'Controls'}</h4>
       <ul>
-        {instructions.map((i, idx) => (
+        {controls.map((i, idx) => (
+          <li key={idx}>{i}</li>
+        ))}
+      </ul>
+      <h4>{'Rules'}</h4>
+      <ul>
+        {rules.map((i, idx) => (
           <li key={idx}>{i}</li>
         ))}
       </ul>

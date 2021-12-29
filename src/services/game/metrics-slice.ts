@@ -23,12 +23,13 @@ const initialState: StatsState = {
   activeEnemies: 0
 };
 
-const scoreModifiers = {
+const scoreModifiers: GameMetrics = {
   bowls: -.25,
   hugs: 5,
   bites: -10,
   captures: 10,
-  escapes: -5
+  escapes: -5,
+  activeEnemies: 0
 };
 
 export const metricsSlice = createSlice({
@@ -36,8 +37,8 @@ export const metricsSlice = createSlice({
   initialState,
   // The `reducers` field lets us define reducers and generate associated actions
   reducers: {
-    setMetric: (state, action: PayloadAction<any>) => {
-      const key = action.payload?.key;
+    setMetric: (state: StatsState, action: PayloadAction<any>) => {
+      const key = action.payload?.key as GameMetricKey;
       if(state[key] !== undefined){
         state[key] = action.payload?.value;
       }else{
@@ -55,12 +56,12 @@ export const metricsSlice = createSlice({
   },
 });
 
-export const getScore = metrics => {
+export const getScore = (metrics: GameMetrics) => {
   let total = 0;
   Object.keys(metrics).forEach(k => {
     // ignore 'score' or other unwanted values
-    if(scoreModifiers[k]){
-      total += metrics[k] * scoreModifiers[k];
+    if(scoreModifiers[k as GameMetricKey]){
+      total += metrics[k as GameMetricKey] * scoreModifiers[k as GameMetricKey];
     }
   })
 
@@ -72,11 +73,11 @@ export const getScore = metrics => {
 export const { setMetric } = metricsSlice.actions;
 export const selectMetrics = (state: RootState): Array<GameMetric> => {
   return Object.keys(state.game.metrics)
-  .filter(sKey => scoreModifiers[sKey] !== undefined)
+  .filter(sKey => scoreModifiers[sKey as GameMetricKey] !== undefined)
   .map(k => ({
     key: k,
-    value: state.game.metrics[k],
-    isGood: scoreModifiers[k] > 0
+    value: state.game.metrics[k as GameMetricKey],
+    isGood: scoreModifiers[k as GameMetricKey] > 0
   }));
 };
 

@@ -23,7 +23,7 @@
       {
         "metric": "hugs",
         "condition": ">",
-        "value": 3,
+        "value": 2,
         "result": "TOO_MANY_HUGS"
       },
       {

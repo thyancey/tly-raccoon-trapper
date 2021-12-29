@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
-import styled from 'styled-components';
 import { selectMetricsMap } from '../../services/game/metrics-slice';
-import { selectGameStatus, loseRound, winRound, selectPlayStatus } from '../../services/game/status-slice';
+import { loseRound, winRound, selectPlayStatus } from '../../services/game/status-slice';
 import { useAppSelector } from '../../services/hooks';
 import RulesJson from './rules.json';
 import { checkMetricRules, evaluateGameConditions } from './rules-checker';
