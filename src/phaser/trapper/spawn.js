@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 
-import Raccoon from './entities/raccoon-simple.js';
+import Raccoon from './entities/raccoon.js';
 import Player from './entities/player.js';
 import Bowl from './entities/bowl.js';
 import { getDepthOfLane } from './utils/values';

@@ -1,39 +1,22 @@
 import Phaser from 'phaser';
-import img_raccoon from '../assets/raccoon.png';
 
-const KILL_TIMEOUT = 5000;
+const KILL_TIMEOUT = 3000;
+const DESTROY_TIMEOUT = 1000;
+let sceneRef;
 
 export const STATUS = {
   ROAMING: 0,
   EATING: 1,
-  ANGRY: 2,
-  TAME: 3,
+  ROAMING_TAME: 3,
   DEAD: 4,
-  HUG: 5,
+  HUGGING: 5,
   IDLE: 6,
-  HOPPING: 7,
-  HOPPING_START: 8,
-  HOPPING_END: 9,
-  PUNTED: 10
+  ROAMING_ANGRY: 11,
+  CAPTURED: 12,
+  ESCAPED: 13
 }
 
 const spriteKey = 'raccoon';
-
-const animationStatus = {
-  [STATUS.IDLE]: 'raccoon_idle',
-  [STATUS.ROAMING]: 'raccoon_walk',
-  [STATUS.HOPPING_START]: 'raccoon_hop_start',
-  [STATUS.HOPPING]: 'raccoon_hop',
-  [STATUS.HOPPING_END]: 'raccoon_hop_end',
-  [STATUS.EATING]: 'raccoon_eat',
-  [STATUS.ANGRY]: 'raccoon_walk',
-  [STATUS.TAME]: 'raccoon_loveWalk',
-  [STATUS.DEAD]: 'raccoon_dead',
-  [STATUS.HUG]: 'raccoon_hug',
-  [STATUS.PUNTED]: 'raccoon_punted'
-}
-
-
 const velocityRanges = {
   LIL_PUNT: {
     min: { x: -75, y: -50 },
@@ -50,23 +33,23 @@ const velocityRanges = {
 velocityRanges.LIL_PUNT.diff = {
   x: velocityRanges.LIL_PUNT.max.x - velocityRanges.LIL_PUNT.min.x,
   y: velocityRanges.LIL_PUNT.max.y - velocityRanges.LIL_PUNT.min.y
-},
+};
 velocityRanges.BIG_PUNT.diff = {
   x: velocityRanges.BIG_PUNT.max.x - velocityRanges.BIG_PUNT.min.x,
   y: velocityRanges.BIG_PUNT.max.y - velocityRanges.BIG_PUNT.min.y
-}
-
-
+};
 
 /*
 stats = {
   speed: [ minSpeedX, maxSpeedX ]
 }
 */
-
 class Entity extends Phaser.Physics.Arcade.Sprite {
   constructor (scene, physicsGroup, spawnData) {
     super(scene, spawnData.x, spawnData.y, 'raccoon');
+    sceneRef = scene;
+    this.deathTimer = null;
+    this.destroyTimer = null;
 
     // this.status = STATUS.ROAMING;
     // this.love = 0;
@@ -75,8 +58,11 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
     this.status = null;
     this.isFull = false;
 
-    //- custom properties
-    this.isAlive = true;
+    // move bowl to the right, relative to entity
+    this.eatOffset = 11;
+
+    this.curPhysState = null;
+    this.curAnimState = null;
 
     this.puntKillThreshold = 1;
     if(spawnData.misc?.puntKillThreshold || spawnData.misc?.puntKillThreshold === 0){
@@ -101,7 +87,7 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
     
     //- physics
     this.setBounce(0);
-    this.setCollideWorldBounds(true);
+    this.setCollideWorldBounds(false);
     this.allowGravity = false;
 
     //- squeeze in hit box from edge of sprite
@@ -109,8 +95,6 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
     this.body.offset.x = 15;
     this.body.offset.y = 25;
     this.setStatus(STATUS.ROAMING, true);
-
-    // testing sounds
 
     //- interaction listeners
     this.setInteractive();
@@ -123,39 +107,18 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
   }
 
   canEat(){
-    if(this.isAlive && this.feedable && !this.isFull){
+    if(this.isAlive() && this.feedable && !this.isFull){
       switch(this.status){
-        case STATUS.HOPPING_START: return false
         case STATUS.EATING: return false;
-        case STATUS.HOPPING: return false;
-        case STATUS.HOPPING_END: return false;
         default: return true;
       }
     }else{
       return false;
     }
   }
-
-  canHop(){
-    if(this.isAlive && this.body.touching.down){
-      switch(this.status){
-        case STATUS.ROAMING: return true;
-        case STATUS.IDLE: return true;
-        case STATUS.TAME: return true;
-        default: return false;
-      }
-    }else{
-      return false;
-    }
-  }
-
-  isGoingUp(){
-    // console.log('velocity', this.body.y);
-    return this.body.velocity.y < 5; 
-  }
   
   canIdle(){
-    if(this.isAlive && this.body.touching.down && this.body.velocity.x === 0){
+    if(this.isAlive() && this.body.touching.down && this.body.velocity.x === 0){
       switch(this.status){
         case STATUS.ROAMING: return true;
         case STATUS.IDLE: return true;
@@ -169,10 +132,7 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
   // right now, its a %, later should be actual power
   punt(force){
     // console.log('force', force)
-    //- (1 - 100)
-
-    this.setStatus(STATUS.PUNTED);
-    this.body.setDrag(200);
+    this.body.setDrag(0);
 
     let vRange;
     if(force < .5){
@@ -197,102 +157,125 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
   kill(){
     this.setStatus(STATUS.DEAD);
 
-    global.setTimeout(() => {
+    this.deathTimer = sceneRef.time.delayedCall(KILL_TIMEOUT, () => {
       this.destroy();
-    }, KILL_TIMEOUT)
+    });
   }
 
   update(){
     //- turn if facing left
-    if(this.flipX){
+    if(this.isAlive() && this.flipX){
       if(this.body.velocity.x >= 0) this.flipX = false;
     }else{
       if(this.body.velocity.x < 0) this.flipX = true;
     }
 
-    if(this.isAlive){
-      const didHop = this.handleHopping();
-      if(!didHop){
-        // this.resumeStatus();
-      }
+    const animKey = this.getAnimationForState();
+    if(animKey !== this.curAnim){
+      this.curAnim = animKey;
+      this.playAnimationForKey(animKey);
+    }
+    
+    this.adjustMovementForState();
+  }
+
+  isAlive(){
+    return this.status !== STATUS.DEAD;
+  }
+
+  isMovingStatus(given){
+    switch (given || this.status){
+      case STATUS.ROAMING: return true;
+      case STATUS.ROAMING_ANGRY: return true;
+      case STATUS.ROAMING_TAME: return true;
+      default: break;
+    }
+    return false;
+  }
+
+  adjustMovementForState(){
+    if(this.body.velocity.x < 1 && this.body.velocity.x > -1){
+      //- if still, but in a moving status (most likely after falling), force it again to get movin!
+      if(this.isMovingStatus(this.status)){
+        this.setStatus(this.status, true);
+      };
+    }
+
+    //- attempt to readjust after landing from a punt
+    if(this.body.touching.down && this.body.velocity.x < 0){
+      this.moveStop();
     }
   }
-  
+
+  getAnimationForState(){
+    if(this.status === STATUS.DEAD){
+      return 'raccoon_dead';
+    } else {
+      if (this.body.velocity.y < -50) {
+        return 'raccoon_hop_up';
+      } else if (this.body.velocity.y > 50) {
+        return 'raccoon_hop_down';
+      } else if (this.status === STATUS.EATING){
+        return 'raccoon_eat';
+      } else if (this.status === STATUS.ROAMING_TAME){
+        return 'raccoon_loveWalk';
+      } else if (this.status === STATUS.ROAMING_ANGRY){
+        return 'raccoon_angryWalk';
+      } else if (this.status === STATUS.ROAMING){
+        return 'raccoon_walk';
+      }
+    }
+
+    return null;
+  }
+
+  setPhysState(){
+    const physState = null;
+
+
+    if(physState && physState !== this.curPhysState){
+
+    }
+  }
+
   throttledUpdate(){
 
   }
-
-  handleHopping(){
-    if(this.checkStatus('HOPPING')){
-      this.checkHoppingAnimation(true);
-      return true;
-    } else if(this.canHop()){
-      //touching ground
-      if((Math.random() * 1000) < this.stats.jumpRate){
-        this.hopForward();
-        return true;
-      }
-    }else{
-      // this.checkHoppingAnimation(false);
-      // this.checkFallingAnimation();
-      return false;
-    }
-  }
-
-  checkFallingAnimation(){
-    // console.log('vel', this.body.velocity)
-    if(this.body.velocity.y > 40){
-      this.anims.play('raccoon_hop_down');
-    }else if(this.body.velocity.y < -40){
-      this.anims.play('raccoon_hop_up');
-    }else{
-      this.resumeStatus();
-    }
-  }
   
-  checkHoppingAnimation(){
-    // console.log('vel', this.body.velocity)
-    if(this.body.velocity.y > 40){
-      this.anims.play('raccoon_hop_down');
-      this.setVelocityX(150); // this lil boost helps it get over barriers
-    }else if(this.body.velocity.y < -40){
-      this.anims.play('raccoon_hop_up');
-    }else if(this.body.velocity.y === 0){
-      this.setStatus(STATUS.HOPPING_END);
-    }
-  }
+  eatAtBowl(bowlBody){
+    // align with the food bowl
+    this.body.x = bowlBody.x - this.eatOffset;
 
-  //- if 
-  touched(otherBody){
-    // console.log('touched')
-    // if(this.canEat()){ //- redundant, now that checking in collison checker
-      this.setStatus(STATUS.EATING);
-      this.body.x = otherBody.x;
-    // }
+    this.setStatus(STATUS.EATING);
   }
 
   bowlEmpty(){
-    if(this.isAlive){
-      this.setStatus(STATUS.TAME);
+    if(this.isAlive()){
+      this.isFull = true;
+      this.setStatus(STATUS.ROAMING_TAME);
     }
   }
 
-  playAnimationForStatus(){
-    const animKey = animationStatus[this.status];
+  playAnimationForKey(animKey){
     if(animKey){
       this.anims.play(animKey);
     }
   }
 
   checkStatus(statusKey){
-    return this.status === STATUS[statusKey];
+    return this.status === statusKey;
   }
 
-  goNormalSpeed(modifier = 1){
+  moveNormal(modifier = 1){
     this.body.setDrag(0);
     // this.body.velocity.x = 10; 
     this.body.velocity.x = this.stats.speed * modifier;
   }
+
+  moveStop(){
+    this.body.setDrag(500);
+  }
+
 
   setStatus(status, force, playStatusAnimation = true){
     if(force || this.status !== status){
@@ -300,89 +283,66 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
 
       switch(this.status){
         case STATUS.ROAMING: 
-          // if(this.body.velocity.x < 0.1){
-          //   this.setStatus(STATUS.HOPPING_START, true, true);
-          // }
-        
-          this.goNormalSpeed();
+          this.moveNormal();
           break;
-        case STATUS.TAME: 
-          this.isFull = true;
-          this.body.setDrag(0);
-          this.goNormalSpeed(.6);
+        case STATUS.ROAMING_TAME: 
+          this.moveNormal(3);
           break;
         case STATUS.EATING: 
-          this.body.setDrag(500);
-          break;
-        case STATUS.HOPPING_START: 
-          this.body.setDrag(500);
-
-          window.setTimeout(() => {
-            if(this.isAlive){
-              this.setStatus(STATUS.HOPPING, false, false);
-            }
-          }, 500);
-          break;
-        case STATUS.HOPPING: 
-          // HOP!
-          this.body.setDrag(200);
-          this.setVelocityY(-200);
-          this.setVelocityX(150);
-          break;
-        case STATUS.HOPPING_END: 
-          this.body.setDrag(500);
-
-          window.setTimeout(() => {
-            this.resumeStatus();
-          }, 200);
+          this.moveStop();
           break;
         case STATUS.DEAD:
-          this.body.setDrag(500);
-          this.isAlive = false;
+          this.moveStop();
           break;
+        case STATUS.HUGGING: 
+          this.moveStop();
+          break;
+        case STATUS.CAPTURED: 
+          this.moveStop();
+          break;
+        default: break;
       }
-      if(playStatusAnimation) this.playAnimationForStatus();
     }
   }
+
+  // assumeStatus(){
+  //   if(this.isAlive()){
+  //     if(this.isFull){
+  //       return STATUS.ROAMING_TAME;
+  //     }else{
+  //       if(this.canIdle()){
+  //         return STATUS.IDLE;
+  //       }else{
+  //         return STATUS.ROAMING;
+  //       }
+  //     }
+  //   }
+  // }
 
   resumeStatus(){
-    if(this.isAlive){
-      if(this.isFull){
-        this.setStatus(STATUS.TAME);
-      }else{
-        if(this.canIdle()){
-          this.setStatus(STATUS.IDLE)
-        }else{
-          if(this.body.velocity.y > 40){
-            this.anims.play('raccoon_hop_down');
-            this.setStatus(STATUS.ROAMING, false, false);
-          }else if(this.body.velocity.y < -40){
-            this.anims.play('raccoon_hop_up');
-            this.setStatus(STATUS.ROAMING, false, false);
-          }else{
-            this.setStatus(STATUS.ROAMING, false, true);
-          }
-        }
-      }
-    }
+    const statusKey = this.resumeStatus;
+    this.setStatus(statusKey)
   }
 
-  escape(){
+  escaped(){
+    this.setStatus(STATUS.ESCAPED);
+    this.delayedDestroy();
+  }
 
+  captured(){
+    this.setStatus(STATUS.CAPTURED);
+    this.delayedDestroy();
   }
   
   hug(){
-    this.setStatus(STATUS.HUG);
-    this.body.setDrag(500);
-
-    global.setTimeout(() => {
-      this.isAlive = false;
-      this.destroy();
-    }, 1000);
+    this.setStatus(STATUS.HUGGING);
+    this.delayedDestroy();
   }
-  
-  hopForward(){
-    this.setStatus(STATUS.HOPPING_START);
+
+  delayedDestroy(){
+    this.destroyTimer = sceneRef.time.delayedCall(DESTROY_TIMEOUT, () => {
+      this.destroy();
+    });
   }
 }
 
@@ -480,11 +440,12 @@ const initSprites = (sceneContext) => {
 }
 
 const initSpritesheet = (sceneContext) => {
-  sceneContext.load.spritesheet('raccoon', img_raccoon, { frameWidth: 56, frameHeight: 56 });
+  sceneContext.load.spritesheet('raccoon', './assets/raccoon.png', { frameWidth: 56, frameHeight: 56 });
 }
 
-export default {
+const exportMap = {
   Entity,
   initSprites,
-  initSpritesheet
+  initSpritesheet,
 }
+export default exportMap; 

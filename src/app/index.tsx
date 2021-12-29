@@ -5,9 +5,9 @@ import styled from 'styled-components';
 import { PhaserContainer } from '../components/game/phaser-container';
 import { Splash } from '../components/ui/splash';
 import { useAppDispatch, useAppSelector } from '../services/hooks';
-import { startGame, exitGame, selectGameStatus } from '../services/game/status-slice';
+import { startGame, exitGame, selectGameStatus, selectPlayStatus } from '../services/game/status-slice';
 import Sidebar from '../components/ui/sidebar';
-import { createGame, killGame } from '../phaser/trapper';
+import { createGame, killGame, resumeGame, pauseGame } from '../phaser/trapper';
 import { getColor } from '../themes';
 import { createGameInterface } from '../components/game/game-interface';
 
@@ -36,6 +36,7 @@ export const RouteReader = ({ dispatch }) => {
 
 function App() {
   const gameStatus = useAppSelector(selectGameStatus);
+  const playStatus = useAppSelector(selectPlayStatus);
   const dispatch = useAppDispatch();
   
   // only need to do this once, hence the []
@@ -55,12 +56,24 @@ function App() {
   ]
 
   useEffect(() => {
+    if(playStatus === 'playing'){
+      console.log('useEffect >> resumeGame')
+      resumeGame();
+    }else if(['won', 'lost', 'paused'].some(s => s === playStatus)){
+      console.log('useEffect >> pauseGame')
+      pauseGame();
+    }
+  }, [ playStatus ]);
+
+  useEffect(() => {
     if(gameStatus === 'active'){
+      console.log('useEffect >> createGame')
       createGame();
     }else{
+      console.log('useEffect >> killGame')
       killGame();
     }
-  }, [ gameStatus, dispatch ]);
+  }, [ gameStatus ]);
   
   return (
     <HashRouter>

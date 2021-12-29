@@ -25,18 +25,21 @@ export function Brain() {
   const metrics = useAppSelector(selectMetricsMap);
   const gameStatus = useAppSelector(selectGameStatus);
   useEffect(() => {
-    const rules = getRulesObj();
-    // get back a list of conditions based on rules, like "you slang too many bowls!"
-    const results = checkMetricRules(rules.metrics, metrics);
-
-    const resultActions = evaluateGameConditions(rules.conditions, results);
-    resultActions.forEach(resultAction => {
-      switch(resultAction.action){
-        case 'LOSE': dispatch(loseRound(resultAction.reason)); break;
-        case 'WIN': dispatch(winRound(resultAction.reason)); break;
-        default: break;
-      }
-    })
+    // if game isnt running, no need to check win conditions
+    if(gameStatus === 'active'){
+      const rules = getRulesObj();
+      // get back a list of conditions based on rules, like "you slang too many bowls!"
+      const results = checkMetricRules(rules.metrics, metrics);
+  
+      const resultActions = evaluateGameConditions(rules.conditions, results);
+      resultActions.forEach(resultAction => {
+        switch(resultAction.action){
+          case 'LOSE': dispatch(loseRound(resultAction.reason)); break;
+          case 'WIN': dispatch(winRound(resultAction.reason)); break;
+          default: break;
+        }
+      })
+    }
   }, [ metrics, gameStatus, dispatch ])
 
   return (

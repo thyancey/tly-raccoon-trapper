@@ -4,6 +4,12 @@
     "metrics":[
       {
         "metric": "bowls",
+        "condition": ">",
+        "value": 1,
+        "result": "SOME_BOWLS"
+      },
+      {
+        "metric": "bowls",
         "condition": "=",
         "value": 5,
         "result": "EXACT_BOWLS"
@@ -16,6 +22,12 @@
       }
     ],
     "conditions": [
+      {
+        "when": [ "SOME_BOWLS" ],
+        "then": "LOSE",
+        "reason": "You ran out of bowls!",
+        "halt": true
+      },
       {
         "when": [ "EXACT_BOWLS", "TOO_MANY_ESCAPES" ],
         "then": "LOSE",

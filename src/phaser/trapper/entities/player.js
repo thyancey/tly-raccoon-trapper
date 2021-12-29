@@ -5,11 +5,10 @@ import StatBar from './stat-bar';
 const STARTING_LANE = 2;
 const KICK_DURATION = 500; // becomes variable based on kick power
 const ATTACKED_DURATION = 1000;
-const KILLED_DURATION = 5000;
-
+const DESTROY_TIMEOUT = 5000;
 const MIN_KICK_FORCE = .3;
-
 let statBar;
+let sceneRef;
 
 export const STATUS = {
   IDLE: 0,
@@ -36,6 +35,9 @@ const gameState = {};
 class Entity extends Phaser.Physics.Arcade.Sprite {
   constructor (scene, x, y, physicsGroup, laneData) {
     super(scene, x, y, 'player');
+    sceneRef = scene;
+    this.recoveryTimer = null;
+    this.destroyTimer = null;
 
     this.hpRange = [ 0, 100 ];
     this.hp = this.hpRange[1];
@@ -120,20 +122,6 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
     this.setLaneDepth();
   }
 
-  startRecoveryTimer(callback, timeout){
-    this.killRecoveryTimer();
-    this.recoveryTimer = window.setTimeout(() => {
-      this.recoveryTimer = null;
-      callback();
-    }, timeout);
-  }
-
-  killRecoveryTimer(){
-    if(this.recoveryTimer);
-    window.clearTimeout(this.recoveryTimer);
-    this.recoveryTimer = null;
-  }
-
   checkStatus(statusKey){
     // console.log('check', statusKey, this.status, STATUS[statusKey])
     return this.status === statusKey;
@@ -145,18 +133,20 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
   onAttackedByEnemy(enemy){
     // console.log('hurt')
     this.setStatus(STATUS.ATTACKED);
-
-    this.startRecoveryTimer(() => {
+    this.recoveryTimer = sceneRef.time.delayedCall(ATTACKED_DURATION, () => {
       this.setStatus(STATUS.IDLE);
-    }, ATTACKED_DURATION);
+    });
   }
   
   kill(){
     this.setStatus(STATUS.DEAD);
+    this.delayedDestroy();
+  }
 
-    global.setTimeout(() => {
+  delayedDestroy(){
+    this.destroyTimer = sceneRef.time.delayedCall(DESTROY_TIMEOUT, () => {
       this.destroy();
-    }, KILLED_DURATION)
+    });
   }
 
   chargeKick(){
@@ -182,15 +172,13 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
 
   kick(){
     this.setStatus(STATUS.KICK);
-    // console.log('KICK: ', this.kickCharge);
 
-    this.startRecoveryTimer(() => {
+    this.recoveryTimer = sceneRef.time.delayedCall(this.getModifiedKickCharge() * KICK_DURATION, () => {
       this.cancelKick();
-    }, this.getModifiedKickCharge() * KICK_DURATION);
+    });
   }
 
   cancelKick(){
-    this.killRecoveryTimer();
     this.kickCharge = 0;
     statBar.setProgress(this.kickCharge);
     this.setStatus(STATUS.IDLE);

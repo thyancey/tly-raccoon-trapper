@@ -43,6 +43,7 @@ export const statusSlice = createSlice({
 export const { startGame, exitGame, winRound, loseRound } = statusSlice.actions;
 
 export const selectGameStatus = (state: RootState) => state.game.status.gameStatus;
+export const selectPlayStatus = (state: RootState) => state.game.status.playStatus;
 export const selectPlayStatusObj = (state: RootState) => (
   {
     status: state.game.status.playStatus,
