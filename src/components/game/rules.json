@@ -1,0 +1,45 @@
+{
+  "TRAPPER": {
+    "title": "Trapper",
+    "metrics":[
+      {
+        "metric": "bowls",
+        "condition": "=",
+        "value": 5,
+        "result": "EXACT_BOWLS"
+      },
+      {
+        "metric": "escapes",
+        "condition": ">",
+        "value": 2,
+        "result": "TOO_MANY_ESCAPES"
+      }
+    ],
+    "conditions": [
+      {
+        "when": [ "EXACT_BOWLS", "TOO_MANY_ESCAPES" ],
+        "then": "LOSE",
+        "reason": "Just the right number of bowls, too many critters",
+        "halt": true
+      },
+      {
+        "when": [ "EXACT_BOWLS" ],
+        "then": "LOSE",
+        "reason": "You ran out of bowls!",
+        "halt": true
+      },
+      {
+        "when": [ "TOO_MANY_ESCAPES" ],
+        "then": "LOSE",
+        "reason": "Too many critters escaped!",
+        "halt": true
+      },
+      {
+        "when": [ "NO_TIME" ],
+        "then": "LOSE",
+        "reason": "You ran out of time!",
+        "halt": true
+      }
+    ]
+  }
+}

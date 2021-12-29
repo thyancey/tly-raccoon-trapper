@@ -1,7 +1,6 @@
 import styled from 'styled-components';
-import { setMetric } from '../../services/game/metrics-slice';
-import { useAppDispatch } from '../../services/hooks';
 import { getColor } from '../../themes';
+import { Brain } from './brain';
 
 export const ScPhaserContainer = styled.div`
   position:relative;
@@ -17,26 +16,10 @@ export const ScWrapper = styled.div`
   }
 `;
 
-export const createGameInterface = dispatch => {
-  if(!(global as any).gameInterface){
-    (global as any).gameInterface = (event, payload) => {
-      switch(event){
-        case 'setMetric': 
-          dispatch(setMetric(payload))
-          break;
-        default: console.error('invalid interface command', event);
-      }
-    }
-  }
-  return;
-}
-
 export function PhaserContainer() {
-  const dispatch = useAppDispatch();
-  createGameInterface(dispatch);
-
   return (
     <ScPhaserContainer>
+      <Brain />
       <ScWrapper id="game-container">
       </ScWrapper>
     </ScPhaserContainer>

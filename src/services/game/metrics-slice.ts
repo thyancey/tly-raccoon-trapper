@@ -60,8 +60,10 @@ export const getScore = metrics => {
   return total;
 }
 
+
+
 export const { setMetric } = metricsSlice.actions;
-export const selectMetrics = (state: RootState) => {
+export const selectMetrics = (state: RootState): Array<GameMetric> => {
   return Object.keys(state.game.metrics)
   .filter(sKey => scoreModifiers[sKey] !== undefined)
   .map(k => ({
@@ -70,6 +72,11 @@ export const selectMetrics = (state: RootState) => {
     isGood: scoreModifiers[k] > 0
   }));
 };
+
+export const selectMetricsMap = (state: RootState): GameMetrics => {
+  return state.game.metrics;
+};
+
 export const selectGoodMetrics = (state: RootState) => {
   return selectMetrics(state).filter(s => s.isGood);
 };

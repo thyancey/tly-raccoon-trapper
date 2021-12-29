@@ -9,6 +9,7 @@ import { startGame, exitGame, selectGameStatus } from '../services/game/status-s
 import Sidebar from '../components/ui/sidebar';
 import { createGame, killGame } from '../phaser/trapper';
 import { getColor } from '../themes';
+import { createGameInterface } from '../components/game/game-interface';
 
 export const ScStage = styled.div`
   position:absolute;
@@ -36,6 +37,9 @@ export const RouteReader = ({ dispatch }) => {
 function App() {
   const gameStatus = useAppSelector(selectGameStatus);
   const dispatch = useAppDispatch();
+  
+  // only need to do this once, hence the []
+  useEffect(() => {createGameInterface();}, [])
   
   const pages = [
     {
