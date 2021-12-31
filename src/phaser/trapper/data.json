@@ -11,6 +11,7 @@
     "enemies":{
       "LIL_BOI":{
         "type": "raccoon",
+        "particleDeath": "raccoon",
         "scaleRange": [150, 150],
         "stats":{
           "speed": [ 80, 80 ],
@@ -23,6 +24,7 @@
       },
       "MEAN_BOI":{
         "type": "raccoon",
+        "particleDeath": "raccoon_mean",
         "scaleRange": [80, 120],
         "stats":{
           "speed": [ 100, 160 ],
@@ -36,6 +38,7 @@
       },
       "BIG_BOI":{
         "type": "raccoon",
+        "particleDeath": "raccoon",
         "scaleRange": [250, 350],
         "stats":{
           "speed": [ 30, 40 ],
@@ -102,7 +105,7 @@
               "rate": 0.1
             },{
               "type": "MEAN_BOI",
-              "rate": 0.05
+              "rate": 0.3
             }
           ]
         },

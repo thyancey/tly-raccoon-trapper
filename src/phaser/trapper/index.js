@@ -9,7 +9,6 @@ import LevelController from './level.js';
 
 let game;
 let levelGroups;
-let emitter;
 let sceneContext;
 
 let points = {
@@ -24,7 +23,88 @@ global.gameData = {
   curLevel: 0
 }
 
+const particleDefs = {
+  blood: {
+    image:'./assets/blood.png',
+    emitter:{
+      quantity: 20,
+      visible: false,
+      blendMode: 'SCREEN',
+      speed: { min: -400, max: 400 },
+      angle: { min: 210, max: 330 },
+      scale: { start: 1, end: 0 },
+      lifespan: 500,
+      gravityY: 1000
+    }
+  },
+  raccoon: {
+    atlas:'./assets/sprites/particle-raccoon',
+    sound: 'splat1',
+    emitter:{
+      quantity: 7,
+      frame: { frames: [ 'particle-raccoon0', 'particle-raccoon1', 'particle-raccoon2', 'particle-raccoon3', 'particle-raccoon4', 'particle-raccoon5', 'particle-raccoon6' ], cycle: true },
+      frequency:1,
+      visible: false,
+      speed: { min: 400, max: 600 },
+      angle: { min: 210, max: 330 },
+      scale: { start: 1.5, end: 2 },
+      lifespan: { min: 400, max: 800 },
+      gravityY: 2000
+    }
+  },
+  raccoon_mean: {
+    atlas:'./assets/sprites/particle-raccoon',
+    sound: 'splat1',
+    emitter:{
+      quantity: 7,
+      frame: { frames: [ 'particle-raccoon0', 'particle-raccoon1', 'particle-raccoon2', 'particle-raccoon3', 'particle-raccoon4', 'particle-raccoon5', 'particle-raccoon6' ], cycle: true },
+      frequency:1,
+      visible: false,
+      tint: 0xff0000,
+      speed: { min: 300, max: 500 },
+      angle: { min: 210, max: 330 },
+      scale: { start: .75, end: 1.1 },
+      lifespan: { min: 400, max: 800 },
+      gravityY: 2000
+    }
+  }
+}
+const particles = {}
+/*
+class AnimatedParticle extends Phaser.GameObjects.Particles.Particle
+{
+    constructor (emitter)
+    {
+        super(emitter);
+        this.frame = anim.frames
 
+        this.t = 0;
+        this.i = 0;
+    }
+
+    update (delta, step, processors)
+    {
+        var result = super.update(delta, step, processors);
+
+        this.t += delta;
+
+        if (this.t >= anim.msPerFrame)
+        {
+            this.i++;
+
+            if (this.i > 17)
+            {
+                this.i = 0;
+            }
+
+            this.frame = anim.frames[this.i].frame;
+            this.t -= anim.msPerFrame;
+        }
+
+        return result;
+    }
+}
+*/
 
 export const createGame = () =>{
   console.log('GAME: createGame');
@@ -93,9 +173,21 @@ function setSceneContext(context){
 }
 
 function preload() {
-  this.load.audioSprite('sfx', './assets/sfx/mixdown.json', [ 'assets/sfx/splat.ogg', 'assets/sfx/splat.mp3'] );
   setSceneContext(this);
-  this.load.image('blood', './assets/blood.png');
+
+  // sounds/music
+  this.load.audioSprite('sfx', './assets/sfx/mixdown.json', [ 'assets/sfx/splat.ogg', 'assets/sfx/splat.mp3'] );
+  this.load.audioSprite('sfx_jab', './assets/sfx/jab.json', [ 'assets/sfx/jab.ogg', 'assets/sfx/jab.mp3'] );
+
+  // particle images
+  Object.keys(particleDefs).forEach(k => {
+    if(particleDefs[k].image){
+      this.load.image(`particle_${k}`, particleDefs[k].image);
+    } else if(particleDefs[k].atlas) {
+      this.load.atlas(`particle_${k}`, `${particleDefs[k].atlas}.png`, `${particleDefs[k].atlas}.json`);
+    }
+  });
+
   LevelController.preload();
   SpawnController.preload();
 }
@@ -127,7 +219,7 @@ function create() {
   this.input.on('gameobjectdown', onObjectClicked);
   this.input.keyboard.on('keydown', onKeyDown);
 
-  setupMouseEmitter();
+  addParticles();
 }
 function update (){
   SpawnController.update();
@@ -192,13 +284,24 @@ function trigger_enemyAndPlayer(enemy, player){
       // enemy.punt ? enemy.punt() : enemy.kill();
     }else if(player.checkStatus(STATUS_PLAYER.KICK) && player.getKickStrength() > 0){
       if(enemy.punt){
-        const wasKilled = enemy.punt(player.getKickStrength());
-        if(wasKilled){
-          showBlood(enemy.body.x, enemy.body.y);
+        if(!enemy.punted){
+          const willKill = (player.getKickStrength() >= enemy.puntKillThreshold);
+          enemy.punt(player.getKickStrength());
+          if(willKill){
+            showParticle('blood', enemy.body.x, enemy.body.y);
+            if(enemy.particleDeath) showParticle(enemy.particleDeath,  enemy.body.x, enemy.body.y);
+            
+            enemy.kill(true);
+          }else{
+            // soft punt sound
+            const thudVolume = .3 * player.getKickStrength()
+            game.sound.playAudioSprite('sfx_jab', 'jab01', { volume: thudVolume });
+          }
         }
       }else{
-        enemy.kill();
-        showBlood(enemy.body.x, enemy.body.y);
+        showParticle('blood',  enemy.body.x, enemy.body.y);
+        if(enemy.particleDeath) showParticle(enemy.particleDeath,  enemy.body.x, enemy.body.y);
+        enemy.kill(true);
       }
     }
   }
@@ -206,31 +309,30 @@ function trigger_enemyAndPlayer(enemy, player){
   //- anything else, just walk on by
 }
 function onObjectClicked(pointer, gameObject){
-  showBlood(pointer.worldX, pointer.worldY);
+  if(gameObject.type === 'raccoon'){
+    gameObject.clicked();
+    showParticle('blood', pointer.worldX, pointer.worldY);
+    if(gameObject.particleDeath) showParticle(gameObject.particleDeath,  pointer.worldX, pointer.worldY);
+  }
 }
 
-function showBlood(x, y){
-  emitter.setPosition(x, y);
-  emitter.explode(20);
-  emitter.visible = true;
-  game.sound.playAudioSprite('sfx', 'splat1');
+function showParticle(type, x, y){
+  const pDef = particleDefs[type];
+  let config = pDef.emitter;
+
+  let pEmitter = particles[type].createEmitter(config);
+
+  pEmitter.setPosition(x, y);
+  pEmitter.explode();
+  pEmitter.visible = true;
+  if(pDef.sound){
+    game.sound.playAudioSprite('sfx', pDef.sound);
+  }
 }
 
-// function onSceneClicked(pointer){
-//   SpawnController.spawnBowl(pointer.x, pointer.y);
-// }
-
-function setupMouseEmitter(){
-  let particles = sceneContext.add.particles('blood');
-
-  emitter = particles.createEmitter({
-    visible: false,
-    blendMode: 'SCREEN',
-    speed: { min: -400, max: 400 },
-    angle: { min: 0, max: 360 },
-    scale: { start: 1, end: 0 },
-    lifespan: 500,
-    gravityY: 1000
+function addParticles(){
+  Object.keys(particleDefs).forEach(k => {
+    particles[k] = sceneContext.add.particles(`particle_${k}`);
   });
 }
 
@@ -276,7 +378,6 @@ export const killGame = () => {
     game.destroy();
     game = null;
     sceneContext = null;
-    emitter = null;
     levelGroups = null;
   }
 }

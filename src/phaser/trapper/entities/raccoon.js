@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 
 const KILL_TIMEOUT = 3000;
 const DESTROY_TIMEOUT = 1000;
+const PUNT_TIMEOUT = 1000;
 let sceneRef;
 
 export const STATUS = {
@@ -50,6 +51,9 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
     sceneRef = scene;
     this.deathTimer = null;
     this.destroyTimer = null;
+    this.punted = null;
+    this.type = 'raccoon';
+    this.particleDeath = spawnData.particleDeath;
 
     // this.status = STATUS.ROAMING;
     // this.love = 0;
@@ -84,7 +88,7 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
     }else{
       scene.physics.add.existing(this);
     }
-    
+    global.poo = this;
     //- physics
     this.setBounce(0);
     this.setCollideWorldBounds(false);
@@ -101,9 +105,10 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
     if(spawnData.misc?.tint){
       this.setTint(spawnData.misc.tint);
     }
-    this.on('pointerdown', (thing) => {
-      this.kill();
-    });
+  }
+
+  clicked(){
+    this.kill(true);
   }
 
   canEat(){
@@ -131,6 +136,11 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
 
   // right now, its a %, later should be actual power
   punt(force){
+    this.punted = true;
+    this.puntedTimer = sceneRef.time.delayedCall(PUNT_TIMEOUT, () => {
+      this.punted = false;
+    });
+    
     // console.log('force', force)
     this.body.setDrag(0);
 
@@ -146,20 +156,19 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
       vRange.min.x + vRange.diff.x * force,
       vRange.min.y + vRange.diff.y * force,
     );
-
-    if(force >= this.puntKillThreshold){
-      this.kill();
-      return true;
-    }
-    return false;
   }
 
-  kill(){
+  kill(quickKill){
     this.setStatus(STATUS.DEAD);
 
-    this.deathTimer = sceneRef.time.delayedCall(KILL_TIMEOUT, () => {
+    if(quickKill){
       this.destroy();
-    });
+    }
+    else{
+      this.deathTimer = sceneRef.time.delayedCall(KILL_TIMEOUT, () => {
+        this.destroy();
+      });
+    }
   }
 
   update(){

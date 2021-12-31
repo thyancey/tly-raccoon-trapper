@@ -11,7 +11,7 @@
       {
         "metric": "escapes",
         "condition": ">",
-        "value": 2,
+        "value": 4,
         "result": "TOO_MANY_ESCAPES"
       },
       {

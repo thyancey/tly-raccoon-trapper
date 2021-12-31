@@ -1,0 +1,76 @@
+{ "frames": {
+   "particle-raccoon0": {
+    "frame": { "x": 0, "y": 0, "w": 35, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 35, "h": 32 },
+    "sourceSize": { "w": 35, "h": 32 },
+    "duration": 100
+   },
+   "particle-raccoon1": {
+    "frame": { "x": 35, "y": 0, "w": 35, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 35, "h": 32 },
+    "sourceSize": { "w": 35, "h": 32 },
+    "duration": 100
+   },
+   "particle-raccoon2": {
+    "frame": { "x": 70, "y": 0, "w": 35, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 35, "h": 32 },
+    "sourceSize": { "w": 35, "h": 32 },
+    "duration": 100
+   },
+   "particle-raccoon3": {
+    "frame": { "x": 105, "y": 0, "w": 35, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 35, "h": 32 },
+    "sourceSize": { "w": 35, "h": 32 },
+    "duration": 100
+   },
+   "particle-raccoon4": {
+    "frame": { "x": 140, "y": 0, "w": 35, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 35, "h": 32 },
+    "sourceSize": { "w": 35, "h": 32 },
+    "duration": 100
+   },
+   "particle-raccoon5": {
+    "frame": { "x": 175, "y": 0, "w": 35, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 35, "h": 32 },
+    "sourceSize": { "w": 35, "h": 32 },
+    "duration": 100
+   },
+   "particle-raccoon6": {
+    "frame": { "x": 210, "y": 0, "w": 35, "h": 32 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 35, "h": 32 },
+    "sourceSize": { "w": 35, "h": 32 },
+    "duration": 100
+   }
+ },
+ "meta": {
+  "app": "http://www.aseprite.org/",
+  "version": "1.2.25-x64",
+  "image": "particle-raccoon.png",
+  "format": "RGBA8888",
+  "size": { "w": 245, "h": 32 },
+  "scale": "1",
+  "layers": [
+   { "name": "head", "opacity": 255, "blendMode": "normal" },
+   { "name": "arm2", "opacity": 255, "blendMode": "normal" },
+   { "name": "foot2", "opacity": 255, "blendMode": "normal" },
+   { "name": "arm2", "opacity": 255, "blendMode": "normal" },
+   { "name": "heart", "opacity": 255, "blendMode": "normal" },
+   { "name": "arm1", "opacity": 255, "blendMode": "normal" },
+   { "name": "tail", "opacity": 255, "blendMode": "normal" }
+  ]
+ }
+}

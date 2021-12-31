@@ -158,7 +158,9 @@ const spawnIt = (EntityRef, entityData, laneIdx) => {
     y: pos.y,
     stats: stats,
     depth: getDepthOfLane(laneIdx),
-    misc: entityData.misc
+    misc: entityData.misc,
+    type: entityData.type,
+    particleDeath: entityData.particleDeath
   });
   const randomScale = Phaser.Math.Between(entityData.scaleRange[0], entityData.scaleRange[1]) / 100;
   entity.setScale(randomScale);
