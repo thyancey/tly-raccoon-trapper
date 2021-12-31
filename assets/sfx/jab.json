@@ -1,0 +1,13 @@
+{
+  "resources": [
+    "./assets/sfx/jab.ogg",
+    "./assets/sfx/jab.mp3"
+  ],
+  "spritemap": {
+    "jab01": {
+      "start": 0,
+      "end": 2,
+      "loop": false
+    }
+  }
+}
