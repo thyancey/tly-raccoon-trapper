@@ -11,6 +11,7 @@ import { createGame, killGame, resumeGame, pauseGame } from '../phaser/trapper';
 import { getColor } from '../themes';
 import { createGameInterface } from '../components/game/game-interface';
 import { Modals } from '../components/ui/modals';
+import { Music } from '../components/ui/components/music';
 
 export const ScStage = styled.div`
   position:absolute;
@@ -77,6 +78,7 @@ function App() {
       <RouteReader dispatch={dispatch}/>
       <Sidebar />
       <Modals />
+      <Music />
       <ScStage>
         <Routes>
           {pages.map((p, i) => (
