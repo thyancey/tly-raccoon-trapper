@@ -11,13 +11,14 @@ let game;
 let levelGroups;
 let sceneContext;
 
-let points = {
+const INITIAL_STATE_POINTS = {
   bowls: 0,
   hugs: 0,
   bites: 0,
   captures: 0,
-  escapes: 0
+  escapes: 0 
 }
+let points = {};
 
 global.gameData = {
   curLevel: 0
@@ -108,6 +109,8 @@ class AnimatedParticle extends Phaser.GameObjects.Particles.Particle
 
 export const createGame = () =>{
   console.log('GAME: createGame');
+  points = { ...INITIAL_STATE_POINTS };
+
   const config = {
     type: Phaser.AUTO,
     scale: {

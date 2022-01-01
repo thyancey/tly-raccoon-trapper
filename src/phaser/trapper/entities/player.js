@@ -66,7 +66,7 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
     // this.spriteOffset = [ 12, 6 ];
 
     this.body.setSize(60, 100);
-    this.posOffset = [ -80, 4 ];
+    this.posOffset = [ -120, 4 ];
     this.spriteOffset = [ 12, 6 ];
     this.setScale(1.3);
 
