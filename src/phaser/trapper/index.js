@@ -238,10 +238,6 @@ function trigger_enemyAtEnd(enemy, trigger){
       setPoints('captures', 1);
       enemy.captured();
       break;
-    case STATUS_ENEMY.ROAMING_ANGRY:
-      setPoints('escapes', 1);
-      enemy.escaped();
-      break;
     case STATUS_ENEMY.ROAMING:
       setPoints('escapes', 1);
       enemy.escaped();
@@ -268,49 +264,63 @@ function collider_enemyAndPlatform(enemy, platform){
 
 function trigger_enemyAndPlayer(enemy, player){
   if(enemy.isAlive()){
-    // if player has arms open for a hug
-    if(player.checkStatus(STATUS_PLAYER.HUGGING)){
-        // hug happy raccoons that havent been hugged yet
-      if(enemy.isFull){
-        if(!enemy.checkStatus(STATUS_ENEMY.HUGGING)){
-          enemy.hug();
-          player.onHugEnemy();
-          setPoints('hugs', 1);
+    // first off, is player is kicking, punt that thing
+    if(player.checkStatus(STATUS_PLAYER.KICK) && player.getKickStrength() > 0){
+      kickEnemy(player, enemy);
+    }else{
+    // otherwise, see if its good or bad
+      // get bitten by mean boys.
+      if(!enemy.isFull && !enemy.checkStatus(STATUS_ENEMY.BITING)){
+        bitePlayer(player, enemy);
+      }else{
+        // good raccoons get a bonus from a hug, dont hug more than once now
+        if(player.checkStatus(STATUS_PLAYER.HUGGING) && !enemy.checkStatus(STATUS_ENEMY.HUGGING)){
+          hugEnemy(player, enemy);
         }
         // already got your hug lil dude, move along
-      }else{
-        // get bitten by mean boys. shouldnt trigger twice cause player moves out of hugging state
-        player.onAttackedByEnemy();
-        setPoints('bites', 1);
-      }
-    }else if(player.checkStatus([STATUS_PLAYER.KICK_PREP])){
-      // enemy.punt ? enemy.punt() : enemy.kill();
-    }else if(player.checkStatus(STATUS_PLAYER.KICK) && player.getKickStrength() > 0){
-      if(enemy.punt){
-        if(!enemy.punted){
-          const willKill = (player.getKickStrength() >= enemy.puntKillThreshold);
-          enemy.punt(player.getKickStrength());
-          if(willKill){
-            showParticle('blood', enemy.body.x, enemy.body.y);
-            if(enemy.particleDeath) showParticle(enemy.particleDeath,  enemy.body.x, enemy.body.y);
-            
-            enemy.kill(true);
-          }else{
-            // soft punt sound
-            const thudVolume = .3 * player.getKickStrength()
-            game.sound.playAudioSprite('sfx_jab', 'jab01', { volume: thudVolume });
-          }
-        }
-      }else{
-        showParticle('blood',  enemy.body.x, enemy.body.y);
-        if(enemy.particleDeath) showParticle(enemy.particleDeath,  enemy.body.x, enemy.body.y);
-        enemy.kill(true);
       }
     }
   }
 
   //- anything else, just walk on by
 }
+
+function kickEnemy(player, enemy){
+  const kickStrength = player.getKickStrength();
+  if(enemy.punt){
+    if(!enemy.punted){
+      const willKill = (kickStrength >= enemy.puntKillThreshold);
+      enemy.punt(kickStrength);
+      if(willKill){
+        showParticle('blood', enemy.body.x, enemy.body.y);
+        if(enemy.particleDeath) showParticle(enemy.particleDeath,  enemy.body.x, enemy.body.y);
+        
+        enemy.kill(true);
+      }else{
+        // soft punt sound
+        const thudVolume = .3 * kickStrength
+        game.sound.playAudioSprite('sfx_jab', 'jab01', { volume: thudVolume });
+      }
+    }
+  }else{
+    showParticle('blood',  enemy.body.x, enemy.body.y);
+    if(enemy.particleDeath) showParticle(enemy.particleDeath,  enemy.body.x, enemy.body.y);
+    enemy.kill(true);
+  }
+}
+
+function hugEnemy(player, enemy){
+  enemy.hug();
+  player.onHugEnemy();
+  setPoints('hugs', 1);
+}
+
+function bitePlayer(player, enemy){
+  enemy.bite();
+  player.onAttackedByEnemy();
+  setPoints('bites', 1);
+}
+
 function onObjectClicked(pointer, gameObject){
   if(gameObject.type === 'raccoon'){
     gameObject.clicked();

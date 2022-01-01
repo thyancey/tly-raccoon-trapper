@@ -91,10 +91,6 @@
             {
               "type": "LIL_BOI",
               "rate": 0.1
-            },
-            {
-              "type": "LIL_BOI",
-              "rate": 0.01
             }
           ]
         },
@@ -103,9 +99,6 @@
             {
               "type": "LIL_BOI",
               "rate": 0.1
-            },{
-              "type": "MEAN_BOI",
-              "rate": 0.3
             }
           ]
         },
