@@ -181,6 +181,7 @@ function preload() {
   // sounds/music
   this.load.audioSprite('sfx', './assets/sfx/mixdown.json', [ 'assets/sfx/splat.ogg', 'assets/sfx/splat.mp3'] );
   this.load.audioSprite('sfx_jab', './assets/sfx/jab.json', [ 'assets/sfx/jab.ogg', 'assets/sfx/jab.mp3'] );
+  this.load.audioSprite('sfx_test', './assets/sfx/sfx-test.json', [ 'assets/sfx/sfx-test.ogg', 'assets/sfx/sfx-test.mp3'] );
 
   // particle images
   Object.keys(particleDefs).forEach(k => {
@@ -235,11 +236,13 @@ function onInterface(event, data){
 function trigger_enemyAtEnd(enemy, trigger){
   switch(enemy.status){
     case STATUS_ENEMY.ROAMING_TAME:
+      game.sound.playAudioSprite('sfx_test', 'sfxtest_trainwhistle');
       spawnStatus('tame', enemy.body.x, enemy.body.y);
       setPoints('captures', 1);
       enemy.captured();
       break;
     case STATUS_ENEMY.ROAMING:
+      game.sound.playAudioSprite('sfx_test', 'sfxtest_slidewhistle');
       spawnStatus('lost', enemy.body.x, enemy.body.y);
       setPoints('escapes', 1);
       enemy.escaped();
@@ -252,12 +255,14 @@ function trigger_itemAtStart(item, trigger){
   spawnStatus('lost', item.body.x, item.body.y);
   item.destroy();
   setPoints('bowls', 1);
+  game.sound.playAudioSprite('sfx_test', 'sfxtest_slidewhistle');
 }
 
 function trigger_enemyAndBowl(enemy, bowl){
   if(enemy.canEat() && bowl.canBeEaten){
     enemy.eatAtBowl(bowl.body);
     bowl.eatenBy(enemy);
+    game.sound.playAudioSprite('sfx_test', 'sfxtest_eat');
   }
 }
 
@@ -274,11 +279,13 @@ function trigger_enemyAndPlayer(enemy, player){
     // otherwise, see if its good or bad
       // get bitten by mean boys.
       if(!enemy.isFull && !enemy.checkStatus(STATUS_ENEMY.BITING)){
+        game.sound.playAudioSprite('sfx_test', 'sfxtest_bite');
         spawnStatus('bite', enemy.body.x, enemy.body.y, enemy.depth);
         bitePlayer(player, enemy);
       }else{
         // good raccoons get a bonus from a hug, dont hug more than once now
         if(player.checkStatus(STATUS_PLAYER.HUGGING) && !enemy.checkStatus(STATUS_ENEMY.HUGGING)){
+          game.sound.playAudioSprite('sfx_test', 'sfxtest_trainwhistle');
           spawnStatus('hug', enemy.body.x, enemy.body.y, enemy.depth);
           hugEnemy(player, enemy);
         }
@@ -297,6 +304,7 @@ function kickEnemy(player, enemy){
       const willKill = (kickStrength >= enemy.puntKillThreshold);
       enemy.punt(kickStrength);
       if(willKill){
+        game.sound.playAudioSprite('sfx_test', 'sfxtest_trainwhistle');
         showParticle('blood', enemy.body.x, enemy.body.y);
         if(enemy.particleDeath) showParticle(enemy.particleDeath,  enemy.body.x, enemy.body.y);
         
@@ -345,6 +353,7 @@ function showParticle(type, x, y){
   pEmitter.visible = true;
   if(pDef.sound){
     game.sound.playAudioSprite('sfx', pDef.sound);
+    game.sound.playAudioSprite('sfx_test', 'sfxtest_bite');
   }
 }
 

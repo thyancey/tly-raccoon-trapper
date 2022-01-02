@@ -1,0 +1,58 @@
+{
+  "resources": [
+    "./assets/sfx/sfx-test.ogg",
+    "./assets/sfx/sfx-test.mp3"
+  ],
+  "spritemap": {
+    "sfxtext_paroodle": {
+      "start": 2,
+      "end": 2.75,
+      "loop": false
+    },
+    "sfxtest_tick": {
+      "start": 3.75,
+      "end": 4.75,
+      "loop": false
+    },
+    "sfxtest_pur": {
+      "start": 5.75,
+      "end": 7,
+      "loop": false
+    },
+    "sfxtest_bite": {
+      "start": 8,
+      "end": 8.75,
+      "loop": false
+    },
+    "sfxtest_growl": {
+      "start": 9.75,
+      "end": 11,
+      "loop": false
+    },
+    "sfxtest_roar": {
+      "start": 11.75,
+      "end": 12.5,
+      "loop": false
+    },
+    "sfxtest_moan": {
+      "start": 13.75,
+      "end": 15.5,
+      "loop": false
+    },
+    "sfxtest_trainwhistle": {
+      "start": 16,
+      "end": 17.5,
+      "loop": false
+    },
+    "sfxtest_slidewhistle": {
+      "start": 18,
+      "end": 19.5,
+      "loop": false
+    },
+    "sfxtest_eat": {
+      "start": 20,
+      "end": 23.5,
+      "loop": false
+    }
+  }
+}
