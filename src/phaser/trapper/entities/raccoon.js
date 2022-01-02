@@ -88,7 +88,7 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
     }else{
       scene.physics.add.existing(this);
     }
-    global.poo = this;
+    
     //- physics
     this.setBounce(0);
     this.setCollideWorldBounds(false);

@@ -4,7 +4,7 @@ import gameData from './data.json';
 import { STATUS as STATUS_ENEMY } from './entities/raccoon';
 import { STATUS as STATUS_PLAYER } from './entities/player';
 import Events from '../event-emitter';
-import SpawnController from './spawn.js';
+import SpawnController, { spawnStatus } from './spawn.js';
 import LevelController from './level.js';
 
 let game;
@@ -235,10 +235,12 @@ function onInterface(event, data){
 function trigger_enemyAtEnd(enemy, trigger){
   switch(enemy.status){
     case STATUS_ENEMY.ROAMING_TAME:
+      spawnStatus('tame', enemy.body.x, enemy.body.y);
       setPoints('captures', 1);
       enemy.captured();
       break;
     case STATUS_ENEMY.ROAMING:
+      spawnStatus('lost', enemy.body.x, enemy.body.y);
       setPoints('escapes', 1);
       enemy.escaped();
       break;
@@ -247,6 +249,7 @@ function trigger_enemyAtEnd(enemy, trigger){
 }
 
 function trigger_itemAtStart(item, trigger){
+  spawnStatus('lost', item.body.x, item.body.y);
   item.destroy();
   setPoints('bowls', 1);
 }
@@ -271,10 +274,12 @@ function trigger_enemyAndPlayer(enemy, player){
     // otherwise, see if its good or bad
       // get bitten by mean boys.
       if(!enemy.isFull && !enemy.checkStatus(STATUS_ENEMY.BITING)){
+        spawnStatus('bite', enemy.body.x, enemy.body.y, enemy.depth);
         bitePlayer(player, enemy);
       }else{
         // good raccoons get a bonus from a hug, dont hug more than once now
         if(player.checkStatus(STATUS_PLAYER.HUGGING) && !enemy.checkStatus(STATUS_ENEMY.HUGGING)){
+          spawnStatus('hug', enemy.body.x, enemy.body.y, enemy.depth);
           hugEnemy(player, enemy);
         }
         // already got your hug lil dude, move along

@@ -1,8 +1,9 @@
 import Phaser from 'phaser';
 
-import Raccoon from './entities/raccoon.js';
-import Player from './entities/player.js';
-import Bowl from './entities/bowl.js';
+import Raccoon from './entities/raccoon';
+import Player from './entities/player';
+import Bowl from './entities/bowl';
+import Status from './entities/status';
 import { getDepthOfLane } from './utils/values';
 import { throttle } from 'throttle-debounce';
 import Events from '../event-emitter';
@@ -38,6 +39,7 @@ export const preload = () => {
   Raccoon.initSpritesheet(sceneContext);
   Player.initSpritesheet(sceneContext);
   Bowl.initSpritesheet(sceneContext);
+  Status.initSpritesheet(sceneContext);
 }
 
 export const create = (globalEntities, levelData, sceneData) => {
@@ -55,8 +57,9 @@ export const create = (globalEntities, levelData, sceneData) => {
   groups.player = sceneContext.physics.add.staticGroup();
 
   Player.initSprites(sceneContext);
-  Bowl.initSprites(sceneContext);
   Raccoon.initSprites(sceneContext);
+  Bowl.initSprites(sceneContext);
+  Status.initSprites(sceneContext);
 
   spawnPlayer(sceneData.lanes);
   return groups;
@@ -165,6 +168,10 @@ const spawnIt = (EntityRef, entityData, laneIdx) => {
   const randomScale = Phaser.Math.Between(entityData.scaleRange[0], entityData.scaleRange[1]) / 100;
   entity.setScale(randomScale);
 }
+
+export const spawnStatus = (type, x, y, depth) => {
+  let status = new Status.Entity(sceneContext, x, y, type, depth);
+};
 
 export const spawnBowl = (x, y) => {
   let bowl = new Bowl.Entity(sceneContext, groups.bowls, {
