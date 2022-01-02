@@ -1,7 +1,13 @@
 import Phaser from 'phaser';
 import Values from '../utils/values';
 
-const DESTROY_TIMEOUT = 500;
+const SPRITE_KEY = 'statuses';
+
+// ranges for how the status pops out
+const rY = [ -200, -300 ];
+const rX = [ -50, 50 ];
+
+const DESTROY_TIMEOUT = 5000;
 const OFFSET = {
   x: 0,
   y: 0
@@ -23,13 +29,18 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
     scene.physics.add.existing(this);
     this.allowGravity = true;
     this.setDrag(0);
-    this.setVelocity(0, -200);
+
+    const vX = Phaser.Math.Between(rX[0], rX[1]);
+    const vY = Phaser.Math.Between(rY[0], rY[1]);
+    this.setVelocity(vX, vY);
 
     this.alpha = 1;
     scene.tweens.add({
       targets: this,
       alpha: 0,
       duration: 500,
+      delay: 300,
+      ease: 'Cubic',
       repeat: 0
     });
 
@@ -54,42 +65,35 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
 const initSprites = (sceneContext) => {
   sceneContext.anims.create({
     key: 'status_bite',
-    frames: [ { key: 'status', frame: 0 } ],
-    frameRate: 0,
-    repeat: -1
+    frames: sceneContext.anims.generateFrameNumbers(SPRITE_KEY, { start: 0, end: 4 }),
+    frameRate: 12,
+    repeat: 0,
   });
   
   sceneContext.anims.create({
     key: 'status_hug',
-    frames: [ { key: 'status', frame: 1 } ],
-    frameRate: 0,
-    repeat: -1
+    frames: sceneContext.anims.generateFrameNumbers(SPRITE_KEY, { start: 5, end: 9 }),
+    frameRate: 12,
+    repeat: 0,
   });
   
   sceneContext.anims.create({
     key: 'status_lost',
-    frames: [ { key: 'status', frame: 2 } ],
-    frameRate: 0,
-    repeat: -1
-  });
-  
-  sceneContext.anims.create({
-    key: 'status_full',
-    frames: [ { key: 'status', frame: 3 } ],
-    frameRate: 0,
-    repeat: -1
+    frames: sceneContext.anims.generateFrameNumbers(SPRITE_KEY, { start: 10, end: 14 }),
+    frameRate: 12,
+    repeat: 0,
   });
   
   sceneContext.anims.create({
     key: 'status_tame',
-    frames: [ { key: 'status', frame: 4 } ],
-    frameRate: 0,
-    repeat: -1
+    frames: sceneContext.anims.generateFrameNumbers(SPRITE_KEY, { start: 15, end: 19 }),
+    frameRate: 12,
+    repeat: 0,
   });
 }
 
 const initSpritesheet = (sceneContext) => {
-  sceneContext.load.spritesheet('status', './assets/sprites/status.png', { frameWidth: 60, frameHeight: 30 } )
+  sceneContext.load.spritesheet(SPRITE_KEY, './assets/sprites/statuses.png', { frameWidth: 80, frameHeight: 50 } )
 }
 
 const exportMap = {

@@ -336,9 +336,12 @@ function bitePlayer(player, enemy){
 
 function onObjectClicked(pointer, gameObject){
   if(gameObject.type === 'raccoon'){
+    // showParticle('blood', pointer.worldX, pointer.worldY);
+    // if(gameObject.particleDeath) showParticle(gameObject.particleDeath,  pointer.worldX, pointer.worldY);
+
+    // game.sound.playAudioSprite('sfx_test', 'sfxtest_trainwhistle');
+    spawnStatus('bite', gameObject.body.x, gameObject.body.y);
     gameObject.clicked();
-    showParticle('blood', pointer.worldX, pointer.worldY);
-    if(gameObject.particleDeath) showParticle(gameObject.particleDeath,  pointer.worldX, pointer.worldY);
   }
 }
 
