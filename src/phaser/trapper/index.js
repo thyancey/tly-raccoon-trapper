@@ -6,7 +6,7 @@ import { STATUS as STATUS_PLAYER } from './entities/player';
 import Events from '../event-emitter';
 import SpawnController, { spawnStatus } from './spawn.js';
 import LevelController from './level.js';
-import { playSound, preload as preloadSound, init as initSound } from './sound';
+import { playSound, preload as preloadSound, init as initSound, SOUNDS } from './sound';
 
 let game;
 let levelGroups;
@@ -238,13 +238,13 @@ function onInterface(event, data){
 function trigger_enemyAtEnd(enemy, trigger){
   switch(enemy.status){
     case STATUS_ENEMY.ROAMING_TAME:
-      playSound('sfxtest_trainwhistle');
+      playSound(SOUNDS.ENEMY_CAPTURED);
       spawnStatus('tame', enemy.body.x, enemy.body.y);
       setPoints('captures', 1);
       enemy.captured();
       break;
     case STATUS_ENEMY.ROAMING:
-      playSound('sfxtest_slidewhistle');
+      playSound(SOUNDS.ENEMY_ESCAPED);
       spawnStatus('lost', enemy.body.x, enemy.body.y);
       setPoints('escapes', 1);
       enemy.escaped();
@@ -257,14 +257,14 @@ function trigger_itemAtStart(item, trigger){
   spawnStatus('lost', item.body.x, item.body.y);
   item.destroy();
   setPoints('bowls', 1);
-  playSound('sfxtest_slidewhistle');
+  playSound(SOUNDS.BAD);
 }
 
 function trigger_enemyAndBowl(enemy, bowl){
   if(enemy.canEat() && bowl.canBeEaten){
     enemy.eatAtBowl(bowl.body);
     bowl.eatenBy(enemy);
-    playSound('sfxtest_eat');
+    playSound(SOUNDS.ENEMY_EATING);
   }
 }
 
@@ -281,13 +281,13 @@ function trigger_enemyAndPlayer(enemy, player){
     // otherwise, see if its good or bad
       // get bitten by mean boys.
       if(!enemy.isFull && !enemy.checkStatus(STATUS_ENEMY.BITING)){
-        playSound('sfxtest_bite');
+        playSound(SOUNDS.ENEMY_BITE);
         spawnStatus('bite', enemy.body.x, enemy.body.y, enemy.depth);
         bitePlayer(player, enemy);
       }else{
         // good raccoons get a bonus from a hug, dont hug more than once now
         if(player.checkStatus(STATUS_PLAYER.HUGGING) && !enemy.checkStatus(STATUS_ENEMY.HUGGING)){
-          playSound('sfxtest_trainwhistle');
+          playSound(SOUNDS.HUG);
           spawnStatus('hug', enemy.body.x, enemy.body.y, enemy.depth);
           hugEnemy(player, enemy);
         }
@@ -306,7 +306,7 @@ function kickEnemy(player, enemy){
       const willKill = (kickStrength >= enemy.puntKillThreshold);
       enemy.punt(kickStrength);
       if(willKill){
-        playSound('sfxtest_trainwhistle');
+        playSound(SOUNDS.GOOD);
         showParticle('blood', enemy.body.x, enemy.body.y);
         if(enemy.particleDeath) showParticle(enemy.particleDeath,  enemy.body.x, enemy.body.y);
         
