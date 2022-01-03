@@ -4,30 +4,114 @@ import gameData from './data.json';
 import { STATUS as STATUS_ENEMY } from './entities/raccoon';
 import { STATUS as STATUS_PLAYER } from './entities/player';
 import Events from '../event-emitter';
-import SpawnController from './spawn.js';
+import SpawnController, { spawnStatus } from './spawn.js';
 import LevelController from './level.js';
+import { playSound, preload as preloadSound, init as initSound, SOUNDS } from './sound';
 
 let game;
 let levelGroups;
-let emitter;
 let sceneContext;
 
-let points = {
+const INITIAL_STATE_POINTS = {
   bowls: 0,
   hugs: 0,
   bites: 0,
   captures: 0,
-  escapes: 0
+  escapes: 0 
 }
+let points = {};
 
 global.gameData = {
   curLevel: 0
 }
 
+const particleDefs = {
+  blood: {
+    image:'./assets/blood.png',
+    emitter:{
+      quantity: 20,
+      visible: false,
+      blendMode: 'SCREEN',
+      speed: { min: -400, max: 400 },
+      angle: { min: 210, max: 330 },
+      scale: { start: 1, end: 0 },
+      lifespan: 500,
+      gravityY: 1000
+    }
+  },
+  raccoon: {
+    atlas:'./assets/sprites/particle-raccoon',
+    sound: 'splat1',
+    emitter:{
+      quantity: 7,
+      frame: { frames: [ 'particle-raccoon0', 'particle-raccoon1', 'particle-raccoon2', 'particle-raccoon3', 'particle-raccoon4', 'particle-raccoon5', 'particle-raccoon6' ], cycle: true },
+      frequency:1,
+      visible: false,
+      speed: { min: 400, max: 600 },
+      angle: { min: 210, max: 330 },
+      scale: { start: 1.5, end: 2 },
+      lifespan: { min: 400, max: 800 },
+      gravityY: 2000
+    }
+  },
+  raccoon_mean: {
+    atlas:'./assets/sprites/particle-raccoon',
+    sound: 'splat1',
+    emitter:{
+      quantity: 7,
+      frame: { frames: [ 'particle-raccoon0', 'particle-raccoon1', 'particle-raccoon2', 'particle-raccoon3', 'particle-raccoon4', 'particle-raccoon5', 'particle-raccoon6' ], cycle: true },
+      frequency:1,
+      visible: false,
+      tint: 0xff0000,
+      speed: { min: 300, max: 500 },
+      angle: { min: 210, max: 330 },
+      scale: { start: .75, end: 1.1 },
+      lifespan: { min: 400, max: 800 },
+      gravityY: 2000
+    }
+  }
+}
+const particles = {}
+/*
+class AnimatedParticle extends Phaser.GameObjects.Particles.Particle
+{
+    constructor (emitter)
+    {
+        super(emitter);
+        this.frame = anim.frames
 
+        this.t = 0;
+        this.i = 0;
+    }
+
+    update (delta, step, processors)
+    {
+        var result = super.update(delta, step, processors);
+
+        this.t += delta;
+
+        if (this.t >= anim.msPerFrame)
+        {
+            this.i++;
+
+            if (this.i > 17)
+            {
+                this.i = 0;
+            }
+
+            this.frame = anim.frames[this.i].frame;
+            this.t -= anim.msPerFrame;
+        }
+
+        return result;
+    }
+}
+*/
 
 export const createGame = () =>{
   console.log('GAME: createGame');
+  points = { ...INITIAL_STATE_POINTS };
+
   const config = {
     type: Phaser.AUTO,
     scale: {
@@ -93,9 +177,19 @@ function setSceneContext(context){
 }
 
 function preload() {
-  this.load.audioSprite('sfx', './assets/sfx/mixdown.json', [ 'assets/sfx/splat.ogg', 'assets/sfx/splat.mp3'] );
   setSceneContext(this);
-  this.load.image('blood', './assets/blood.png');
+  initSound(this, game);
+  preloadSound();
+
+  // particle images
+  Object.keys(particleDefs).forEach(k => {
+    if(particleDefs[k].image){
+      this.load.image(`particle_${k}`, particleDefs[k].image);
+    } else if(particleDefs[k].atlas) {
+      this.load.atlas(`particle_${k}`, `${particleDefs[k].atlas}.png`, `${particleDefs[k].atlas}.json`);
+    }
+  });
+
   LevelController.preload();
   SpawnController.preload();
 }
@@ -127,7 +221,7 @@ function create() {
   this.input.on('gameobjectdown', onObjectClicked);
   this.input.keyboard.on('keydown', onKeyDown);
 
-  setupMouseEmitter();
+  addParticles();
 }
 function update (){
   SpawnController.update();
@@ -140,14 +234,14 @@ function onInterface(event, data){
 function trigger_enemyAtEnd(enemy, trigger){
   switch(enemy.status){
     case STATUS_ENEMY.ROAMING_TAME:
+      playSound(SOUNDS.ENEMY_CAPTURED);
+      spawnStatus('tame', enemy.body.x, enemy.body.y);
       setPoints('captures', 1);
       enemy.captured();
       break;
-    case STATUS_ENEMY.ROAMING_ANGRY:
-      setPoints('escapes', 1);
-      enemy.escaped();
-      break;
     case STATUS_ENEMY.ROAMING:
+      playSound(SOUNDS.ENEMY_ESCAPED);
+      spawnStatus('lost', enemy.body.x, enemy.body.y);
       setPoints('escapes', 1);
       enemy.escaped();
       break;
@@ -156,8 +250,10 @@ function trigger_enemyAtEnd(enemy, trigger){
 }
 
 function trigger_itemAtStart(item, trigger){
+  spawnStatus('lost', item.body.x, item.body.y);
   item.destroy();
   setPoints('bowls', 1);
+  playSound(SOUNDS.BOWL_LOST);
 }
 
 function trigger_enemyAndBowl(enemy, bowl){
@@ -173,64 +269,93 @@ function collider_enemyAndPlatform(enemy, platform){
 
 function trigger_enemyAndPlayer(enemy, player){
   if(enemy.isAlive()){
-    // if player has arms open for a hug
-    if(player.checkStatus(STATUS_PLAYER.HUGGING)){
-        // hug happy raccoons that havent been hugged yet
-      if(enemy.isFull){
-        if(!enemy.checkStatus(STATUS_ENEMY.HUGGING)){
-          enemy.hug();
-          player.onHugEnemy();
-          setPoints('hugs', 1);
+    // first off, is player is kicking, punt that thing
+    if(player.checkStatus(STATUS_PLAYER.KICK) && player.getKickStrength() > 0){
+      kickEnemy(player, enemy);
+    }else{
+    // otherwise, see if its good or bad
+      // get bitten by mean boys.
+      if(!enemy.isFull && !enemy.checkStatus(STATUS_ENEMY.BITING)){
+        playSound(SOUNDS.ENEMY_BITE);
+        spawnStatus('bite', enemy.body.x, enemy.body.y, enemy.depth);
+        bitePlayer(player, enemy);
+      }else{
+        // good raccoons get a bonus from a hug, dont hug more than once now
+        if(player.checkStatus(STATUS_PLAYER.HUGGING) && !enemy.checkStatus(STATUS_ENEMY.HUGGING)){
+          playSound(SOUNDS.ENEMY_HUG);
+          spawnStatus('hug', enemy.body.x, enemy.body.y, enemy.depth);
+          hugEnemy(player, enemy);
         }
         // already got your hug lil dude, move along
-      }else{
-        // get bitten by mean boys. shouldnt trigger twice cause player moves out of hugging state
-        player.onAttackedByEnemy();
-        setPoints('bites', 1);
-      }
-    }else if(player.checkStatus([STATUS_PLAYER.KICK_PREP])){
-      // enemy.punt ? enemy.punt() : enemy.kill();
-    }else if(player.checkStatus(STATUS_PLAYER.KICK) && player.getKickStrength() > 0){
-      if(enemy.punt){
-        const wasKilled = enemy.punt(player.getKickStrength());
-        if(wasKilled){
-          showBlood(enemy.body.x, enemy.body.y);
-        }
-      }else{
-        enemy.kill();
-        showBlood(enemy.body.x, enemy.body.y);
       }
     }
   }
 
   //- anything else, just walk on by
 }
+
+function kickEnemy(player, enemy){
+  const kickStrength = player.getKickStrength();
+  if(enemy.punt){
+    if(!enemy.punted){
+      const willKill = (kickStrength >= enemy.puntKillThreshold);
+      enemy.punt(kickStrength);
+      if(willKill){
+        playSound(SOUNDS.KICK);
+        showParticle('blood', enemy.body.x, enemy.body.y);
+        if(enemy.particleDeath) showParticle(enemy.particleDeath,  enemy.body.x, enemy.body.y);
+        
+        enemy.kill(true);
+      }else{
+        // soft punt sound
+        const thudVolume = .3 * kickStrength
+        playSound(SOUNDS.KICK, { volume: thudVolume });
+      }
+    }
+  }else{
+    showParticle('blood',  enemy.body.x, enemy.body.y);
+    if(enemy.particleDeath) showParticle(enemy.particleDeath,  enemy.body.x, enemy.body.y);
+    enemy.kill(true);
+  }
+}
+
+function hugEnemy(player, enemy){
+  enemy.hug();
+  player.onHugEnemy();
+  setPoints('hugs', 1);
+}
+
+function bitePlayer(player, enemy){
+  enemy.bite();
+  player.onAttackedByEnemy();
+  setPoints('bites', 1);
+}
+
 function onObjectClicked(pointer, gameObject){
-  showBlood(pointer.worldX, pointer.worldY);
+  if(gameObject.type === 'raccoon'){
+    if(gameObject.particleDeath) showParticle(gameObject.particleDeath,  pointer.worldX, pointer.worldY);
+    spawnStatus('lost', gameObject.body.x, gameObject.body.y);
+    gameObject.clicked();
+  }
 }
 
-function showBlood(x, y){
-  emitter.setPosition(x, y);
-  emitter.explode(20);
-  emitter.visible = true;
-  game.sound.playAudioSprite('sfx', 'splat1');
+function showParticle(type, x, y){
+  const pDef = particleDefs[type];
+  let config = pDef.emitter;
+
+  let pEmitter = particles[type].createEmitter(config);
+
+  pEmitter.setPosition(x, y);
+  pEmitter.explode();
+  pEmitter.visible = true;
+  if(pDef.sound){
+    playSound(SOUNDS.SPLAT);
+  }
 }
 
-// function onSceneClicked(pointer){
-//   SpawnController.spawnBowl(pointer.x, pointer.y);
-// }
-
-function setupMouseEmitter(){
-  let particles = sceneContext.add.particles('blood');
-
-  emitter = particles.createEmitter({
-    visible: false,
-    blendMode: 'SCREEN',
-    speed: { min: -400, max: 400 },
-    angle: { min: 0, max: 360 },
-    scale: { start: 1, end: 0 },
-    lifespan: 500,
-    gravityY: 1000
+function addParticles(){
+  Object.keys(particleDefs).forEach(k => {
+    particles[k] = sceneContext.add.particles(`particle_${k}`);
   });
 }
 
@@ -276,7 +401,6 @@ export const killGame = () => {
     game.destroy();
     game = null;
     sceneContext = null;
-    emitter = null;
     levelGroups = null;
   }
 }

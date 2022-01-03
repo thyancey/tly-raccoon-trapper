@@ -1,11 +1,13 @@
 import Phaser from 'phaser';
 
-import Raccoon from './entities/raccoon.js';
-import Player from './entities/player.js';
-import Bowl from './entities/bowl.js';
+import Raccoon from './entities/raccoon';
+import Player from './entities/player';
+import Bowl from './entities/bowl';
+import Status from './entities/status';
 import { getDepthOfLane } from './utils/values';
 import { throttle } from 'throttle-debounce';
 import Events from '../event-emitter';
+import { playSound, SOUNDS } from './sound';
 
 const THROTTLE_SPEED = 150;
 const SPAWN_MIN = 1000;
@@ -38,6 +40,7 @@ export const preload = () => {
   Raccoon.initSpritesheet(sceneContext);
   Player.initSpritesheet(sceneContext);
   Bowl.initSpritesheet(sceneContext);
+  Status.initSpritesheet(sceneContext);
 }
 
 export const create = (globalEntities, levelData, sceneData) => {
@@ -55,8 +58,9 @@ export const create = (globalEntities, levelData, sceneData) => {
   groups.player = sceneContext.physics.add.staticGroup();
 
   Player.initSprites(sceneContext);
-  Bowl.initSprites(sceneContext);
   Raccoon.initSprites(sceneContext);
+  Bowl.initSprites(sceneContext);
+  Status.initSprites(sceneContext);
 
   spawnPlayer(sceneData.lanes);
   return groups;
@@ -144,8 +148,8 @@ export const spawn = (group, key, anim, x, y) => {
 /* Internal spawn methods */
 const randomizeStats = statsObj => {
   return {
-    speed: Phaser.Math.Between(statsObj.speed[0], statsObj.speed[1]),
-    jumpRate: Phaser.Math.Between(statsObj.jumpRate[0], statsObj.jumpRate[1]),
+    speed: Phaser.Math.FloatBetween(statsObj.speed[0], statsObj.speed[1]),
+    jumpRate: Phaser.Math.FloatBetween(statsObj.jumpRate[0], statsObj.jumpRate[1]),
   }
 }
 
@@ -158,11 +162,17 @@ const spawnIt = (EntityRef, entityData, laneIdx) => {
     y: pos.y,
     stats: stats,
     depth: getDepthOfLane(laneIdx),
-    misc: entityData.misc
+    misc: entityData.misc,
+    type: entityData.type,
+    particleDeath: entityData.particleDeath
   });
-  const randomScale = Phaser.Math.Between(entityData.scaleRange[0], entityData.scaleRange[1]) / 100;
+  const randomScale = Phaser.Math.FloatBetween(entityData.scaleRange[0], entityData.scaleRange[1]) / 100;
   entity.setScale(randomScale);
 }
+
+export const spawnStatus = (type, x, y, depth) => {
+  new Status.Entity(sceneContext, x, y, type, depth);
+};
 
 export const spawnBowl = (x, y) => {
   let bowl = new Bowl.Entity(sceneContext, groups.bowls, {
@@ -181,6 +191,8 @@ export const slingBowl = () => {
   });
 
   bowl.setVelocity(defGlobalEntities.bowl.spawnSpeed, -100);
+  
+  playSound(SOUNDS.BOWL_SLING);
 }
 
 const spawnPlayer = (laneData) => {

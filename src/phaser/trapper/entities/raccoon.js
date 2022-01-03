@@ -1,7 +1,9 @@
 import Phaser from 'phaser';
+import { cancelSound, playSound, SOUNDS } from '../sound';
 
 const KILL_TIMEOUT = 3000;
 const DESTROY_TIMEOUT = 1000;
+const PUNT_TIMEOUT = 1000;
 let sceneRef;
 
 export const STATUS = {
@@ -11,9 +13,9 @@ export const STATUS = {
   DEAD: 4,
   HUGGING: 5,
   IDLE: 6,
-  ROAMING_ANGRY: 11,
   CAPTURED: 12,
-  ESCAPED: 13
+  ESCAPED: 13,
+  BITING: 14,
 }
 
 const spriteKey = 'raccoon';
@@ -50,6 +52,11 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
     sceneRef = scene;
     this.deathTimer = null;
     this.destroyTimer = null;
+    this.punted = null;
+    this.type = 'raccoon';
+    this.particleDeath = spawnData.particleDeath;
+
+    this.eatingSound = null;
 
     // this.status = STATUS.ROAMING;
     // this.love = 0;
@@ -101,9 +108,10 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
     if(spawnData.misc?.tint){
       this.setTint(spawnData.misc.tint);
     }
-    this.on('pointerdown', (thing) => {
-      this.kill();
-    });
+  }
+
+  clicked(){
+    this.kill(true);
   }
 
   canEat(){
@@ -131,6 +139,11 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
 
   // right now, its a %, later should be actual power
   punt(force){
+    this.punted = true;
+    this.puntedTimer = sceneRef.time.delayedCall(PUNT_TIMEOUT, () => {
+      this.punted = false;
+    });
+    
     // console.log('force', force)
     this.body.setDrag(0);
 
@@ -146,20 +159,19 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
       vRange.min.x + vRange.diff.x * force,
       vRange.min.y + vRange.diff.y * force,
     );
-
-    if(force >= this.puntKillThreshold){
-      this.kill();
-      return true;
-    }
-    return false;
   }
 
-  kill(){
+  kill(quickKill){
     this.setStatus(STATUS.DEAD);
 
-    this.deathTimer = sceneRef.time.delayedCall(KILL_TIMEOUT, () => {
+    if(quickKill){
       this.destroy();
-    });
+    }
+    else{
+      this.deathTimer = sceneRef.time.delayedCall(KILL_TIMEOUT, () => {
+        this.destroy();
+      });
+    }
   }
 
   update(){
@@ -186,7 +198,6 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
   isMovingStatus(given){
     switch (given || this.status){
       case STATUS.ROAMING: return true;
-      case STATUS.ROAMING_ANGRY: return true;
       case STATUS.ROAMING_TAME: return true;
       default: break;
     }
@@ -219,11 +230,17 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
         return 'raccoon_eat';
       } else if (this.status === STATUS.ROAMING_TAME){
         return 'raccoon_loveWalk';
-      } else if (this.status === STATUS.ROAMING_ANGRY){
-        return 'raccoon_angryWalk';
       } else if (this.status === STATUS.ROAMING){
-        return 'raccoon_walk';
-      }
+        return 'raccoon_angryWalk';
+      } else if (this.status === STATUS.HUGGING){
+        return 'raccoon_hug';
+      } else if (this.status === STATUS.BITING){
+        return 'raccoon_bite';
+      } else if (this.status === STATUS.ESCAPED){
+        return 'raccoon_bite';
+      } else if (this.status === STATUS.CAPTURED){
+        return 'raccoon_hug';
+      } 
     }
 
     return null;
@@ -245,11 +262,19 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
   eatAtBowl(bowlBody){
     // align with the food bowl
     this.body.x = bowlBody.x - this.eatOffset;
+    const detune = Phaser.Math.Between(-800, 800);
+    const eatRate = Phaser.Math.FloatBetween(0.8, 1.2);
+    this.eatingSound = playSound(SOUNDS.ENEMY_EATING, { 
+      volume: 0.3, 
+      detune: detune,
+      rate: eatRate
+    });
 
     this.setStatus(STATUS.EATING);
   }
 
   bowlEmpty(){
+    cancelSound(this.eatingSound);
     if(this.isAlive()){
       this.isFull = true;
       this.setStatus(STATUS.ROAMING_TAME);
@@ -297,7 +322,13 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
         case STATUS.HUGGING: 
           this.moveStop();
           break;
+        case STATUS.BITING: 
+          this.moveStop();
+          break;
         case STATUS.CAPTURED: 
+          this.moveStop();
+          break;
+        case STATUS.ESCAPED: 
           this.moveStop();
           break;
         default: break;
@@ -334,8 +365,13 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
     this.delayedDestroy();
   }
   
-  hug(){
+  hug(){    
     this.setStatus(STATUS.HUGGING);
+    this.delayedDestroy();
+  }
+  
+  bite(){
+    this.setStatus(STATUS.BITING);
     this.delayedDestroy();
   }
 
@@ -412,7 +448,7 @@ const initSprites = (sceneContext) => {
 
   sceneContext.anims.create({
     key: 'raccoon_dead',
-    frames: sceneContext.anims.generateFrameNumbers(spriteKey, { start: 14, end: 15 }),
+    frames: sceneContext.anims.generateFrameNumbers(spriteKey, { start: 16, end: 17 }),
     frameRate: 7,
     repeat: -1
   });
@@ -432,6 +468,13 @@ const initSprites = (sceneContext) => {
   });
 
   sceneContext.anims.create({
+    key: 'raccoon_bite',
+    frames: sceneContext.anims.generateFrameNumbers(spriteKey, { start: 14, end: 15 }),
+    frameRate: 7,
+    repeat: -1
+  });
+
+  sceneContext.anims.create({
     key: 'raccoon_punted',
     frames: sceneContext.anims.generateFrameNumbers(spriteKey, { start: 2, end: 3 }),
     frameRate: 7,
@@ -440,7 +483,7 @@ const initSprites = (sceneContext) => {
 }
 
 const initSpritesheet = (sceneContext) => {
-  sceneContext.load.spritesheet('raccoon', './assets/raccoon.png', { frameWidth: 56, frameHeight: 56 });
+  sceneContext.load.spritesheet('raccoon', './assets/sprites/raccoon2.png', { frameWidth: 56, frameHeight: 56 });
 }
 
 const exportMap = {

@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import { spawnStatus } from "../spawn";
 
 const DESTROY_TIMEOUT = 1000;
 const DRAIN_TIMER_INTERVAL = 500;
@@ -27,7 +28,7 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
     this.drainTimer = null;
     this.destroyTimer = null;
 
-    this.hpRange = [ 0, 100 ];
+    this.hpRange = [ 0, 50 ];
     this.hp = this.hpRange[1];
 
     this.feeding = [];
@@ -136,6 +137,7 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
         case STATUS.EMPTY: 
           this.canBeEaten = false;
           this.feeding.forEach(feeder => {
+            spawnStatus('tame', feeder.body.x, feeder.body.y, feeder.depth);
             feeder.bowlEmpty();
           })
           break;

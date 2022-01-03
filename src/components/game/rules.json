@@ -17,13 +17,13 @@
       {
         "metric": "bites",
         "condition": ">",
-        "value": 0,
+        "value": 2,
         "result": "TOO_MANY_BITES"
       },
       {
         "metric": "hugs",
         "condition": ">",
-        "value": 2,
+        "value": 50,
         "result": "TOO_MANY_HUGS"
       },
       {
@@ -61,7 +61,7 @@
       {
         "when": [ "TOO_MANY_BITES" ],
         "then": "LOSE",
-        "reason": "We got a lil rule around here where you can't get bit at all",
+        "reason": "We got a lil rule around here where you can't get bit more than two times",
         "halt": true
       },
       {

@@ -13,9 +13,13 @@ export const setContext = (context) => {
 }
 
 export const preload = () => {
-  sceneContext.load.image('bg-yard', './assets/yard-bg.jpg');
-  sceneContext.load.image('fg-yard', './assets/yard-fg.png');
-  sceneContext.load.image('lane4-yard', './assets/yard-lane4.png');
+  sceneContext.load.image('bg', './assets/levels/level-backyard-0.jpg');
+  sceneContext.load.image('lane1', './assets/levels/level-backyard-1.png');
+  sceneContext.load.image('lane2', './assets/levels/level-backyard-2.png');
+  sceneContext.load.image('lane3', './assets/levels/level-backyard-3.png');
+  sceneContext.load.image('fg', './assets/levels/level-backyard-4.png');
+  // sceneContext.load.image('fg-yard', './assets/yard-fg.png');
+  // sceneContext.load.image('lane4-yard', './assets/yard-lane4.png');
 }
 
 export const create = (levelData) => {
@@ -25,9 +29,11 @@ export const create = (levelData) => {
   const rightTrigger = sceneContext.physics.add.staticGroup();
   // sceneContext.make.sprite(50, 50, 'bg-yard');
   
-  sceneContext.add.image(0, 0, 'bg-yard').setOrigin(0).setScale(1).setDepth(Values.zindex.BACKGROUND);
-  sceneContext.add.image(0, 0, 'fg-yard').setOrigin(0).setScale(1).setDepth(Values.zindex.FOREGROUND);
-  sceneContext.add.image(0, 0, 'lane4-yard').setOrigin(0).setScale(1).setDepth(Values.zindex.LANE_4);
+  sceneContext.add.image(0, 0, 'bg').setOrigin(0).setScale(1).setDepth(Values.zindex.BACKGROUND);
+  sceneContext.add.image(0, 0, 'lane1').setOrigin(0).setScale(1).setDepth(Values.zindex.LANE_2);
+  sceneContext.add.image(0, 0, 'lane2').setOrigin(0).setScale(1).setDepth(Values.zindex.LANE_3);
+  sceneContext.add.image(0, 0, 'lane3').setOrigin(0).setScale(1).setDepth(Values.zindex.LANE_4);
+  sceneContext.add.image(0, 0, 'fg').setOrigin(0).setScale(1).setDepth(Values.zindex.FOREGROUND);
   const GAME_WIDTH = 900;
 
   levelData.lanes.forEach(pO => {

@@ -131,20 +131,22 @@ background: center / contain no-repeat url('./assets/raccoon-on-branch.gif');
 
 const HelpList = () => {
   const controls = [
-    'Arrow Up/Down: Change langes',
+    'Arrow Up/Down: Change lanes',
     'Arrow Left: Hug',
     'Arrow Right: Charge kick',
     'Space: Throw food'
   ];
 
   const rules = [
-    'Feed the raccoons and give them hugs',
-    '>>> 3 hugs wins the game',
-    'Don\'t let unfed raccoons in your house',
+    'YOU CAN\'T WIN YET, BUT YOU SURE CAN LOSE!',
+    'Don\'t let feral raccoons in your house!',
     '>>> 3 escapes loses the game',
-    'When you try to hug, you expose yourself, don\'t even think about hugging wild raccoons',
-    '>>> If you get bit once you lose',
-    'Kick any raccoon you want, especially the little red ones',
+    'Feed the feral raccoons to tame them!',
+    'Give tame raccoons a nice hug to show them you care',
+    '>>> hugs give you bonus points',
+    'Don\'t even think about hugging feral raccoons',
+    '>>> 3 escapes loses the game',
+    'Kick any raccoon you want, supercharge your kicks to disintegrate them'
   ]
   return (
     <ScHelp>
