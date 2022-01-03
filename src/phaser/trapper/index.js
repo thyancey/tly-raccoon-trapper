@@ -1,4 +1,4 @@
-import Phaser, { Sound } from 'phaser';
+import Phaser from 'phaser';
 
 import gameData from './data.json';
 import { STATUS as STATUS_ENEMY } from './entities/raccoon';

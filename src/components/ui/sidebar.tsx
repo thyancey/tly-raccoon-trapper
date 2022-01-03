@@ -138,14 +138,15 @@ const HelpList = () => {
   ];
 
   const rules = [
+    'YOU CAN\'T WIN YET, BUT YOU SURE CAN LOSE!',
     'Don\'t let feral raccoons in your house!',
     '>>> 3 escapes loses the game',
     'Feed the feral raccoons to tame them!',
     'Give tame raccoons a nice hug to show them you care',
-    '>>> 3 hugs wins the game',
+    '>>> hugs give you bonus points',
     'Don\'t even think about hugging feral raccoons',
-    '>>> If you get bit once, you lose!',
-    'Kick any raccoon you want',
+    '>>> 3 escapes loses the game',
+    'Kick any raccoon you want, supercharge your kicks to disintegrate them'
   ]
   return (
     <ScHelp>

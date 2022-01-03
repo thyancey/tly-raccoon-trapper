@@ -171,7 +171,7 @@ const spawnIt = (EntityRef, entityData, laneIdx) => {
 }
 
 export const spawnStatus = (type, x, y, depth) => {
-  let status = new Status.Entity(sceneContext, x, y, type, depth);
+  new Status.Entity(sceneContext, x, y, type, depth);
 };
 
 export const spawnBowl = (x, y) => {

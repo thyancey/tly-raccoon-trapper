@@ -1,4 +1,4 @@
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 import { useEffect, useState } from 'react';
 import useSound from 'use-sound';
 
@@ -10,8 +10,8 @@ const ScMusic = styled.div`
 `
 
 export function Music() {
-  const [playing, setPlaying] = useState(false);
-  const [play, { stop }] = useSound('./assets/sfx/trapper.ogg');
+  const [playing, setPlaying] = useState(true);
+  const [play, { stop }] = useSound('./assets/sfx/trapper.ogg', { volume: 0.5 });
 
   useEffect(() => {
     if(playing){
@@ -19,7 +19,7 @@ export function Music() {
     }else{
       stop();
     }
-  }, [ playing ])
+  }, [ playing, play, stop ])
 
   return (
     <ScMusic>
