@@ -3,14 +3,20 @@ let gameContext;
 let sceneContext;
 
 export const SOUNDS = {
-  SPLAT: null,
-  GOOD: 'sfxtest_trainwhistle',
-  BAD: 'sfxtest_slidewhistle',
-  HUG: 'sfxtest_trainwhistle',
-  ENEMY_BITE: 'sfxtest_bite',
-  ENEMY_EATING: 'sfxtest_eat',
-  ENEMY_CAPTURED: 'sfxtest_trainwhistle',
-  ENEMY_ESCAPED: 'sfxtest_slidewhistle',
+  SPLAT: 'crash',
+  GOOD: 'beepUp',
+  BAD: 'beepDown',
+  BOWL_LOST: 'beepBoop',
+  BOWL_SLING: 'charge_slice',
+  ENEMY_HUG: 'beepUp',
+  ENEMY_BITE: 'chomp',
+  ENEMY_EATING: 'chomp_repeat',
+  ENEMY_CAPTURED: 'beepUp',
+  ENEMY_ESCAPED: 'badBeep',
+  KICK: 'bigPunt',
+  CHARGE: 'chargeUp',
+  PLAYER_HUG: 'beep',
+  CHANGE_LANE: 'beepDown_slice'
 }
 
 export const init = (sContext, gContext) => {
@@ -19,9 +25,15 @@ export const init = (sContext, gContext) => {
 }
 
 export const preload = () => {
-  sceneContext.load.audioSprite('sfx_test', './assets/sfx/sfx-test.json', [ 'assets/sfx/sfx-test.ogg', 'assets/sfx/sfx-test.mp3'] );
+  sceneContext.load.audioSprite('sfx', './assets/sfx/sfx.json', [ 'assets/sfx/sfx.ogg', 'assets/sfx/sfx.mp3'] );
 }
 
 export const playSound = (soundKey, params = {}) => {
-  gameContext.sound.playAudioSprite('sfx_test', soundKey, params);
+  const sound = gameContext.sound.addAudioSprite('sfx');
+  sound.play(soundKey, params);
+  return sound;
+}
+
+export const cancelSound = soundThing => {
+  return gameContext.sound.remove(soundThing)
 }

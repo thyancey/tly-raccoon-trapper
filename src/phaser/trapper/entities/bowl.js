@@ -28,7 +28,7 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
     this.drainTimer = null;
     this.destroyTimer = null;
 
-    this.hpRange = [ 0, 100 ];
+    this.hpRange = [ 0, 50 ];
     this.hp = this.hpRange[1];
 
     this.feeding = [];

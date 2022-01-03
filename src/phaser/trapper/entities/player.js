@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { playSound, cancelSound, SOUNDS } from '../sound';
 import { getDepthOfLane } from '../utils/values';
 import StatBar from './stat-bar';
 
@@ -7,6 +8,7 @@ const KICK_DURATION = 500; // becomes variable based on kick power
 const ATTACKED_DURATION = 1000;
 const DESTROY_TIMEOUT = 5000;
 const MIN_KICK_FORCE = .3;
+const KICK_CHARGE_SPEED = .07;
 let statBar;
 let sceneRef;
 
@@ -46,6 +48,7 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
     this.posOffset = [];
     this.spriteOffset = [];
     this.lastIntent = null;
+    this.chargeSound = null;
 
     this.isAlive = true;
     this.kickCharge = 0;
@@ -99,6 +102,7 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
       this.laneIdx = maxIdx;
     }
 
+    playSound(SOUNDS.CHANGE_LANE);
 
     this.updatePlayerPosition();
   }
@@ -150,7 +154,7 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
   }
 
   chargeKick(){
-    this.kickCharge += .1;
+    this.kickCharge += KICK_CHARGE_SPEED;
     if(this.kickCharge > 1){
       this.kickCharge = 1;
     }
@@ -160,6 +164,8 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
 
   startKick(){
     if(!this.checkStatuses([STATUS.KICK, STATUS.KICK_PREP])){
+      
+      this.chargeSound = playSound(SOUNDS.CHARGE);
       this.setStatus(STATUS.KICK_PREP);
     }
   }
@@ -172,6 +178,8 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
 
   kick(){
     this.setStatus(STATUS.KICK);
+    cancelSound(this.chargeSound);
+    playSound(SOUNDS.ENEMY_BITE);
 
     this.recoveryTimer = sceneRef.time.delayedCall(this.getModifiedKickCharge() * KICK_DURATION, () => {
       this.cancelKick();
@@ -179,6 +187,7 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
   }
 
   cancelKick(){
+    // TODO_SOUND
     this.kickCharge = 0;
     statBar.setProgress(this.kickCharge);
     this.setStatus(STATUS.IDLE);
@@ -192,6 +201,7 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
 
   startHug(){
     if(!this.checkStatus(STATUS.HUGGING)){
+      playSound(SOUNDS.PLAYER_HUG);
       this.setStatus(STATUS.HUGGING);
     }
   }

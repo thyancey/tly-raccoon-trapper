@@ -1,0 +1,78 @@
+{
+  "resources": [
+    "./assets/sfx/sfx.ogg",
+    "./assets/sfx/sfx.mp3"
+  ],
+  "spritemap": {
+    "beepUp": {
+      "start": 0,
+      "end": 0.65,
+      "loop": false
+    },
+    "beepDown": {
+      "start": 0.65,
+      "end": 1.41,
+      "loop": false
+    },
+    "chargeUp": {
+      "start": 1.44,
+      "end": 4.6,
+      "loop": false
+    },
+    "chomp": {
+      "start": 4.65,
+      "end": 4.85,
+      "loop": false
+    },
+    "bigPunt": {
+      "start": 4.85,
+      "end": 5.2,
+      "loop": false
+    },
+    "badBeep": {
+      "start": 5.2,
+      "end": 5.8,
+      "loop": false
+    },
+    "beepBoop": {
+      "start": 5.8,
+      "end": 6.49,
+      "loop": false
+    },
+    "beep": {
+      "start": 6.49,
+      "end": 6.73,
+      "loop": false
+    },
+    "boop": {
+      "start": 6.73,
+      "end": 7.25,
+      "loop": false
+    },
+    "badTimeBeep": {
+      "start": 7.25,
+      "end": 7.93,
+      "loop": false
+    },
+    "crash": {
+      "start": 7.93,
+      "end": 8.83,
+      "loop": false
+    },
+    "chomp_repeat": {
+      "start": 4.65,
+      "end": 4.85,
+      "loop": true
+    },
+    "charge_slice": {
+      "start": 1.44,
+      "end": 1.6,
+      "loop": false
+    },
+    "beepDown_slice": {
+      "start": 0.6,
+      "end": 0.7,
+      "loop": false
+    }
+  }
+}

@@ -181,10 +181,6 @@ function preload() {
   initSound(this, game);
   preloadSound();
 
-  // sounds/music
-  this.load.audioSprite('sfx', './assets/sfx/mixdown.json', [ 'assets/sfx/splat.ogg', 'assets/sfx/splat.mp3'] );
-  this.load.audioSprite('sfx_jab', './assets/sfx/jab.json', [ 'assets/sfx/jab.ogg', 'assets/sfx/jab.mp3'] );
-
   // particle images
   Object.keys(particleDefs).forEach(k => {
     if(particleDefs[k].image){
@@ -257,14 +253,13 @@ function trigger_itemAtStart(item, trigger){
   spawnStatus('lost', item.body.x, item.body.y);
   item.destroy();
   setPoints('bowls', 1);
-  playSound(SOUNDS.BAD);
+  playSound(SOUNDS.BOWL_LOST);
 }
 
 function trigger_enemyAndBowl(enemy, bowl){
   if(enemy.canEat() && bowl.canBeEaten){
     enemy.eatAtBowl(bowl.body);
     bowl.eatenBy(enemy);
-    playSound(SOUNDS.ENEMY_EATING);
   }
 }
 
@@ -287,7 +282,7 @@ function trigger_enemyAndPlayer(enemy, player){
       }else{
         // good raccoons get a bonus from a hug, dont hug more than once now
         if(player.checkStatus(STATUS_PLAYER.HUGGING) && !enemy.checkStatus(STATUS_ENEMY.HUGGING)){
-          playSound(SOUNDS.HUG);
+          playSound(SOUNDS.ENEMY_HUG);
           spawnStatus('hug', enemy.body.x, enemy.body.y, enemy.depth);
           hugEnemy(player, enemy);
         }
@@ -306,7 +301,7 @@ function kickEnemy(player, enemy){
       const willKill = (kickStrength >= enemy.puntKillThreshold);
       enemy.punt(kickStrength);
       if(willKill){
-        playSound(SOUNDS.GOOD);
+        playSound(SOUNDS.KICK);
         showParticle('blood', enemy.body.x, enemy.body.y);
         if(enemy.particleDeath) showParticle(enemy.particleDeath,  enemy.body.x, enemy.body.y);
         
@@ -314,7 +309,7 @@ function kickEnemy(player, enemy){
       }else{
         // soft punt sound
         const thudVolume = .3 * kickStrength
-        game.sound.playAudioSprite('sfx_jab', 'jab01', { volume: thudVolume });
+        playSound(SOUNDS.KICK, { volume: thudVolume });
       }
     }
   }else{
@@ -354,7 +349,7 @@ function showParticle(type, x, y){
   pEmitter.explode();
   pEmitter.visible = true;
   if(pDef.sound){
-    game.sound.playAudioSprite('sfx', pDef.sound);
+    playSound(SOUNDS.SPLAT);
   }
 }
 

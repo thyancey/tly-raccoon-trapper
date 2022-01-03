@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { cancelSound, playSound, SOUNDS } from '../sound';
 
 const KILL_TIMEOUT = 3000;
 const DESTROY_TIMEOUT = 1000;
@@ -54,6 +55,8 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
     this.punted = null;
     this.type = 'raccoon';
     this.particleDeath = spawnData.particleDeath;
+
+    this.eatingSound = null;
 
     // this.status = STATUS.ROAMING;
     // this.love = 0;
@@ -259,11 +262,19 @@ class Entity extends Phaser.Physics.Arcade.Sprite {
   eatAtBowl(bowlBody){
     // align with the food bowl
     this.body.x = bowlBody.x - this.eatOffset;
+    const detune = Phaser.Math.Between(-800, 800);
+    const eatRate = Phaser.Math.FloatBetween(0.8, 1.2);
+    this.eatingSound = playSound(SOUNDS.ENEMY_EATING, { 
+      volume: 0.3, 
+      detune: detune,
+      rate: eatRate
+    });
 
     this.setStatus(STATUS.EATING);
   }
 
   bowlEmpty(){
+    cancelSound(this.eatingSound);
     if(this.isAlive()){
       this.isFull = true;
       this.setStatus(STATUS.ROAMING_TAME);
